@@ -1,0 +1,95 @@
+.Container{
+    height: 920px;
+    padding: 5px;
+    display: flex;
+    justify-items: center;
+}
+
+/*-------------------------------- */
+
+/* SELECT CHAT TAB */
+.LeftPanel{
+    text-align: center;
+    border: 1px solid black;
+    /* width: 500px; */
+    
+    flex: 0.20;
+}
+.ChatsLabel{
+    font-size: 20px;
+}
+.SearchInput{
+    width: 200px;
+    height: 30px;
+}
+.createNewChatBtn{
+    margin-right: 5px;
+    float: right;
+    width: 40px;
+    height: 30px;
+}
+.ChatList{
+    margin-top: 25px;
+    border: 0.5px black solid;
+    height: 650px;
+}
+.UserProfile{
+    margin-top: 4px;
+    border: 0.5px black solid;
+    height: 150px;
+}
+/* SELECT CHAT TAB */
+
+/*-------------------------------- */
+
+/* CHAT AREA */
+.BottomPanel{
+    border: 1px solid black;
+    flex: 0.55;
+}
+.TopInfo{
+    border: 1px solid gray;
+    height: 9%;
+    padding: 10px;
+    font-size: 30px;
+    text-align: center;
+}
+.ChatPfp{
+    
+    width: 50px;
+    height: 50px;
+}
+.Chat{
+    border: 1px solid gray;
+    margin-top: 1px;
+    height: 80%;
+    padding: 10px;
+}
+.BottomButtons{
+    margin: 3px;
+    border: 1px solid gray;
+    height:5%;
+}
+.InputMessage{
+    margin-left: 40px;
+    float: left;
+    width: 580px;
+    height: 40px;
+}
+.SendMessage{
+    margin: 3px;
+    height: 40px;
+    width: 80px;
+}
+/* CHAT AREA */
+
+/*-------------------------------- */
+
+/* CHAT INFORMATION TAB */
+.RightPanel{
+    border: 1px solid black;
+    /* width: 200px; */
+    
+    flex:0.25;
+}
+/* CHAT INFORMATION TAB */
