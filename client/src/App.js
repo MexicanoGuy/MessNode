@@ -1,5 +1,5 @@
 import React from 'react';
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, Navigate} from 'react-router-dom';
 
 import io from 'socket.io-client';
 import { useState } from 'react';
@@ -36,16 +36,13 @@ function App() {
   return (
     <>
   <Routes>
+    <Route path="/" element={<Navigate to="/Login"></Navigate>}></Route>
     <Route exact path="/Login" element={<LoginPage/>}></Route>
     <Route exact path="/Signup" element={<SignupPage/>}></Route>
     <Route exact path="/Chat" element={<Chat/>}></Route>
+    
+    
   </Routes>
-  
-
-    
-    
-      {<MainPage></MainPage>}
-    
     </>
     
     /*<div className="App">

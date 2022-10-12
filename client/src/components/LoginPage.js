@@ -1,6 +1,6 @@
 import '../styles/loginPage.css';
 import {useState, useEffect} from 'react';
-
+import {useCookies} from 'react-cookie';
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom';
 import io from 'socket.io-client';
@@ -11,7 +11,9 @@ export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [pwd, setPwd] = useState('');
     const [errorMsg, setErrorMsg] = useState(false);
-
+    const [cookies, setCookie, removeCookie] = useCookies(['user']);
+    
+    
     function Login(){
       const userData = {
         email: email,
@@ -25,6 +27,11 @@ export default function LoginPage() {
           //RENDER CHAT APP
           alert('You have successfully logged in!');
           setErrorMsg(false);
+
+          const loginCookies = () =>{
+            setCookie('email', email, {path:'/'});
+            setCookie('pwd', pwd, {path:'/'});
+          }
         }else{
           setErrorMsg(true);
         }
