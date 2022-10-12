@@ -1,18 +1,18 @@
 import '../styles/loginPage.css';
 import {useState, useEffect} from 'react';
-import {useCookies} from 'react-cookie';
+
 import React, { Component } from 'react'
 import {Link} from 'react-router-dom';
 import io from 'socket.io-client';
 const socket = io.connect("localhost:3001");
-
+//import bcrypt from 'bcrypt';
+import {useCookies} from 'react-cookie';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
     const [pwd, setPwd] = useState('');
     const [errorMsg, setErrorMsg] = useState(false);
     const [cookies, setCookie, removeCookie] = useCookies(['user']);
-    
     
     function Login(){
       const userData = {
@@ -32,6 +32,7 @@ export default function LoginPage() {
             setCookie('email', email, {path:'/'});
             setCookie('pwd', pwd, {path:'/'});
           }
+
         }else{
           setErrorMsg(true);
         }
