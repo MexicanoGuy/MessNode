@@ -2,36 +2,21 @@ const express = require('express');
 const app = express();
 const http = require("http");
 const {Server} = require('socket.io');
-
+const bcrypt = require('bcrypt');
 const cors = require("cors");
 
 app.use(cors());
 
-const { MongoClient } = require("mongodb");
+/*const { MongoClient } = require("mongodb");
 let mongoose = require('mongoose');
 const uri = "mongodb+srv://root:Buraczan56sodu@chaos.azedixd.mongodb.net/test";
-/*const client = new MongoClient(uri);
-async function run() {
-  try {
-    // Connect the client to the server (optional starting in v4.7)
-    await client.connect();
-    // Establish and verify connection
-    await client.db("root").command({ ping: 1 });
-    console.log("Connected successfully to the MongoDB");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);*/
-
 mongoose.connect(uri, { 
   useNewUrlParser: true, 
   useUnifiedTopology: true
 }, () => { 
   console.log('Connected successfully to the MongoDB') 
 })
-
+*/
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -41,14 +26,19 @@ const io = new Server(server, {
     },
 });
 
+const pg = require('pg');
+//var conString = "postgres://jkwfxnqj:z5_h82Lsy4-VJgwjFjUT7c4YZg5tqrPe@tyke.db.elephantsql.com/jkwfxnqj" //Can be found in the Details page
+//var conStringLocal = "localhost"
+//var client = new pg.Client(conStringLocal);
 
-//var pg = require('pg');
-//or native libpq bindings
-//var pg = require('pg').native
+const pool = require("./db");
 
-/*var conString = "postgres://jkwfxnqj:z5_h82Lsy4-VJgwjFjUT7c4YZg5tqrPe@tyke.db.elephantsql.com/jkwfxnqj" //Can be found in the Details page
-var client = new pg.Client(conString);
-client.connect(function(err) {
+/*pool.query('SELECT NOW()', (err,res) =>{
+  //console.log(err,res);
+  pool.end();
+});*/
+
+/*client.connect(function(err) {
   if(err) {
     return console.error('could not connect to postgres', err);
   }
@@ -60,74 +50,70 @@ client.connect(function(err) {
     // TIME
     client.end();
   });
-});
-const {Pool, Client} = require('pg');
+});*/
 
-const pool = require("./db");
 
- 
-pool.query('SELECT NOW()', (err,res) =>{
-  console.log(err,res);
-  pool.end();
-})
-*/
 
-const UserProfile = require('./mongoSchemas/UserProfile');
+//const UserProfile = require('./mongoSchemas/UserProfile');
 
 io.on("connection", (socket) => {
   console.log(`The ${socket.id} connected!`);
     
     socket.on("create_new_account", async (data) =>{
+      const accountStatus ={
+        status: true,
+      }
       console.log(data);
-      
-      
-      const userDuplicate =  await UserProfile.findOne({email: data.email}).exec();
-      //console.log(userDuplicate);
+      /*const userDuplicate =  await UserProfile.findOne({email: data.email}).exec();
       if(!userDuplicate){
         const profile = await UserProfile.create({
           email: data.email,
-          nickname: data.username,
+          username: data.username,
           pwd: data.password
         });
-        //console.log(profile);
-        //profile.save();
-        //console.log("Account created succesfully")
-      
       }else{
         console.log("error creating/account exists")
         socket.emit("account_creation_status",{new: false});
+      }*/
+      pool.connect();
+      const findUser = await pool.query("SELECT email, pwd from users WHERE email=$1", [data.email]);
+      console.log(findUser.rows);
+      if(findUser.rows){
+        const hashedPwd = await bcrypt.hash(data.password, 10);
+        
+        pool.query("INSERT INTO users(email, username, pwd) VALUES($1,$2,$3) ", [data.email, data.username, hashedPwd])
+        console.log("creating new account")
+      }else{
+        socket.emit("account_status", accountStatus) 
       }
-      
+      //pool.end();
     });
     socket.on("request_login_info", async (data) =>{
-      const emailFind = await UserProfile.findOne({email: data.email})
+      /*const emailFind = await UserProfile.findOne({email: data.email})
       var result = false;
       if(emailFind){
         var correctPwd = emailFind.pwd;
         if(data.pwd === correctPwd) result = true;
       }
       
-      socket.emit("receive_login_info", {result});
+      socket.emit("receive_login_info", {result});*/
+      const findUser = await pool.query("SELECT email, pwd from users WHERE email=$1", [data.email]);
+      const userPwd = findUser.rows[0].pwd;
+      const pwdMatch = await bcrypt.compare(data.password, userPwd);
+      console.log(pwdMatch);
+      
     })
 
 
     
     socket.on("join_room", (data) =>{
         
-        //console.log(users);
-        
         socket.join(data.room);
         console.log(`User: ${socket.id}, joined a room ${data.room}`);
         
         const user = userJoin(data);
-        //socket.emit("userlist_change", users);
-        
     });
     socket.on("leave_room", (data) =>{
-
-        //userLeave(data);
-        //socket.to(data.room).emit("userlist_change", data);
-        
         console.log(`User: ${socket.id}, left a room ${data.room}`);
     });
     socket.on("send_message", (data) => {
@@ -136,7 +122,7 @@ io.on("connection", (socket) => {
 
 })
 io.on("disconnect", (socket) =>{
-    //userLeave(socket);
+    
 })
 server.listen(3001, () => {
     console.log("Server is on!")
