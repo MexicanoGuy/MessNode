@@ -40,6 +40,7 @@ function App() {
     <Route exact path="/Login" element={<LoginPage/>}></Route>
     <Route exact path="/Signup" element={<SignupPage/>}></Route>
     <Route exact path="/Chat" element={<Chat/>}></Route>
+    <Route exact path="/MainPage" element={<MainPage/>}></Route>
   </Routes> 
     </>
     

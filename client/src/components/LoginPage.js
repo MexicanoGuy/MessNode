@@ -1,45 +1,68 @@
 import '../styles/loginPage.css';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useLayoutEffect} from 'react';
 
 import React, { Component } from 'react'
-import {Link} from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
-const socket = io.connect("localhost:3001");
-//import bcrypt from 'bcrypt';
+
 import {useCookies} from 'react-cookie';
 
+
+import LoadingPage from '../components/LoadingPage';
+
+const socket = io.connect("localhost:3001");
+
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [pwd, setPwd] = useState('');
-    const [errorMsg, setErrorMsg] = useState(false);
-    const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  
+  const [email, setEmail] = useState('');
+  const [pwd, setPwd] = useState('');
+  const [errorMsg, setErrorMsg] = useState(false);
+  const [cookies, setCookie, removeCookie] = useCookies(['user']);
+  const navigate = useNavigate();
+  
+  
+  useLayoutEffect(() =>{
+    <LoadingPage/>
     
+    if(cookies){
+      alert("trying cookies");
+      const userData = {
+        email: cookies.email,
+        pwd: cookies.pwd
+      }
+      socket.emit("request_login_info", userData);
+    }
+  })
+    
+
     function Login(){
       const userData = {
         email: email,
         pwd: pwd
       }
+      
       socket.emit("request_login_info", userData);
     }
-    useEffect(()=>{
-      socket.on("receive_login_info", (data) =>{
-        if(data.result === true){
+    //useEffect(()=>{
+      
+      socket.on("receive_login_info", (result) =>{
+        if(result == true){
           //RENDER CHAT APP
-          alert('You have successfully logged in!');
+          //alert('You have successfully logged in!');
           setErrorMsg(false);
-
-          const loginCookies = () =>{
-            setCookie('email', email, {path:'/'});
-            setCookie('pwd', pwd, {path:'/'});
-          }
-
+          
+          setCookie('email', email, {path:'/'});
+          setCookie('pwd', pwd, {path:'/'});
+          
+          navigate("/MainPage");
         }else{
           setErrorMsg(true);
         }
       });
-    },[])
+    //},[])
 
     return (<>
+    
     <div className='ContainerTab'>
         <div className='LoginLabel'>Login Page</div>
         <div className='Inputs'>

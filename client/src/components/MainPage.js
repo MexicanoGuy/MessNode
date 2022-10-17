@@ -1,9 +1,23 @@
-import React from 'react'
+import React, { Component } from 'react'
 import '../styles/mainPage.css';
+//import {useState, useEffect} from 'react';
 
+
+//import {Link, useNavigate} from 'react-router-dom';
+import io from 'socket.io-client';
+
+
+import {useCookies} from 'react-cookie';
+
+const socket = io.connect("localhost:3001");
 
 export default function MainPage() {
-  return (
+    const [cookies, setCookie, removeCookie] = useCookies(['user']);
+    
+    const getUserData = () =>{
+
+    }
+    return (
     <>
     <div className='Container'>
         <div className='LeftPanel'>
