@@ -22,17 +22,20 @@ export default function LoginPage() {
   
   
   useLayoutEffect(() =>{
-    <LoadingPage/>
-    
-    if(cookies){
-      alert("trying cookies");
+    // <LoadingPage/>
+
+    if(localStorage.getItem('email')){
+    //if(cookies.user){
+      //alert("trying cookies");
       const userData = {
-        email: cookies.email,
-        pwd: cookies.pwd
+        //email: cookies.email,
+        email: localStorage.getItem('email'),
+        //pwd: cookies.pwd
+        pwd: localStorage.getItem('pwd')
       }
       socket.emit("request_login_info", userData);
     }
-  })
+  },[]);
     
 
     function Login(){
@@ -46,13 +49,16 @@ export default function LoginPage() {
     //useEffect(()=>{
       
       socket.on("receive_login_info", (result) =>{
-        if(result == true){
+        if(result.result == true){
           //RENDER CHAT APP
           //alert('You have successfully logged in!');
           setErrorMsg(false);
-          
-          setCookie('email', email, {path:'/'});
-          setCookie('pwd', pwd, {path:'/'});
+          localStorage.setItem('email',email);
+          localStorage.setItem('pwd', pwd);
+          localStorage.setItem('username', result.username);
+
+          //setCookie('email', email, {path:'/'});
+          //setCookie('pwd', pwd, {path:'/'});
           
           navigate("/MainPage");
         }else{

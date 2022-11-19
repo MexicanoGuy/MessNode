@@ -58,7 +58,7 @@ function SignupPage() {
       id: socket.id,
       email: emailAddress,
       username: username,
-      password: password2,
+      pwd: password2,
     }
     socket.emit('create_new_account', accountData);
   }

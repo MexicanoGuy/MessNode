@@ -13,7 +13,7 @@
     border: 1px solid black;
     /* width: 500px; */
     
-    flex: 0.20;
+    flex: 0.25;
 }
 .ChatsLabel{
     font-size: 20px;
@@ -37,6 +37,19 @@
     margin-top: 4px;
     border: 0.5px black solid;
     height: 150px;
+}
+
+.conversation{
+    margin: 12px;
+    width: 90%;
+    border: 0.5px black solid;
+    border-radius: 10px;
+}
+.conversationSelected{
+    margin: 12px;
+    width: 90%;
+    border: 0.5px rgb(209, 94, 94) solid;
+    border-radius: 10px;
 }
 /* SELECT CHAT TAB */
 
@@ -81,6 +94,39 @@
     height: 40px;
     width: 80px;
 }
+
+.message{
+    width: fit-content;
+    margin: 10px;
+    border-radius: 10px;
+    border: 0.5px solid rgb(41, 116, 117);
+}
+.message-content{
+    margin: 10px;
+    font-size: 20px;
+}
+.message-meta{
+    display: flex;
+}
+.message-meta p{
+    flex: 0;
+    margin: 5px;
+}
+
+#author{
+    font-size: medium;
+    text-decoration: wavy;
+}
+#time{
+    font-size: smaller;
+    margin-top: 5px;
+}
+#you{
+    justify-content: flex-end;
+}
+#other{
+    justify-content: flex-start;
+}
 /* CHAT AREA */
 
 /*-------------------------------- */
@@ -90,6 +136,42 @@
     border: 1px solid black;
     /* width: 200px; */
     
-    flex:0.25;
+    flex:0.2;
+}
+.ChatInfo{
+    border: 0.5px solid black;
+    height: 50vh;
+    width: 100%;
+}
+.Participants{
+    width: 100%;
+    height: 50vh;
+}
+.Member{
+    width: 100%;
+    height: 70px;
+}
+.memberImage{
+    border-radius: 40%;
+    float: left;
+    width: 35px;
+    height: 35px;
+}
+.memberUsername{
+    font-size: 18px;
+    margin: 20px;
+    margin-left: 40px;
+}
+.memberStatus{
+    
+    font-size: 15px;
+}
+.flexMember{
+    
+}
+.AddMember{
+    margin-top: 20px;
+    width: 10vw;
+
 }
 /* CHAT INFORMATION TAB */
