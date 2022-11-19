@@ -3,8 +3,11 @@ const app = express();
 const http = require("http");
 const {Server} = require('socket.io');
 const bcrypt = require('bcryptjs');
-const cors = require("cors");
 
+const Redis = require('redis');
+const redisClient = Redis.createClient();
+
+const cors = require("cors");
 app.use(cors());
 
 /*const { MongoClient } = require("mongodb");
@@ -27,16 +30,9 @@ const io = new Server(server, {
 });
 
 const pg = require('pg');
-//var conString = "postgres://jkwfxnqj:z5_h82Lsy4-VJgwjFjUT7c4YZg5tqrPe@tyke.db.elephantsql.com/jkwfxnqj" //Can be found in the Details page
-//var conStringLocal = "localhost"
-//var client = new pg.Client(conStringLocal);
+var conString = "postgres://jckwfzolztqref:31932f47a1ad2a1413fa78b91457dcfc4376c2cd7ba3d0e6b63ae572c94b404e@ec2-54-246-185-161.eu-west-1.compute.amazonaws.com:5432/d62hcpf032s5sv";
 
 const pool = require("./db");
-
-/*pool.query('SELECT NOW()', (err,res) =>{
-  //console.log(err,res);
-  pool.end();
-});*/
 
 /*client.connect(function(err) {
   if(err) {
@@ -60,7 +56,7 @@ io.on("connection", (socket) => {
   console.log(`The ${socket.id} connected!`);
     
     socket.on("create_new_account", async (data) =>{
-      const accountStatus ={
+      const accountStatus = {
         status: true,
       }
       
@@ -75,21 +71,28 @@ io.on("connection", (socket) => {
         console.log("error creating/account exists")
         socket.emit("account_creation_status",{new: false});
       }*/
+      
       pool.connect();
       const findUser = await pool.query("SELECT email, pwd from users WHERE email=$1", [data.email]);
-      console.log(findUser.rows);
-      if(!findUser.rows){
-        const hashedPwd = await bcrypt.hash(data.pwd, 10);
+      
+      if(!findUser.rows[0]){
         
-        pool.query("INSERT INTO users(email, username, pwd) VALUES($1,$2,$3) ", [data.email, data.username, hashedPwd])
+        var hashedPwd = await bcrypt.hash(data.pwd, 10);
+        
+        await pool.query("INSERT INTO users(email, username, pwd) VALUES($1,$2,$3) ", [data.email, data.username, hashedPwd])
         console.log("creating new account")
       }else{
-        socket.emit("account_status", accountStatus) 
+        console.log('not creating')
+        socket.emit("account_status", accountStatus)
       }
       //pool.end();
     });
     socket.on("request_login_info", async (data) =>{
-      var result = false;
+      
+      const accountStatus = {
+        result: false,
+        username: ''
+      }
       /*const emailFind = await UserProfile.findOne({email: data.email})
       
       if(emailFind){
@@ -98,20 +101,76 @@ io.on("connection", (socket) => {
       }
       
       socket.emit("receive_login_info", {result});*/
-      const findUser = await pool.query("SELECT email, pwd from users WHERE email=$1", [data.email]);
-      if(findUser){
+      const findUser = await pool.query("SELECT email, pwd, username from users WHERE email=$1", [data.email]);
+      
+      
+      if(findUser !== undefined){
+        console.log('checking passwords')
         const userPwd = findUser.rows[0].pwd;
+        accountStatus.username = findUser.rows[0].username;
         
         const pwdMatch = await bcrypt.compare(data.pwd, userPwd);
         console.log(pwdMatch);
-        if(pwdMatch) result = true;
+        if(pwdMatch) accountStatus.result = true;
       }
       
       
-      socket.emit("receive_login_info", result)
+      socket.emit("receive_login_info", accountStatus);
     });
+    socket.on("create_new_chat", async (data) =>{  
+      await pool.query("INSERT INTO conversation(conversationTitle,creator) VALUES($1,$2) ", [data.title,data.creator]);
+      //await pool.query("INSERT INTO conversationUsers(users) VALUES($1) ", [test]);
+    });
+    socket.on("get_user_data", async (data) =>{
+      //console.log(data);
 
+      const findUserConv = await pool.query("SELECT DISTINCT conversationid, conversationtitle, creator FROM conversation INNER JOIN users ON conversation.creator = $1",[data.username]);
 
+      const conversations =[];
+      for(let i=0; i < findUserConv.rowCount; i++){
+        let obj1 = {
+          convId: findUserConv.rows[i].conversationid,
+          title: findUserConv.rows[i].conversationtitle
+        }
+        
+        conversations.push(obj1);
+        
+      }
+      //console.log(conversations)
+      socket.emit("receive_user_data", conversations)
+      //THEN EMIT DATA TO USER
+    });
+    socket.on('get_chat_data', async (data) =>{
+      const queryInfo = await pool.query("SELECT msgId, content, author, timestamp, participants FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[data]);
+      
+      const messagesData = [];
+      const membersInfo = [];
+      for(let i=0; i < queryInfo.rowCount; i++){
+        let obj1 = {
+          msgId: queryInfo.rows[i].msgid,
+          content: queryInfo.rows[i].content,
+          author: queryInfo.rows[i].author,
+          timestamp: queryInfo.rows[i].timestamp,
+        }
+        messagesData.push(obj1);
+      }
+      // SEARCH FOR PARTICIPANTS
+
+      const members = queryInfo.rows[0].participants;
+      if(members !== null){        
+        for(let i=0; i<members.length; i++){
+          let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
+          let obj2 = {
+            userId: userQuery.rows[0].userid,
+            username: userQuery.rows[0].username,
+            // userpfp: userQuery.rows[i].pfp;
+          }
+          membersInfo.push(obj2);
+        }
+      }
+      console.log(membersInfo);
+      socket.emit("receive_chat_data", {msgList: messagesData, memberList: membersInfo});
+    })
     
     socket.on("join_room", (data) =>{
         
@@ -121,10 +180,26 @@ io.on("connection", (socket) => {
         const user = userJoin(data);
     });
     socket.on("leave_room", (data) =>{
-        console.log(`User: ${socket.id}, left a room ${data.room}`);
+        console.log(`User: ${socket.id}, left a room ${data.room}`); 
     });
-    socket.on("send_message", (data) => {
-        socket.to(data.room).emit("receive_message", data);
+    socket.on("send_message", async (data) => {
+      //console.log(data);
+      await pool.query("INSERT INTO messages(content, timestamp, author, convNo) values($1,$2,$3,$4)",[data.message, data.time, data.author, data.convNo])
+      const queryInfo = await pool.query("SELECT msgId, content, author, timestamp FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[data.convNo])
+      const messagesData = [];
+
+      for(let i=0; i < queryInfo.rowCount; i++){
+        let obj1 = {
+          msgId: queryInfo.rows[i].msgid,
+          content: queryInfo.rows[i].content,
+          author: queryInfo.rows[i].author,
+          timestamp: queryInfo.rows[i].timestamp,
+        }
+        messagesData.push(obj1);
+        
+      }
+      console.log(messagesData);
+      socket.emit("receive_message", messagesData);
     });
 
 })
