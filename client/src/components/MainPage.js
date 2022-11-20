@@ -4,7 +4,7 @@ import '../styles/mainPage.css';
 
 //import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
-
+import ManageUser from '../components/ManageUser';
 
 const socket = io.connect("localhost:3001");
 
@@ -19,6 +19,8 @@ export default function MainPage() {
 
     const [memberList, setMemberList] = useState([]);
 
+    const [toggleManageUser, setToggleManageUser] = useState(null);
+    
     const userData ={
         username: localStorage.getItem('username'),
         email: localStorage.getItem('email')
@@ -77,6 +79,7 @@ export default function MainPage() {
         }
         socket.emit('create_new_chat', chatData);
     }
+    
     return (
     <>
     <div className='Container'>
@@ -160,14 +163,20 @@ export default function MainPage() {
                 {memberList.map((content) =>{
                     return <div className='Member' key={content.userId}>
                         <img className='memberImage' src="https://i.pinimg.com/550x/20/0d/72/200d72a18492cf3d7adac8a914ef3520.jpg"></img >
+                        <button className='manageUser' onClick={e =>{
+                            setToggleManageUser((oldId) =>{
+                                return oldId == content.userId ? null : content.userId;
+                            });
+                        } }>...</button>
                         <div className='flexMember'>
                             <p className='memberUsername'>{content.username}</p>
                             <p className='memberStatus'>Online</p>
                         </div>
+                        {toggleManageUser == content.userId  ? <ManageUser userId={content.userId}></ManageUser>  : '' }
                     </div>
-                })}  
+                })}
             </div>
-        </div> {/*For Media*/}
+        </div>
     </div>
     </>
   )

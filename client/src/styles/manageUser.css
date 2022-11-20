@@ -1,0 +1,18 @@
+.container{
+    width: 20%;
+    height: 250px;
+    background-color:#e5e4e7;
+    z-index: 9;
+    position: absolute;
+    border-radius: 3%;
+    display: inline-grid;
+    
+}
+#customizeUser{
+    font-size: 20px;
+    border: transparent;
+    width: auto;
+}
+#customizeUser:hover{
+    background-color: #e5e4e7;
+}
