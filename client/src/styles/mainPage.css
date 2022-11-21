@@ -179,5 +179,28 @@
     height: fit-content;
     float: right;
 }
-
+.addMemberContainer{
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: transparent;
+    border: transparent;
+    /* text-align: center; */
+    display: flex;
+    font-size: 22px;
+    width: 100%;
+    height: 40px;
+}
+.addMemberContainer:hover{
+    background-color: aliceblue;
+}
+.addNewMemberBtn{
+    border-radius: 50px;
+    border: 0.5px solid black;
+    flex: 0.2;
+    width: 50px;
+}
+.addMemberA{
+    flex: 0.8;
+    margin-right: -10px;
+}
 /* CHAT INFORMATION TAB */

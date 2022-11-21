@@ -5,6 +5,7 @@ import '../styles/mainPage.css';
 //import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import ManageUser from '../components/ManageUser';
+import AddUser from './AddUser';
 
 const socket = io.connect("localhost:3001");
 
@@ -20,6 +21,7 @@ export default function MainPage() {
     const [memberList, setMemberList] = useState([]);
 
     const [toggleManageUser, setToggleManageUser] = useState(null);
+    const [toggleAddUser, setToggleAddUser] = useState(false);
     
     const userData ={
         username: localStorage.getItem('username'),
@@ -82,6 +84,7 @@ export default function MainPage() {
     
     return (
     <>
+    {toggleAddUser ? <AddUser></AddUser> : <></>}
     <div className='Container'>
         <div className='LeftPanel'>
             <p className='ChatsLabel'>Chats</p>
@@ -173,8 +176,13 @@ export default function MainPage() {
                             <p className='memberStatus'>Online</p>
                         </div>
                         {toggleManageUser == content.userId  ? <ManageUser userId={content.userId}></ManageUser>  : '' }
+                        
                     </div>
                 })}
+            <button className='addMemberContainer' onClick={e =>{
+                if(toggleAddUser == true) setToggleAddUser(false)
+                else setToggleAddUser(true);
+            }}><div className='addNewMemberBtn'>&#10010;</div> <a className='addMemberA'>Add new user</a> </button>
             </div>
         </div>
     </div>
