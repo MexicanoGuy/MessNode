@@ -201,7 +201,11 @@ io.on("connection", (socket) => {
       console.log(messagesData);
       socket.emit("receive_message", messagesData);
     });
+    socket.on('searchForUsers', async (data) =>{
+      const queryUsers = await pool.query("SELECT * FROM users WHERE username=$1 LIKE ",[data]);
 
+      console.log(queryUsers.rows[0]);
+    })
 })
 io.on("disconnect", (socket) =>{
     
