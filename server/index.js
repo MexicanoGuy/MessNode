@@ -60,18 +60,6 @@ io.on("connection", (socket) => {
         status: true,
       }
       
-      /*const userDuplicate =  await UserProfile.findOne({email: data.email}).exec();
-      if(!userDuplicate){
-        const profile = await UserProfile.create({
-          email: data.email,
-          username: data.username,
-          pwd: data.password
-        });
-      }else{
-        console.log("error creating/account exists")
-        socket.emit("account_creation_status",{new: false});
-      }*/
-      
       pool.connect();
       const findUser = await pool.query("SELECT email, pwd from users WHERE email=$1", [data.email]);
       
@@ -88,34 +76,22 @@ io.on("connection", (socket) => {
       //pool.end();
     });
     socket.on("request_login_info", async (data) =>{
-      
       const accountStatus = {
         result: false,
         username: ''
       }
-      /*const emailFind = await UserProfile.findOne({email: data.email})
-      
-      if(emailFind){
-        var correctPwd = emailFind.pwd;
-        if(data.pwd === correctPwd) result = true;
-      }
-      
-      socket.emit("receive_login_info", {result});*/
-      const findUser = await pool.query("SELECT email, pwd, username from users WHERE email=$1", [data.email]);
-      
-      
-      if(findUser !== undefined){
-        console.log('checking passwords')
-        const userPwd = findUser.rows[0].pwd;
-        accountStatus.username = findUser.rows[0].username;
-        
-        const pwdMatch = await bcrypt.compare(data.pwd, userPwd);
-        console.log(pwdMatch);
-        if(pwdMatch) accountStatus.result = true;
-      }
-      
-      
+      const findUser = await pool.query("SELECT email, pwd, username from users WHERE email=$1 ", [data.email]);
+        if(findUser.rowCount){
+          console.log('checking passwords')
+          const userPwd = findUser.rows[0].pwd;
+          accountStatus.username = findUser.rows[0].username;
+          
+          const pwdMatch = bcrypt.compare(data.pwd, userPwd);
+          console.log(pwdMatch);
+          if(pwdMatch) accountStatus.result = true;
+        }
       socket.emit("receive_login_info", accountStatus);
+      
     });
     socket.on("create_new_chat", async (data) =>{  
       await pool.query("INSERT INTO conversation(conversationTitle,creator) VALUES($1,$2) ", [data.title,data.creator]);
@@ -202,10 +178,41 @@ io.on("connection", (socket) => {
       socket.emit("receive_message", messagesData);
     });
     socket.on('searchForUsers', async (data) =>{
-      const queryUsers = await pool.query("SELECT * FROM users WHERE username=$1 LIKE ",[data]);
-
-      console.log(queryUsers.rows[0]);
-    })
+      var username = '%' + data.searchValue + '%';
+      const queryUsers = await pool.query("SELECT * FROM users WHERE username LIKE $1",[username]);
+      const usersData = [];
+      const alreadyAdded = await pool.query("SELECT participants FROM conversation WHERE conversationid=$1", [data.convId]);
+      
+      for(let i=0; i < queryUsers.rowCount; i++){ 
+        var isAdded = null;
+        if(alreadyAdded.rowCount > 0){
+          var currentUser = queryUsers.rows[i].userid;
+          var userId = "'" + alreadyAdded.rows[0].participants + "'";
+          
+          if(userId.includes(currentUser)){
+            isAdded = true;
+            // console.log('Added: ',currentUser);
+          }else{
+            isAdded = false;
+            // console.log('Not Added: ',currentUser);
+          }
+        }
+        let userObject = {
+          userId: queryUsers.rows[i].userid,
+          username: queryUsers.rows[i].username,
+          email: queryUsers.rows[i].email,
+          isAdded: isAdded
+        }
+        usersData.push(userObject);
+      }
+      // console.log(usersData);
+      socket.emit("receive_searched_users", usersData);
+    });
+    socket.on("addNewMember", async (data) =>{
+      var userId = data.userId;
+      console.log(userId);
+      pool.query(`UPDATE conversation SET participants = participants || '$1'::integer WHERE conversationid=$2`,[2,5]);
+    });
 })
 io.on("disconnect", (socket) =>{
     
