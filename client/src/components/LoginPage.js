@@ -25,28 +25,21 @@ export default function LoginPage() {
     // <LoadingPage/>
 
     if(localStorage.getItem('email')){
-    //if(cookies.user){
-      //alert("trying cookies");
       const userData = {
-        //email: cookies.email,
         email: localStorage.getItem('email'),
-        //pwd: cookies.pwd
         pwd: localStorage.getItem('pwd')
       }
       socket.emit("request_login_info", userData);
     }
   },[]);
     
-
     function Login(){
       const userData = {
         email: email,
         pwd: pwd
       }
-      
       socket.emit("request_login_info", userData);
     }
-    //useEffect(()=>{
       
       socket.on("receive_login_info", (result) =>{
         if(result.result == true){
@@ -56,16 +49,12 @@ export default function LoginPage() {
           localStorage.setItem('email',email);
           localStorage.setItem('pwd', pwd);
           localStorage.setItem('username', result.username);
-
-          //setCookie('email', email, {path:'/'});
-          //setCookie('pwd', pwd, {path:'/'});
           
           navigate("/MainPage");
         }else{
           setErrorMsg(true);
         }
       });
-    //},[])
 
     return (<>
     
@@ -87,12 +76,15 @@ export default function LoginPage() {
                 onChange={(event) =>{
                   setPwd(event.target.value);
                 }}
+                onKeyPress={(event)=>{
+                  event.key === "Enter" && Login();
+                }}
                 className='passwordInput'> 
               </input>
               {errorMsg ? <p>The credentials you've entered are incorrect!</p> : <p></p>}
         </div>
         <div className='Buttons'>
-            <button className='submit' onClick={Login}>LOGIN</button>
+            <button  className='submit'  onClick={Login} >LOGIN</button>
             <hr className='lineBreak'></hr>
             <p className='createAccount'> <Link to={"/Signup"}> Don't have an account yet?  Sign up here!</Link> </p>
             

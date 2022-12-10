@@ -9,6 +9,9 @@
     background-color: rgba(230, 251, 244, 0.892);
     border-radius: 10px;
 }
+.searchedUsers{
+    margin-left: 5%;
+}
 .inputSearchUser{
     margin-top: 2%;
     margin-left: 5%;
@@ -45,9 +48,8 @@
 .submitAddPeople:hover{
     background-color: rgb(192, 198, 198);
 }
-.searchBtn{
-    margin-left: 5px;
-    margin-top: 2%;
-    width: 30px;
-    height: 30px;
+.alreadyAddedBtn{
+    text-decoration: line-through;
+    opacity: 0.4;
+    background-color: gray;
 }

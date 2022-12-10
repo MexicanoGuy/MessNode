@@ -6,6 +6,7 @@ import '../styles/mainPage.css';
 import io from 'socket.io-client';
 import ManageUser from '../components/ManageUser';
 import AddUser from './AddUser';
+import { Link, Navigate, NavLink, Route } from 'react-router-dom';
 
 const socket = io.connect("localhost:3001");
 
@@ -14,7 +15,8 @@ export default function MainPage() {
     
     const [conversationList, setConversationList] = useState([]);
     const [conversationIndex, setConversationIndex] = useState(0);
-    
+    const [selectedConvName, setSelectedConvName] = useState('');
+
     const [messageList, setMessageList] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
 
@@ -44,6 +46,7 @@ export default function MainPage() {
         socket.on('receive_user_data', (data) =>{
             var firstConv = data[0].convId;
             setConversationIndex(firstConv);
+            setSelectedConvName(data[0].title);
             setConversationList(data);
         })
     }
@@ -70,8 +73,9 @@ export default function MainPage() {
         }
     };
 
-    const handleConvChange = (e,convId) =>{
+    const handleConvChange = (e,convId, title) =>{
         setConversationIndex(convId);
+        setSelectedConvName(title);
     }
     const createNewChat = async () => {
         if(newChatName == null || newChatName == '') alert(newChatName);
@@ -81,10 +85,13 @@ export default function MainPage() {
         }
         socket.emit('create_new_chat', chatData);
     }
-    
+    const logout = async () =>{
+        localStorage.clear();
+        Navigate('/Login');
+    }
     return (
     <>
-    {toggleAddUser ? <AddUser></AddUser> : <></>}
+    {toggleAddUser ?  <AddUser memberList={memberList} convId={conversationIndex}></AddUser> : <></>}
     <div className='Container'>
         <div className='LeftPanel'>
             <p className='ChatsLabel'>Chats</p>
@@ -96,11 +103,13 @@ export default function MainPage() {
                     setNewChatName(event.target.value);
                 }}
             ></input>
-            <button className='searchForChat'>search</button>
+            <button 
+                className='searchForChat'>search
+            </button>
             <button 
                 className='createNewChatBtn'
-                onClick={createNewChat}
-            >create</button>
+                onClick={createNewChat}>create
+            </button>
             <div className='ChatList'>
             {conversationList.map((content) =>(
                  <div 
@@ -111,7 +120,7 @@ export default function MainPage() {
                     }
                     key={content.convId}
                     meta-index={content.convId}
-                    onClick={e => handleConvChange(e, content.convId)}>
+                    onClick={e => handleConvChange(e, content.convId, content.title)}>
                     <div className='convImg' ></div>
                     <p className='conversationTitle'>{content.title}</p>
                     <p className='lastMessage'></p>
@@ -119,12 +128,15 @@ export default function MainPage() {
             ))
             }
             </div>
-            <div className='UserProfile'>Welcome back {userData.username}</div>
+            <div className='UserProfile'>
+                <p>Welcome back {userData.username}</p>
+                <a className='Logout' onClick={logout}>Logout </a>
+            </div>
         </div> {/*Groups window */}
         <div className='BottomPanel'>
             <div className='TopInfo'>
                 <img src='https://static.thenounproject.com/png/630729-200.png' className='ChatPfp'></img>
-                <div className='ChatName'>{}</div>
+                <div className='ChatName'>{selectedConvName}</div>
             </div>
             <div className='Chat'>
                 {messageList.map((messageContent) =>{
