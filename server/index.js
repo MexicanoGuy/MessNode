@@ -4,8 +4,8 @@ const http = require("http");
 const {Server} = require('socket.io');
 const bcrypt = require('bcryptjs');
 
-const Redis = require('redis');
-const redisClient = Redis.createClient();
+// const Redis = require('redis');
+// const redisClient = Redis.createClient();
 
 const cors = require("cors");
 app.use(cors());
@@ -76,19 +76,24 @@ io.on("connection", (socket) => {
       //pool.end();
     });
     socket.on("request_login_info", async (data) =>{
-      const accountStatus = {
+      var accountStatus = {
         result: false,
-        username: ''
+        username: '',
+        userId: ''
       }
-      const findUser = await pool.query("SELECT email, pwd, username from users WHERE email=$1 ", [data.email]);
+      const findUser = await pool.query("SELECT email, pwd, username, userid from users WHERE email=$1 ", [data.email]);
         if(findUser.rowCount){
-          console.log('checking passwords')
+          // console.log('checking passwords')
           const userPwd = findUser.rows[0].pwd;
-          accountStatus.username = findUser.rows[0].username;
-          
           const pwdMatch = bcrypt.compare(data.pwd, userPwd);
-          console.log(pwdMatch);
-          if(pwdMatch) accountStatus.result = true;
+          // console.log(pwdMatch);
+          if(pwdMatch){
+            accountStatus = {
+              result: true,
+              username: findUser.rows[0].username,
+              userId: findUser.rows[0].userid
+            }
+          } 
         }
       socket.emit("receive_login_info", accountStatus);
       
@@ -136,12 +141,14 @@ io.on("connection", (socket) => {
       if(members !== null){        
         for(let i=0; i<members.length; i++){
           let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
-          let obj2 = {
-            userId: userQuery.rows[0].userid,
-            username: userQuery.rows[0].username,
-            // userpfp: userQuery.rows[i].pfp;
+          if(userQuery.rowCount > 0){
+            let obj2 = {
+              userId: userQuery.rows[0].userid,
+              username: userQuery.rows[0].username,
+              // userpfp: userQuery.rows[i].pfp;
+            }
+            membersInfo.push(obj2);
           }
-          membersInfo.push(obj2);
         }
       }
       console.log(membersInfo);
@@ -191,10 +198,8 @@ io.on("connection", (socket) => {
           
           if(userId.includes(currentUser)){
             isAdded = true;
-            // console.log('Added: ',currentUser);
           }else{
             isAdded = false;
-            // console.log('Not Added: ',currentUser);
           }
         }
         let userObject = {
@@ -210,8 +215,63 @@ io.on("connection", (socket) => {
     });
     socket.on("addNewMember", async (data) =>{
       var userId = data.userId;
-      console.log(userId);
-      pool.query(`UPDATE conversation SET participants = participants || '$1'::integer WHERE conversationid=$2`,[2,5]);
+      pool.query(`UPDATE conversation SET participants = array_append(participants, $1) WHERE conversationid=$2`,[userId,data.convId]);
+    });
+
+    socket.on("chat_permissions", async (data) =>{
+      console.log(data);
+      const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
+      var isAdmin = {
+        userAdmin: false,
+        memberAdmin: false
+      }
+
+      if(adminList.rowCount > 0){
+        const admins = adminList.rows[0].admins;
+        var userId = parseInt(data.userId);
+        var memberId = parseInt(data.memberId);
+
+        if(admins.includes(userId)) isAdmin.userAdmin = true;
+        if(admins.includes(memberId)) isAdmin.memberAdmin = true;
+      }
+
+      socket.emit("receive_chat", isAdmin);
+    });
+    socket.on('give_admin', async (data)=>{
+      const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
+      
+      if(adminList.rowCount > 0){
+        var admins = adminList.rows[0].admins;
+        if(!admins.includes(data.memberId))
+          await pool.query(`UPDATE conversation SET admins = array_append(admins, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
+      }
+      
+    });
+    socket.on('remove_admin', async (data)=>{
+      const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
+      console.log(data);
+      if(adminList.rowCount > 0){
+        var admins = adminList.rows[0].admins;
+        if(admins.includes(data.memberId))
+          await pool.query(`UPDATE conversation SET admins = array_remove(admins, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
+      }
+      
+    });
+    socket.on('remove_member', async (data)=>{
+      const memberList = await pool.query("SELECT participants FROM conversation WHERE conversationid=$1",[data.convId]);
+      console.log(data);
+      var memberId = parseInt(data.memberId);
+      if(memberList.rowCount > 0){
+        
+        var members = memberList.rows[0].participants;
+        console.log(members.includes(memberId));
+        console.log(memberId);
+        if(members.includes(memberId)){
+          console.log('test')
+          // pool.query(`UPDATE conversation SET participants = array_remove(participants, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
+        }
+      }
+      
     });
 })
 io.on("disconnect", (socket) =>{
