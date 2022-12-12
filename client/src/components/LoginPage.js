@@ -49,6 +49,7 @@ export default function LoginPage() {
           localStorage.setItem('email',email);
           localStorage.setItem('pwd', pwd);
           localStorage.setItem('username', result.username);
+          localStorage.setItem('userId', result.userId)
           
           navigate("/MainPage");
         }else{

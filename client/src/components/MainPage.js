@@ -27,12 +27,14 @@ export default function MainPage() {
     
     const userData ={
         username: localStorage.getItem('username'),
-        email: localStorage.getItem('email')
+        email: localStorage.getItem('email'),
+        userId: localStorage.getItem('userId')
     }
     useLayoutEffect(() =>{
         fetchUserInfo();
     },[])
     useEffect(() =>{
+        setToggleAddUser(false);
         if(conversationIndex !== 0)
         socket.emit('get_chat_data', conversationIndex);
         socket.on('receive_chat_data', (data) =>{
@@ -187,7 +189,7 @@ export default function MainPage() {
                             <p className='memberUsername'>{content.username}</p>
                             <p className='memberStatus'>Online</p>
                         </div>
-                        {toggleManageUser == content.userId  ? <ManageUser userId={content.userId}></ManageUser>  : '' }
+                        {toggleManageUser == content.userId  ? <ManageUser memberId={content.userId} convId={conversationIndex}></ManageUser>  : '' }
                         
                     </div>
                 })}
