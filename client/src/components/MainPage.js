@@ -212,18 +212,21 @@ export default function MainPage() {
                         
                     </div>
                 })}
-            <button className='addMemberContainer' onClick={e =>{
-                if(toggleAddUser == true) setToggleAddUser(false)
-                else setToggleAddUser(true);
-            }}>
-            <div className='addNewMemberBtn'>&#10010;</div> <a className='addMemberA'>Add new user</a> 
-            </button>
-            <button className='leaveGroupContainer' onClick={e =>{
-                if(toggleLeaveGroup == true) setToggleLeaveGroup(false)
-                else setToggleLeaveGroup(true);
-            }}>
-                <div className='leaveGroup'>&#10149;</div> <a className='leaveGroupA'>Leave group</a> 
-            </button>
+            { conversationIndex !== 0 
+            ?
+                <><button className='addMemberContainer' onClick={e =>{
+                    if(toggleAddUser == true) setToggleAddUser(false)
+                    else setToggleAddUser(true);
+                }}>
+                <div className='addNewMemberBtn'>&#10010;</div> <a className='addMemberA'>Add new user</a> 
+                </button>
+                <button className='leaveGroupContainer' onClick={e =>{
+                    if(toggleLeaveGroup == true) setToggleLeaveGroup(false)
+                    else setToggleLeaveGroup(true);
+                }}>
+                    <div className='leaveGroup'>&#10149;</div> <a className='leaveGroupA'>Leave group</a> 
+                </button> </>
+            : <></>}
             </div>
         </div>
     </div>
