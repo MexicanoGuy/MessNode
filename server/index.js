@@ -99,13 +99,15 @@ io.on("connection", (socket) => {
       
     });
     socket.on("create_new_chat", async (data) =>{  
-      await pool.query("INSERT INTO conversation(conversationTitle,creator) VALUES($1,$2) ", [data.title,data.creator]);
-      //await pool.query("INSERT INTO conversationUsers(users) VALUES($1) ", [test]);
+      var users = [];
+      users.push(data.creator);
+      console.log(users);
+      await pool.query("INSERT INTO conversation(conversationTitle, creator, participants, admins) VALUES($1, $2, $3, $4) ", [data.title, data.creator, users, users]);
     });
     socket.on("get_user_data", async (data) =>{
-      //console.log(data);
-
-      const findUserConv = await pool.query("SELECT DISTINCT conversationid, conversationtitle, creator FROM conversation INNER JOIN users ON conversation.creator = $1",[data.username]);
+      console.log(data);
+      const findUserConv = await pool.query("SELECT DISTINCT * FROM conversation WHERE $1 = ANY(conversation.participants)",[data.userId]);
+      // const findUserConv2 = await pool.query("SELECT DISTINCT * FROM conversation INNER JOIN users ON conversation.participants = $1",[data.userId]);
 
       const conversations =[];
       for(let i=0; i < findUserConv.rowCount; i++){
@@ -115,59 +117,79 @@ io.on("connection", (socket) => {
         }
         
         conversations.push(obj1);
-        
+        console.log(conversations);
       }
       //console.log(conversations)
       socket.emit("receive_user_data", conversations)
       //THEN EMIT DATA TO USER
     });
     socket.on('get_chat_data', async (data) =>{
-      const queryInfo = await pool.query("SELECT msgId, content, author, timestamp, participants FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[data]);
+      const queryInfo = await pool.query("SELECT * FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[data]);
       
       const messagesData = [];
       const membersInfo = [];
-      for(let i=0; i < queryInfo.rowCount; i++){
-        let obj1 = {
-          msgId: queryInfo.rows[i].msgid,
-          content: queryInfo.rows[i].content,
-          author: queryInfo.rows[i].author,
-          timestamp: queryInfo.rows[i].timestamp,
-        }
-        messagesData.push(obj1);
-      }
-      // SEARCH FOR PARTICIPANTS
+      if(queryInfo.rowCount > 0){
 
-      const members = queryInfo.rows[0].participants;
-      if(members !== null){        
-        for(let i=0; i<members.length; i++){
-          let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
-          if(userQuery.rowCount > 0){
-            let obj2 = {
-              userId: userQuery.rows[0].userid,
-              username: userQuery.rows[0].username,
-              // userpfp: userQuery.rows[i].pfp;
+        for(let i=0; i < queryInfo.rowCount; i++){
+          let obj1 = {
+            msgId: queryInfo.rows[i].msgid,
+            content: queryInfo.rows[i].content,
+            author: queryInfo.rows[i].author,
+            timestamp: queryInfo.rows[i].timestamp,
+          }
+          messagesData.push(obj1);
+        }
+        // SEARCH FOR PARTICIPANTS
+        // console.log(queryInfo.rowCount);
+        const members = queryInfo.rows[0].participants;
+        if(members !== null){        
+          for(let i=0; i<members.length; i++){
+            let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
+            if(userQuery.rowCount > 0){
+              let obj2 = {
+                userId: userQuery.rows[0].userid,
+                username: userQuery.rows[0].username,
+                // userpfp: userQuery.rows[i].pfp;
+              }
+              membersInfo.push(obj2);
             }
-            membersInfo.push(obj2);
+          }
+        }
+      }else{
+        const convInfo = await pool.query("SELECT * FROM conversation WHERE conversationid=$1", [data]);
+        const members = convInfo.rows[0].participants;
+        if(members !== null){        
+          for(let i=0; i<members.length; i++){
+            let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
+            if(userQuery.rowCount > 0){
+              let obj2 = {
+                userId: userQuery.rows[0].userid,
+                username: userQuery.rows[0].username,
+                // userpfp: userQuery.rows[i].pfp;
+              }
+              membersInfo.push(obj2);
+            }
           }
         }
       }
-      console.log(membersInfo);
       socket.emit("receive_chat_data", {msgList: messagesData, memberList: membersInfo});
-    })
+    });
     
     socket.on("join_room", (data) =>{
         
         socket.join(data.room);
         console.log(`User: ${socket.id}, joined a room ${data.room}`);
         
-        const user = userJoin(data);
+        
     });
     socket.on("leave_room", (data) =>{
         console.log(`User: ${socket.id}, left a room ${data.room}`); 
     });
     socket.on("send_message", async (data) => {
-      //console.log(data);
-      await pool.query("INSERT INTO messages(content, timestamp, author, convNo) values($1,$2,$3,$4)",[data.message, data.time, data.author, data.convNo])
+      const time = new Date(data.timestamp);
+      // console.log(time);
+      // socket.emit("receive_message", time);
+      await pool.query("INSERT INTO messages(content, timestamp, author, convNo) values($1,$2,$3,$4)",[data.message, time, data.author, data.convNo])
       const queryInfo = await pool.query("SELECT msgId, content, author, timestamp FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[data.convNo])
       const messagesData = [];
 
@@ -183,6 +205,7 @@ io.on("connection", (socket) => {
       }
       console.log(messagesData);
       socket.emit("receive_message", messagesData);
+    
     });
     socket.on('searchForUsers', async (data) =>{
       var username = '%' + data.searchValue + '%';
@@ -237,16 +260,19 @@ io.on("connection", (socket) => {
 
       socket.emit("receive_chat", isAdmin);
     });
-    socket.on('give_admin', async (data)=>{
-      const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
+    const giveAdminEvent = require("./socketEvents/give_admin");
+    giveAdminEvent(io, socket);
+    // socket.on('give_admin', async (data)=>{
+    //   const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
       
-      if(adminList.rowCount > 0){
-        var admins = adminList.rows[0].admins;
-        if(!admins.includes(data.memberId))
-          await pool.query(`UPDATE conversation SET admins = array_append(admins, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
-      }
+    //   if(adminList.rowCount > 0){
+    //     var admins = adminList.rows[0].admins;
+    //     if(!admins.includes(data.memberId))
+    //       await pool.query(`UPDATE conversation SET admins = array_append(admins, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
+    //   }
       
-    });
+    // });
+
     socket.on('remove_admin', async (data)=>{
       const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
       console.log(data);
@@ -273,7 +299,23 @@ io.on("connection", (socket) => {
       }
       
     });
-})
+    socket.on('leaveGroup', async (data) =>{
+      const isEmpty1 = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1", [data.convId]);
+      if(isEmpty1.rowCount > 0){
+        const adminPosition = await pool.query("SELECT array_position(admins, $1) FROM conversation WHERE conversationid=$2", [data.userId, data.convId]);
+        //CHECK IF USER IS ADMIN IF NOT THEN DONT USE array_remove for admins
+        if(adminPosition.rows[0].array_position > 0){
+          await pool.query("UPDATE conversation SET participants = array_remove(participants, $1), admins = array_remove(admins, $1) WHERE conversationid=$2",[data.userId, data.convId]);
+        }
+      }else{
+        await pool.query("UPDATE conversation SET participants = array_remove(participants, $1) WHERE conversationid=$2",[data.userId, data.convId]);
+      }
+
+      // await pool.query("UPDATE conversation SET participants = array_remove(participants, $1), admins = array_remove(admins, $1) WHERE conversationid=$2",[data.userId, data.convId]);
+      // const isEmpty = pool.query("SELECT participants FROM conversation WHERE conversationid=$1", [data.convId]);
+      
+    });
+});
 io.on("disconnect", (socket) =>{
     
 })

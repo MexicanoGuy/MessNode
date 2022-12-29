@@ -1,7 +1,7 @@
 CREATE TABLE messages(
     msgId SERIAL PRIMARY KEY,
     content TEXT NOT NULL,
-    timestamp TIME,
+    timestamp TIMESTAMP,
     author VARCHAR(30) NOT NULL,
     convNo INTEGER NOT NULL
 );
