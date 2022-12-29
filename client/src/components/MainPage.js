@@ -6,7 +6,8 @@ import '../styles/mainPage.css';
 import io from 'socket.io-client';
 import ManageUser from '../components/ManageUser';
 import AddUser from './AddUser';
-import { Link, Navigate, NavLink, Route } from 'react-router-dom';
+import { Link, useNavigate, NavLink, Route } from 'react-router-dom';
+import LeaveGroup from './LeaveGroup';
 
 const socket = io.connect("localhost:3001");
 
@@ -24,6 +25,8 @@ export default function MainPage() {
 
     const [toggleManageUser, setToggleManageUser] = useState(null);
     const [toggleAddUser, setToggleAddUser] = useState(false);
+    const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
+    let navigate = useNavigate()
     
     const userData ={
         username: localStorage.getItem('username'),
@@ -43,28 +46,41 @@ export default function MainPage() {
             // console.log(data.memberList);
         })  
     }, [conversationIndex])
+    const logout = async () =>{
+        localStorage.clear();
+        navigate('/Login');
+    }
     const fetchUserInfo = () =>{
         socket.emit('get_user_data', userData);
         socket.on('receive_user_data', (data) =>{
-            var firstConv = data[0].convId;
-            setConversationIndex(firstConv);
-            setSelectedConvName(data[0].title);
-            setConversationList(data);
-        })
+            if(data[0] === undefined){
+
+            }else{
+                var firstConv = data[0].convId;
+                setConversationIndex(firstConv);
+                tellOthers();
+                setSelectedConvName(data[0].title);
+                setConversationList(data);
+            }
+        });
+    }
+    const tellOthers = () =>{
+        socket.emit('new')
     }
     const sendMessage = async () =>{
         
         if (currentMessage !== "" && conversationIndex !== "") {
             const messageData = {
                 //room: room,
+                msgId: messageList.length+1,
                 author: userData.username,
                 message: currentMessage,
-                time:
-                    new Date(Date.now()).getHours() +
-                    ":" +
-                    new Date(Date.now()).getMinutes() +
-                    ":" + 
-                    new Date(Date.now()).getSeconds(),
+                timestamp: new Date().toISOString(),
+                    // new Date(Date.now()).getHours() +
+                    // ":" +
+                    // new Date(Date.now()).getMinutes() +
+                    // ":" + 
+                    // new Date(Date.now()).getSeconds(),
                 convNo: conversationIndex,
                 
             };
@@ -83,17 +99,18 @@ export default function MainPage() {
         if(newChatName == null || newChatName == '') alert(newChatName);
         const chatData = {
             title: newChatName,
-            creator: userData.username
+            creator: userData.userId
         }
         socket.emit('create_new_chat', chatData);
     }
-    const logout = async () =>{
-        localStorage.clear();
-        Navigate('/Login');
+    
+    const leaveGroupToggle = () =>{
+        setToggleLeaveGroup(false);
     }
     return (
     <>
-    {toggleAddUser ?  <AddUser memberList={memberList} convId={conversationIndex}></AddUser> : <></>}
+    {toggleAddUser && !toggleLeaveGroup ?  <AddUser memberList={memberList} convId={conversationIndex}></AddUser> : <></>}
+    {toggleLeaveGroup && !toggleAddUser ? <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}></LeaveGroup> : <></>}
     <div className='Container'>
         <div className='LeftPanel'>
             <p className='ChatsLabel'>Chats</p>
@@ -132,7 +149,7 @@ export default function MainPage() {
             </div>
             <div className='UserProfile'>
                 <p>Welcome back {userData.username}</p>
-                <a className='Logout' onClick={logout}>Logout </a>
+                <button className='Logout' onClick={logout}>Logout </button>
             </div>
         </div> {/*Groups window */}
         <div className='BottomPanel'>
@@ -142,7 +159,9 @@ export default function MainPage() {
             </div>
             <div className='Chat'>
                 {messageList.map((messageContent) =>{
-                    //console.log(messageContent);
+                    const date = new Date(messageContent.timestamp);
+                    var hours = date.getHours();
+                    var minutes = date.getMinutes();
                     return <div className='message' key={messageContent.msgId} id={userData.username === messageContent.author ? "you" : "other"}>
                         <div>
                             <div className='message-content'>
@@ -150,7 +169,7 @@ export default function MainPage() {
                             </div>
                             <div className='message-meta'>
                                 <p id="author">{messageContent.author}</p>
-                                <p id="time">{messageContent.timestamp}</p>
+                                <p id="time">{hours + ":" + minutes}</p>
                             </div>
                         </div>
                         
@@ -196,7 +215,15 @@ export default function MainPage() {
             <button className='addMemberContainer' onClick={e =>{
                 if(toggleAddUser == true) setToggleAddUser(false)
                 else setToggleAddUser(true);
-            }}><div className='addNewMemberBtn'>&#10010;</div> <a className='addMemberA'>Add new user</a> </button>
+            }}>
+            <div className='addNewMemberBtn'>&#10010;</div> <a className='addMemberA'>Add new user</a> 
+            </button>
+            <button className='leaveGroupContainer' onClick={e =>{
+                if(toggleLeaveGroup == true) setToggleLeaveGroup(false)
+                else setToggleLeaveGroup(true);
+            }}>
+                <div className='leaveGroup'>&#10149;</div> <a className='leaveGroupA'>Leave group</a> 
+            </button>
             </div>
         </div>
     </div>

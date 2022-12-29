@@ -20,6 +20,9 @@
     text-align: center;
 }
 .emailInput{
+    font-size: 15px;
+    width: 400px;
+    height: 30px;
     position: absolute;
 }
 .passwordInput{

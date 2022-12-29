@@ -62,7 +62,6 @@ export default function LoginPage() {
     <div className='ContainerTab'>
         <div className='LoginLabel'>Login Page</div>
         <div className='Inputs'>
-              <h3>Email</h3>
               <input 
                 type='text' 
                 placeholder='E-mail...'

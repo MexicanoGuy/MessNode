@@ -179,7 +179,7 @@
     height: fit-content;
     float: right;
 }
-.addMemberContainer{
+.addMemberContainer, .leaveGroupContainer{
     margin-top: 20px;
     border-radius: 10px;
     background-color: transparent;
@@ -190,16 +190,24 @@
     width: 100%;
     height: 40px;
 }
-.addMemberContainer:hover{
+
+.addMemberContainer:hover, .leaveGroupContainer:hover{
     background-color: aliceblue;
 }
-.addNewMemberBtn{
+.addNewMemberBtn, .leaveGroup{
     border-radius: 50px;
     border: 0.5px solid black;
     flex: 0.2;
     width: 50px;
 }
-.addMemberA{
+.leaveGroup{
+    -moz-transform: scale(-1, 1);
+    -webkit-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+    transform: scale(-1, 1);
+}
+.addMemberA, .leaveGroupA{
     flex: 0.8;
     margin-right: -10px;
 }
