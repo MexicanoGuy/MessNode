@@ -1,17 +1,13 @@
 import React, { Component, useLayoutEffect, useEffect, useState } from 'react'
 import '../styles/mainPage.css';
-//import {useState, useEffect} from 'react';
 
-//import {Link, useNavigate} from 'react-router-dom';
-import io from 'socket.io-client';
 import ManageUser from '../components/ManageUser';
 import AddUser from './AddUser';
-import { Link, useNavigate, NavLink, Route } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 
-const socket = io.connect("localhost:3001");
-
-export default function MainPage() {
+export default function MainPage(props) {
+    const socket = props.socket;
     const [newChatName, setNewChatName] = useState('');
     
     const [conversationList, setConversationList] = useState([]);
@@ -36,16 +32,30 @@ export default function MainPage() {
     useLayoutEffect(() =>{
         fetchUserInfo();
     },[])
+
     useEffect(() =>{
         setToggleAddUser(false);
-        if(conversationIndex !== 0)
-        socket.emit('get_chat_data', conversationIndex);
-        socket.on('receive_chat_data', (data) =>{
-            setMessageList(data.msgList);
-            setMemberList(data.memberList);
-            // console.log(data.memberList);
-        })  
+        if(conversationIndex !== 0){
+            var convData = {
+                convId: conversationIndex,
+            }
+            socket.emit('get_chat_data', convData);
+            socket.emit('join_room', convData);
+            socket.on('receive_chat_data', (data) =>{
+                setMessageList(data.msgList);
+                setMemberList(data.memberList);
+                
+            });
+        }
+         
     }, [conversationIndex])
+    useEffect(() =>{
+        socket.off('receive_message').on('receive_message', (data) =>{
+            setMessageList((list) => [...list, data]);
+            console.log(data);
+        });
+    }, [socket]);
+    
     const logout = async () =>{
         localStorage.clear();
         navigate('/Login');
@@ -65,23 +75,17 @@ export default function MainPage() {
         });
     }
     const tellOthers = () =>{
-        socket.emit('new')
+        
     }
     const sendMessage = async () =>{
         
         if (currentMessage !== "" && conversationIndex !== "") {
             const messageData = {
-                //room: room,
                 msgId: messageList.length+1,
                 author: userData.username,
-                message: currentMessage,
+                content: currentMessage,
                 timestamp: new Date().toISOString(),
-                    // new Date(Date.now()).getHours() +
-                    // ":" +
-                    // new Date(Date.now()).getMinutes() +
-                    // ":" + 
-                    // new Date(Date.now()).getSeconds(),
-                convNo: conversationIndex,
+                convId: conversationIndex,
                 
             };
             await socket.emit('send_message', messageData);
@@ -151,7 +155,7 @@ export default function MainPage() {
                 <p>Welcome back {userData.username}</p>
                 <button className='Logout' onClick={logout}>Logout </button>
             </div>
-        </div> {/*Groups window */}
+        </div>
         <div className='BottomPanel'>
             <div className='TopInfo'>
                 <img src='https://static.thenounproject.com/png/630729-200.png' className='ChatPfp'></img>
@@ -182,9 +186,10 @@ export default function MainPage() {
                     className='InputMessage' 
                     placeholder='type here...'
                     onChange={e => setCurrentMessage(e.target.value)}
-                    onKeyPress={(event) => {
-                        event.key === "Enter" && sendMessage();
-                    }}>  
+                    // onKeyPress={(event) => {
+                    //     event.key === "Enter" && sendMessage();
+                    // }}
+                    >  
                     </input>
                 <button 
                     className='SendMessage' 

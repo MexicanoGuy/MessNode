@@ -58,7 +58,7 @@ function ManageUser(props) {
             <button id='customizeUser' className='adminPerms' onClick={GiveAdmin}>Make admin</button>
             : ''
           }
-          {memberIsAdmin ?<>
+          {memberIsAdmin && !permData.userId == permData.memberId ?<>
           
           <button id='customizeUser' className='adminPerms' onClick={RemoveAdmin}>Remove admin</button>
           </>

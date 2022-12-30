@@ -77,6 +77,8 @@
     margin-top: 1px;
     height: 80%;
     padding: 10px;
+    overflow: auto;
+    overflow-y: scroll;
 }
 .BottomButtons{
     margin: 3px;

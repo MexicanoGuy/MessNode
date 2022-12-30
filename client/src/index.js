@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import'./App.css';
 import {BrowserRouter} from 'react-router-dom';
-import {CookiesProvider} from 'react-cookie';
+
+import io from 'socket.io-client';
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const socket = io.connect("localhost:3001");
+
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <CookiesProvider>
-        <App />
-      </CookiesProvider>
+        <App socket={socket}/>
     </BrowserRouter>
   </React.StrictMode>
 );
-
