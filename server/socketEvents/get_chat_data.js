@@ -1,7 +1,11 @@
+const join_room = require("./join_room");
+
 module.exports = (io, socket, pool) =>{
   
     socket.on('get_chat_data', async (data) =>{
-        const queryInfo = await pool.query("SELECT * FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[data]);
+      var convId = data.convId;
+
+        const queryInfo = await pool.query("SELECT * FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[convId]);
         pool.end;
         const messagesData = [];
         const membersInfo = [];
@@ -34,7 +38,7 @@ module.exports = (io, socket, pool) =>{
             pool.end;
           }
         }else{
-          const convInfo = await pool.query("SELECT * FROM conversation WHERE conversationid=$1", [data]);
+          const convInfo = await pool.query("SELECT * FROM conversation WHERE conversationid=$1", [convId]);
           const members = convInfo.rows[0].participants;
           if(members !== null){        
             for(let i=0; i<members.length; i++){

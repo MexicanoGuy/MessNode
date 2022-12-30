@@ -11,10 +11,8 @@ module.exports = (io, socket, pool) =>{
           }
           
           conversations.push(obj1);
-          console.log(conversations);
         }
         pool.end;
-        //console.log(conversations)
         socket.emit("receive_user_data", conversations)
         //THEN EMIT DATA TO USER
       });

@@ -1,7 +1,6 @@
 module.exports = (io, socket, pool) =>{
 
   socket.on("chat_permissions", async (data) =>{
-        console.log(data);
         const adminList = await pool.query("SELECT admins FROM conversation WHERE conversationid=$1",[data.convId]);
         var isAdmin = {
           userAdmin: false,

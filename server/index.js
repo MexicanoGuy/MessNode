@@ -13,7 +13,6 @@ const io = new Server(server, {
         methods: ["GET", "POST"],
     },
 });
-const pg = require('pg');
 const pool = require("./db");
 const eventsFolder = "./socketEvents";
 io.on("connection", (socket) => {
@@ -25,9 +24,15 @@ io.on("connection", (socket) => {
     console.log(`The ${socket.id} connected!`);
     
 });
+
 io.on("disconnect", (socket) =>{
     console.log(`Socket ${socket} disconnected! `);
 })
 server.listen(3001, () => {
     console.log("Server is on!")
 })
+
+
+
+
+// use socket io for isTyping function TODO \\\\\\\\\\\\\\\\\\
