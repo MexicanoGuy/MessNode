@@ -1,11 +1,8 @@
-const join_room = require("./join_room");
-
 module.exports = (io, socket, pool) =>{
   
     socket.on('get_chat_data', async (data) =>{
       var convId = data.convId;
-
-        const queryInfo = await pool.query("SELECT * FROM messages INNER JOIN conversation ON conversation.conversationid = $1 AND messages.convno = $1 ORDER BY timestamp ASC",[convId]);
+        const queryInfo = await pool.query("SELECT * FROM (SELECT * FROM messages INNER JOIN conversation ON convno = $1 AND conversationid = $1 ORDER BY timestamp DESC LIMIT 10) sub ORDER BY timestamp ASC",[convId]);
         pool.end;
         const messagesData = [];
         const membersInfo = [];
