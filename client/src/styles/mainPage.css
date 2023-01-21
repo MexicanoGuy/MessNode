@@ -68,11 +68,12 @@
     text-align: center;
 }
 .ChatPfp{
-    
     width: 50px;
     height: 50px;
 }
 .Chat{
+    display: flex;
+    flex-direction: column;
     border: 1px solid gray;
     margin-top: 1px;
     height: 80%;
@@ -96,12 +97,17 @@
     height: 40px;
     width: 80px;
 }
-
 .message{
     width: fit-content;
-    margin: 10px;
+    margin: 10px; 
     border-radius: 10px;
     border: 0.5px solid rgb(41, 116, 117);
+}
+.you{
+    align-self: flex-end;
+}
+.other{
+    align-self: flex-start;
 }
 .message-content{
     margin: 10px;
@@ -123,12 +129,7 @@
     font-size: smaller;
     margin-top: 5px;
 }
-#you{
-    justify-content: flex-end;
-}
-#other{
-    justify-content: flex-start;
-}
+
 /* CHAT AREA */
 
 /*-------------------------------- */
