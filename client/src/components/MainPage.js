@@ -6,6 +6,8 @@ import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 
+import InfiniteScroll from 'react-infinite-scroller';
+
 export default function MainPage(props) {
     const socket = props.socket;
     const [newChatName, setNewChatName] = useState('');
@@ -58,7 +60,6 @@ export default function MainPage(props) {
     useEffect(() =>{
         socket.off('receive_message').on('receive_message', (data) =>{
             setMessageList((list) => [...list, data]);
-            console.log(data);
         });
     }, [socket]);
     
@@ -79,22 +80,22 @@ export default function MainPage(props) {
             }
         });
     }
+    const [hasMoreMessages, setHasMoreMessages] = useState(false);
     const fetchMoreMessages = async () =>{
-        if(msgContainerRef.current.scrollTop === 0 && messageList !== null){
+        if(msgContainerRef.current.scrollTop === 0 && messageList.length > 0){
             var chatData = {
                 oldestMessage: messageList[0].timestamp,
-                convId: conversationIndex
+                convId: conversationIndex,
+                lastMsgId: messageList[0].msgId
             }
             socket.emit('fetch_more_messages', chatData);
             socket.on('receive_more_messages', (data) =>{
-                console.log(data);
-                setMessageList([...data, ...messageList]);
-                // msgId: messageList.length+1,
-                // author: userData.username,
-                // content: currentMessage,
-                // timestamp: new Date().toISOString(),
-                // convId: conversationIndex,
+                if(data.length !== 0){
+                    setMessageList([...data, ...messageList]);
+                    msgContainerRef.current.scrollTop = 40;
+                }
             });
+            
         }
     }
     const sendMessage = async () =>{
@@ -120,12 +121,16 @@ export default function MainPage(props) {
         setSelectedConvName(title);
     }
     const createNewChat = async () => {
-        if(newChatName == null || newChatName == '') alert(newChatName);
-        const chatData = {
-            title: newChatName,
-            creator: userData.userId
+        if(newChatName == null || newChatName == ''){
+            alert(newChatName);
+        }else{
+            const chatData = {
+                title: newChatName,
+                creator: userData.userId
+            }
+            socket.emit('create_new_chat', chatData);
         }
-        socket.emit('create_new_chat', chatData);
+        
     }
     
     const leaveGroupToggle = () =>{
@@ -181,12 +186,18 @@ export default function MainPage(props) {
                 <img src='https://static.thenounproject.com/png/630729-200.png' className='ChatPfp'></img>
                 <div className='ChatName'>{selectedConvName}</div>
             </div>
+            {/* <InfiniteScroll
+                pageStart={1}
+                loadMore={fetchMoreMessages}
+                hasMore={hasMoreMessages}
+                loader={<div className='loader'>Loading ...</div>}
+            > */}
             <div className='Chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
                 {messageList.map((messageContent) =>{
-                    console.log(messageContent.msgId)
                     const date = new Date(messageContent.timestamp);
                     var hours = date.getHours();
                     var minutes = date.getMinutes();
+                    if(minutes < 10) minutes = '0' + minutes;
                     var clName = `message ${userData.username === messageContent.author ? "you" : "other"}`;
                     return <div className={clName} key={messageContent.msgId} >
                             <div className='message-content'>
@@ -199,15 +210,18 @@ export default function MainPage(props) {
                     </div>
                 })}
             </div>
+            {/* </InfiniteScroll> */}
+            
             <div className='BottomButtons'>
                 <input 
                     type='text' 
                     className='InputMessage' 
                     placeholder='type here...'
                     onChange={e => setCurrentMessage(e.target.value)}
-                    onKeyPress={(event) => {
+                    onKeyDown={(event) => {
                         event.key === "Enter" && sendMessage();
                     }}
+                    value={currentMessage}
                     >  
                     </input>
                 <button 
