@@ -13,7 +13,7 @@ module.exports = (io, socket, pool) =>{
             console.log(memberId);
             if(members.includes(memberId)){
               console.log('test')
-              // pool.query(`UPDATE conversation SET participants = array_remove(participants, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
+              pool.query(`UPDATE conversation SET participants = array_remove(participants, $1) WHERE conversationid=$2`,[data.memberId, data.convId]);
             }
           }
         }else{

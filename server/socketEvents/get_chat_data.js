@@ -18,7 +18,6 @@ module.exports = (io, socket, pool) =>{
             messagesData.push(obj1);
           }
           // SEARCH FOR PARTICIPANTS
-          // console.log(queryInfo.rowCount);
           const members = queryInfo.rows[0].participants;
           if(members !== null){        
             for(let i=0; i<members.length; i++){
