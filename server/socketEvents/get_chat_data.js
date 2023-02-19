@@ -26,7 +26,7 @@ module.exports = (io, socket, pool) =>{
                 let obj2 = {
                   userId: userQuery.rows[0].userid,
                   username: userQuery.rows[0].username,
-                  // userpfp: userQuery.rows[i].pfp;
+                  pfp: userQuery.rows[0].pfp
                 }
                 membersInfo.push(obj2);
               }
@@ -43,7 +43,7 @@ module.exports = (io, socket, pool) =>{
                 let obj2 = {
                   userId: userQuery.rows[0].userid,
                   username: userQuery.rows[0].username,
-                  // userpfp: userQuery.rows[i].pfp;
+                  pfp: userQuery.rows[0].pfp
                 }
                 membersInfo.push(obj2);
               }

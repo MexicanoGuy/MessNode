@@ -3,6 +3,7 @@ CREATE TABLE users(
     email VARCHAR(30) NOT NULL, 
     username VARCHAR(30) NOT NULL,
     pwd VARCHAR NOT NULL,
+    pfp VARCHAR NOT NULL,
     activity VARCHAR NOT NULL DEFAULT 'Offline'
 );
 INSERT INTO users(email, username, pwd) values($1,$2,$3);

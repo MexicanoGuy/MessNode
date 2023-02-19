@@ -4,23 +4,24 @@ module.exports = (io, socket, pool) =>{
         var accountStatus = {
           result: false,
           username: '',
-          userId: ''
+          userId: '',
+          pfp: ''
         }
-        const findUser = await pool.query("SELECT email, pwd, username, userid from users WHERE email=$1 ", [data.email]);
+        const findUser = await pool.query("SELECT * from users WHERE email=$1 ", [data.email]);
           if(findUser.rowCount){
-            // console.log('checking passwords')
             const userPwd = findUser.rows[0].pwd;
             const pwdMatch = bcrypt.compare(data.pwd, userPwd);
-            // console.log(pwdMatch);
             if(pwdMatch){
               accountStatus = {
                 result: true,
                 username: findUser.rows[0].username,
-                userId: findUser.rows[0].userid
+                userId: findUser.rows[0].userid,
+                pfp: findUser.rows[0].pfp
               }
             } 
           }
           pool.end;
+          console.log(accountStatus)
         socket.emit("receive_login_info", accountStatus);
         
       });

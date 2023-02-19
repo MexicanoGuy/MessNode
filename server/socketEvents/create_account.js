@@ -1,6 +1,7 @@
 module.exports = (io, socket, pool) =>{
     const bcrypt = require('bcrypt');
     socket.on("create_new_account", async (data) =>{
+        console.log(data)
         const accountStatus = {
           status: true,
         }
@@ -12,7 +13,7 @@ module.exports = (io, socket, pool) =>{
           
           var hashedPwd = await bcrypt.hash(data.pwd, 10);
           
-          await pool.query("INSERT INTO users(email, username, pwd) VALUES($1,$2,$3) ", [data.email, data.username, hashedPwd])
+          await pool.query("INSERT INTO users(email, username, pwd, pfp) VALUES($1,$2,$3,$4) ", [data.email, data.username, hashedPwd, data.pfpId])
           console.log("creating new account")
         }else{
           console.log('not creating')
