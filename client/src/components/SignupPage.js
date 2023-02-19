@@ -1,17 +1,12 @@
 import React from 'react'
 import '../styles/signupPage.css';
 import {useRef, useState, useEffect} from 'react';
-//import emailCheck from 'email-check';
 import {Link, useParams, useLocation} from 'react-router-dom';
 import io from 'socket.io-client';
+import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 const socket = io.connect("localhost:3001");
 
 function SignupPage() {
-  // const type = useParams();
-  //const stateParamValue = useLocation().state.stateParam;
-  // console.log("Props parameter value:", type);
-  //console.log("Props state value:", stateParamValue);
-
 
   const [emailValid, setEmailValid] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
@@ -24,43 +19,60 @@ function SignupPage() {
   const [passwordMatch, setPasswordMatch] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
   
-  //CHECK IF PASSWORDS MATCH
+  const [pfpId, setPfpId] = useState('');
+  const [pfpFile , setPfpFile] = useState('');
+  
+  const dataCld = {
+    cloudName: 'dbz9t4cb6',
+    apiKey: '487621486735284',
+    apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY'
+  }
+  const handleUpload = () =>{
+    const formData = new FormData();
+    formData.append('file', pfpFile);
+    formData.append('upload_preset', 'r1l3esxv');
+    formData.append('cloud_name', 'dbz9t4cb6');
+
+    fetch(`https://api.cloudinary.com/v1_1/${dataCld.cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+      .then(response => response.json())
+      .then(data => {
+        setPfpId(data.public_id);
+      }).catch((err) =>{
+          console.log(err)
+      });
+  }
+
   useEffect(() =>{
-    
     if(password2 == password1 && password2 != '' && password2 !=''){
       setPasswordMatch(true)
     }else setPasswordMatch(false);
-
   },[password2])
   useEffect(() =>{
     socket.on("account_creation_status", (data) =>{
-      
-      console.log("test");
       if(data.new==false){
         alert("That account already exists!");
       }else{
         alert("Account succesfully created!");
       }
-      
     })
   }, [])
   
-
   //SEND REQUEST TO CREATE NEW ACCOUNT TO SERVER
   const CreateNewAccount = async() =>{
-    
-    //Check email
-    if(emailValid && usernameValid );
-    
-    //console.log(emailAddress);
-    
-    const accountData = {
-      id: socket.id,
-      email: emailAddress,
-      username: username,
-      pwd: password2,
+    handleUpload()
+    if(emailValid && usernameValid && pfpId){
+      const accountData = {
+        id: socket.id,
+        email: emailAddress,
+        username: username,
+        pwd: password2,
+        pfpId: pfpId
+      }
+      socket.emit('create_new_account', accountData);
     }
-    socket.emit('create_new_account', accountData);
   }
   return (<>
     <div className='ContainerTab'>
@@ -94,6 +106,19 @@ function SignupPage() {
                 />
               
               {usernameValid || username =='' ? <></> : <p>Your username is not valid</p>}
+
+              <CloudinaryContext cloudName={dataCld.cloudName}>
+                <input type='file' onChange={e => {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      setPfpFile(reader.result);
+                    };
+                    reader.readAsDataURL(file);
+                }}/>
+              </CloudinaryContext>
+              <img src={pfpFile}/>
+
               <input 
                 type='password'
                 placeholder='Password...' 
@@ -102,8 +127,6 @@ function SignupPage() {
                   setPassword1(event.target.value);
                   var passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
                   setPasswordValid(passwordRegex.test(event.target.value));
-                  
-                  //console.log(passwordValid);
                 }}
               ></input>
               {passwordValid || password1=='' ? <></> : <p>Password must be 8-20 letter long, with at least a symbol, upper and lower case letters and a number</p>}
@@ -123,7 +146,7 @@ function SignupPage() {
             className='submit2'
             onClick={CreateNewAccount}
             >Sign up</button>
-            
+        
             <hr className='lineBreak2'></hr>
             <p className='createAccount2' ><Link to={"/Login"}>Have an account? Click here!</Link> </p>
         </div>

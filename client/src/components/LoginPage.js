@@ -36,7 +36,7 @@ export default function LoginPage() {
     function Login(){
       const userData = {
         email: email,
-        pwd: pwd
+        pwd: pwd,
       }
       socket.emit("request_login_info", userData);
     }
@@ -50,7 +50,7 @@ export default function LoginPage() {
           localStorage.setItem('pwd', pwd);
           localStorage.setItem('username', result.username);
           localStorage.setItem('userId', result.userId)
-          
+          localStorage.setItem('pfp', result.pfp)
           navigate("/MainPage");
         }else{
           setErrorMsg(true);

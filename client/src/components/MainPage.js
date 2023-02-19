@@ -5,8 +5,7 @@ import ManageUser from '../components/ManageUser';
 import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
-
-import InfiniteScroll from 'react-infinite-scroller';
+import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 
 export default function MainPage(props) {
     const socket = props.socket;
@@ -28,12 +27,20 @@ export default function MainPage(props) {
     const msgContainerRef = useRef(null);
 
     let navigate = useNavigate()
-    
+    const dataCld = {
+        cloudName: 'dbz9t4cb6',
+        apiKey: '487621486735284',
+        apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY'
+      }
+
     const userData ={
         username: localStorage.getItem('username'),
         email: localStorage.getItem('email'),
-        userId: localStorage.getItem('userId')
+        userId: localStorage.getItem('userId'),
+        pfp: localStorage.getItem('pfp')
     }
+    // socket.emit("request_login_info", userData.email)
+    // socket.on("receive_login_info")
     useLayoutEffect(() =>{
         fetchUserInfo();
     },[])
@@ -178,6 +185,9 @@ export default function MainPage(props) {
             </div>
             <div className='UserProfile'>
                 <p>Welcome back {userData.username}</p>
+                <CloudinaryContext cloudName={dataCld.cloudName}>
+                    <Image publicId={userData.pfp}/>
+                </CloudinaryContext>
                 <button className='Logout' onClick={logout}>Logout </button>
             </div>
         </div>
@@ -186,12 +196,7 @@ export default function MainPage(props) {
                 <img src='https://static.thenounproject.com/png/630729-200.png' className='ChatPfp'></img>
                 <div className='ChatName'>{selectedConvName}</div>
             </div>
-            {/* <InfiniteScroll
-                pageStart={1}
-                loadMore={fetchMoreMessages}
-                hasMore={hasMoreMessages}
-                loader={<div className='loader'>Loading ...</div>}
-            > */}
+
             <div className='Chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
                 {messageList.map((messageContent) =>{
                     const date = new Date(messageContent.timestamp);
@@ -210,7 +215,6 @@ export default function MainPage(props) {
                     </div>
                 })}
             </div>
-            {/* </InfiniteScroll> */}
             
             <div className='BottomButtons'>
                 <input 
@@ -236,7 +240,7 @@ export default function MainPage(props) {
             <div className='Participants'>
                 {memberList.map((content) =>{
                     return <div className='Member' key={content.userId}>
-                        <img className='memberImage' src="https://i.pinimg.com/550x/20/0d/72/200d72a18492cf3d7adac8a914ef3520.jpg"></img >
+                        <Image className='memberImage' cloudName={dataCld.cloudName} publicId={content.pfp}></Image>
                         <button className='manageUser' onClick={e =>{
                             setToggleManageUser((oldId) =>{
                                 return oldId == content.userId ? null : content.userId;
