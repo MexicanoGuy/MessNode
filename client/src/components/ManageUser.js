@@ -7,7 +7,7 @@ const socket = io.connect("localhost:3001");
 function ManageUser(props) {
   const [userIsAdmin, setUserIsAdmin] = useState(false);
   const [memberIsAdmin, setMemberIsAdmin] = useState(false);
-  const [removeMember, setRemoveMember] = useState(false);
+
   var userId = localStorage.getItem('userId')
   var permData = {
     convId: props.convId, 
@@ -28,6 +28,7 @@ function ManageUser(props) {
       memberId: props.memberId
     }
     socket.emit('give_admin', adminData);
+    props.toggle();
   }
   const RemoveAdmin= () =>{
     var removeAdminData = {
@@ -35,6 +36,7 @@ function ManageUser(props) {
       memberId: props.memberId
     }
     socket.emit('remove_admin', removeAdminData);
+    props.toggle();
   }
   const RemoveMember = () =>{
     var removeData = {
@@ -42,6 +44,7 @@ function ManageUser(props) {
       memberId: props.memberId
     }
     socket.emit('remove_member', removeData);
+    props.toggle();
   }
   return (
     <div className='container'>

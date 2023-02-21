@@ -10,6 +10,7 @@ export default function LeaveGroup(props) {
     }
     const leaveGroup = () =>{
         socket.emit("leaveGroup", convData);
+        props.toggle();
     }
     return (
     <div className='ContainerLeaveGroup'>

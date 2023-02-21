@@ -1,10 +1,10 @@
 import React, { Component, useLayoutEffect, useEffect, useState, useRef } from 'react'
 import '../styles/mainPage.css';
-
 import ManageUser from '../components/ManageUser';
 import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
+import CreateGroup from './CreateGroup';
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 
 export default function MainPage(props) {
@@ -13,24 +13,29 @@ export default function MainPage(props) {
     
     const [conversationList, setConversationList] = useState([]);
     const [conversationIndex, setConversationIndex] = useState(0);
-    const [selectedConvName, setSelectedConvName] = useState('');
+    const [selectedConv, setSelectedConv] = useState({
+        title: 'Conversation',
+        pic: 'conv_cga93k.jpg',
+    });
 
     const [messageList, setMessageList] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
 
     const [memberList, setMemberList] = useState([]);
 
-    const [toggleManageUser, setToggleManageUser] = useState(null);
+    const [toggleManageMember, setToggleManageMember] = useState(null);
     const [toggleAddUser, setToggleAddUser] = useState(false);
     const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
-
+    const [toggleCreateGroup, setToggleCreateGroup] = useState(false);
+    
     const msgContainerRef = useRef(null);
 
     let navigate = useNavigate()
     const dataCld = {
         cloudName: 'dbz9t4cb6',
         apiKey: '487621486735284',
-        apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY'
+        apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY',
+        uploadPreset: 'r1l3esxv'
       }
 
     const userData ={
@@ -39,14 +44,14 @@ export default function MainPage(props) {
         userId: localStorage.getItem('userId'),
         pfp: localStorage.getItem('pfp')
     }
-    // socket.emit("request_login_info", userData.email)
-    // socket.on("receive_login_info")
     useLayoutEffect(() =>{
         fetchUserInfo();
     },[])
 
     useEffect(() =>{
         setToggleAddUser(false);
+        setToggleLeaveGroup(false);
+        setToggleManageMember(false);
         if(conversationIndex !== 0){
             var convData = {
                 convId: conversationIndex,
@@ -64,12 +69,44 @@ export default function MainPage(props) {
             });
         }
     }, [conversationIndex]);
+    
+    useEffect(() =>{
+        socket.off('added_to_conv').on('added_to_conv', (data) =>{
+            fetchUserInfo();
+        });
+        socket.off('you_were_kicked').on('you_were_kicked', (data) =>{
+            fetchUserInfo();
+            alert('You were kicked from the conversation!');
+        });
+    }, [socket]);
+
+    useEffect(() =>{
+        socket.off('member_added').on('member_added', (data) =>{
+            setMemberList((list) => [...list, data]);
+        });
+        socket.off('member_kicked').on('member_kicked', (data) =>{
+            const filteredList = memberList.filter(member => parseInt(member.userId) !== parseInt(data));
+            setMemberList(filteredList);
+        });
+      }, [memberList]);
+
+    useEffect(() =>{
+        socket.off('remove_the_group').on('remove_the_group', (data) =>{
+            const filteredList = conversationList.filter(conv => conv.convId !== data);
+            setConversationList(filteredList);
+            if(conversationList.length > 0){
+                setConversationIndex(1);
+            }
+        });
+    }, [conversationList]);
+
     useEffect(() =>{
         socket.off('receive_message').on('receive_message', (data) =>{
             setMessageList((list) => [...list, data]);
         });
-    }, [socket]);
-    
+    }, [messageList]);
+
+
     const logout = async () =>{
         localStorage.clear();
         navigate('/Login');
@@ -82,7 +119,11 @@ export default function MainPage(props) {
             }else{
                 var firstConv = data[0].convId;
                 setConversationIndex(firstConv);
-                setSelectedConvName(data[0].title);
+                setSelectedConv(prevState => ({
+                    ...prevState,
+                    title: data[0].title,
+                    pic: data[0].pic
+                }));
                 setConversationList(data);
             }
         });
@@ -125,28 +166,44 @@ export default function MainPage(props) {
 
     const handleConvChange = (e,convId, title) =>{
         setConversationIndex(convId);
-        setSelectedConvName(title);
+        setSelectedConv(prevState => ({
+            ...prevState,
+            title: title
+        }));
     }
-    const createNewChat = async () => {
-        if(newChatName == null || newChatName == ''){
-            alert(newChatName);
-        }else{
-            const chatData = {
-                title: newChatName,
-                creator: userData.userId
-            }
-            socket.emit('create_new_chat', chatData);
-        }
-        
+    const createNewChat = () => {
+        // if(newChatName == null || newChatName == ''){
+        //     alert(newChatName);
+        // }else{
+        //     setNewChatName('');
+        //     const chatData = {
+        //         title: newChatName,
+        //         creator: userData.userId
+        //     }
+        //     socket.emit('create_new_chat', chatData);
+        //     socket.on('chat_created', data =>{
+        //         if(data == true) fetchUserInfo();
+        //     });
+        // }
     }
     
     const leaveGroupToggle = () =>{
         setToggleLeaveGroup(false);
     }
+    const manageMemberToggle = () =>{
+        setToggleManageMember(false);
+    }
+    const createGroupToggle = () =>{
+        if(toggleCreateGroup == false){
+           setToggleCreateGroup(true);
+        }
+        else setToggleCreateGroup(false);
+    }
     return (
     <>
-    {toggleAddUser && !toggleLeaveGroup ?  <AddUser memberList={memberList} convId={conversationIndex}></AddUser> : <></>}
-    {toggleLeaveGroup && !toggleAddUser ? <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}></LeaveGroup> : <></>}
+    {toggleAddUser && !toggleLeaveGroup && !toggleLeaveGroup ?  <AddUser memberList={memberList} convId={conversationIndex} roomId={conversationIndex}></AddUser> : <></>}
+    {toggleLeaveGroup && !toggleAddUser && !toggleCreateGroup ? <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}></LeaveGroup> : <></>}
+    {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser ? <CreateGroup toggle={createGroupToggle} userId={userData.userId} dataCld={dataCld}> </CreateGroup> : <></>}
     <div className='Container'>
         <div className='LeftPanel'>
             <p className='ChatsLabel'>Chats</p>
@@ -157,13 +214,18 @@ export default function MainPage(props) {
                 onChange={(event) =>{
                     setNewChatName(event.target.value);
                 }}
+                value={newChatName}
             ></input>
             <button 
                 className='searchForChat'>search
             </button>
             <button 
                 className='createNewChatBtn'
-                onClick={createNewChat}>create
+                onClick={e => {
+                    createGroupToggle();
+                    // createNewChat()
+                }
+                }>+
             </button>
             <div className='ChatList'>
             {conversationList.map((content) =>(
@@ -193,8 +255,10 @@ export default function MainPage(props) {
         </div>
         <div className='BottomPanel'>
             <div className='TopInfo'>
-                <img src='https://static.thenounproject.com/png/630729-200.png' className='ChatPfp'></img>
-                <div className='ChatName'>{selectedConvName}</div>
+                <CloudinaryContext cloudName={dataCld.cloudName}>
+                    <Image publicId={selectedConv.pic} className='ChatPfp'></Image>
+                </CloudinaryContext>
+                <div className='ChatName'>{selectedConv.title}</div>
             </div>
 
             <div className='Chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
@@ -236,13 +300,12 @@ export default function MainPage(props) {
             </div>
         </div> {/*Chat Window*/}
         <div className='RightPanel'>
-            {/* <input type='text' className='AddMember' placeholder='Add member...'></input> */}
             <div className='Participants'>
                 {memberList.map((content) =>{
                     return <div className='Member' key={content.userId}>
                         <Image className='memberImage' cloudName={dataCld.cloudName} publicId={content.pfp}></Image>
                         <button className='manageUser' onClick={e =>{
-                            setToggleManageUser((oldId) =>{
+                            setToggleManageMember((oldId) =>{
                                 return oldId == content.userId ? null : content.userId;
                             });
                         } }>...</button>
@@ -250,7 +313,7 @@ export default function MainPage(props) {
                             <p className='memberUsername'>{content.username}</p>
                             <p className='memberStatus'>Online</p>
                         </div>
-                        {toggleManageUser == content.userId  ? <ManageUser memberId={content.userId} convId={conversationIndex}></ManageUser>  : '' }
+                        {toggleManageMember == content.userId  ? <ManageUser toggle={manageMemberToggle} memberId={content.userId} convId={conversationIndex}></ManageUser>  : '' }
                         
                     </div>
                 })}

@@ -12,6 +12,7 @@
     "cloudinary-react": "^1.8.1",
     "email-check": "^1.1.0",
     "firebase": "^9.8.3",
+    "fs": "0.0.1-security",
     "react": "^18.1.0",
     "react-cookie": "^4.1.1",
     "react-dom": "^18.1.0",

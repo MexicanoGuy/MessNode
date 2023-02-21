@@ -22,10 +22,10 @@ function AddUser(props) {
     const AddNewMember = (userId,e) => {
         
         if(e){
-            console.log('clicked');
             var dataM = {
                 userId: userId,
-                convId: props.convId
+                convId: props.convId,
+                roomId: props.roomId
             }
             socket.emit('addNewMember', dataM);
         }
@@ -47,10 +47,13 @@ function AddUser(props) {
                         ></input> 
                         : 
                         <input 
-                            className='addUserBtn' 
+                            className='addUserBtn'
                             type='button' 
                             value='Add' 
-                            onClick={e => AddNewMember(content.userId, e)}
+                            onClick={e => {
+                                AddNewMember(content.userId, e)
+                                Search()
+                            }}
                         ></input>
                         }
                         <img className='imageFound' src='https://i.pinimg.com/550x/20/0d/72/200d72a18492cf3d7adac8a914ef3520.jpg'></img>
