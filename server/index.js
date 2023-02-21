@@ -22,7 +22,6 @@ io.on("connection", (socket) => {
     event(io, socket, pool);
   });
     console.log(`The ${socket.id} connected!`);
-    
 });
 
 io.on("disconnect", (socket) =>{

@@ -1,5 +1,5 @@
 module.exports = (io, socket, pool) =>{
-  const bcrypt = require('bcrypt');
+    const bcrypt = require('bcrypt');
     socket.on("request_login_info", async (data) =>{
         var accountStatus = {
           result: false,
@@ -25,4 +25,5 @@ module.exports = (io, socket, pool) =>{
         socket.emit("receive_login_info", accountStatus);
         
       });
+      
 }

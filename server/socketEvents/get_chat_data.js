@@ -35,21 +35,23 @@ module.exports = (io, socket, pool) =>{
           }
         }else{
           const convInfo = await pool.query("SELECT * FROM conversation WHERE conversationid=$1", [convId]);
-          const members = convInfo.rows[0].participants;
-          if(members !== null){        
-            for(let i=0; i<members.length; i++){
-              let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
-              if(userQuery.rowCount > 0){
-                let obj2 = {
-                  userId: userQuery.rows[0].userid,
-                  username: userQuery.rows[0].username,
-                  pfp: userQuery.rows[0].pfp
+          if(convInfo.rowCount > 0){
+            const members = convInfo.rows[0].participants; 
+            if(members !== null){        
+              for(let i=0; i<members.length; i++){
+                let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
+                if(userQuery.rowCount > 0){
+                  let obj2 = {
+                    userId: userQuery.rows[0].userid,
+                    username: userQuery.rows[0].username,
+                    pfp: userQuery.rows[0].pfp
+                  }
+                  membersInfo.push(obj2);
                 }
-                membersInfo.push(obj2);
               }
             }
+            pool.end;
           }
-          pool.end;
         }
         socket.emit("receive_chat_data", {msgList: messagesData, memberList: membersInfo});
       });
