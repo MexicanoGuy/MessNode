@@ -1,6 +1,6 @@
 import React, { Component, useLayoutEffect, useEffect, useState, useRef } from 'react'
-import '../styles/mainPage.css';
-import ManageUser from '../components/ManageUser';
+import '../styles/secondPage.css';
+import ManageUser from './ManageUser';
 import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
@@ -170,18 +170,6 @@ export default function MainPage(props) {
             pic: content.pic,
         }));
     }
-    const createNewChat = () => {
-        // if(newChatName == null || newChatName == ''){
-        //     alert(newChatName);
-        // }else{
-        //     setNewChatName('');
-        //     const chatData = {
-        //         title: newChatName,
-        //         creator: userData.userId
-        //     }
-        //     socket.emit('create_new_chat', chatData);
-        // }
-    }
     
     const leaveGroupToggle = () =>{
         setToggleLeaveGroup(false);
@@ -200,26 +188,16 @@ export default function MainPage(props) {
     {toggleAddUser && !toggleLeaveGroup && !toggleLeaveGroup ?  <AddUser memberList={memberList} convId={conversationIndex} roomId={conversationIndex}></AddUser> : <></>}
     {toggleLeaveGroup && !toggleAddUser && !toggleCreateGroup ? <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}></LeaveGroup> : <></>}
     {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser ? <CreateGroup toggle={createGroupToggle} userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}> </CreateGroup> : <></>}
+    
     <div className='Container'>
         <div className='LeftPanel'>
-            <p className='ChatsLabel'>Chats</p>
-            <input 
-                type='search' 
-                placeholder='search or create chat...' 
-                className='SearchInput'
-                onChange={(event) =>{
-                    setNewChatName(event.target.value);
-                }}
-                value={newChatName}
-            ></input>
-            <button 
-                className='searchForChat'>search
-            </button>
-            <button 
-                className='createNewChatBtn'
+            <button
+                className='search'
+            >Search</button> <br></br>            
+            <button
+                className='search'
                 onClick={e => {
                     createGroupToggle();
-                    // createNewChat()
                 }
                 }>+
             </button>
@@ -234,27 +212,22 @@ export default function MainPage(props) {
                     key={content.convId}
                     meta-index={content.convId}
                     onClick={e => handleConvChange(e, content)}>
-                    <div className='convImg' ></div>
-                    <p className='conversationTitle'>{content.title}</p>
-                    <p className='lastMessage'></p>
+                    <p className='convTitle'>
+                        <Image className='convImg' cloudName={dataCld.cloudName} publicId={content.pic}></Image>
+                        {content.title}</p>
                  </div>
             ))
             }
             </div>
             <div className='UserProfile'>
-                <p>Welcome back {userData.username}</p>
-                <CloudinaryContext cloudName={dataCld.cloudName}>
-                    <Image publicId={userData.pfp}/>
-                </CloudinaryContext>
+                <p><Image cloudName={dataCld.cloudName} publicId={userData.pfp}/>{userData.username}</p>
+                    
                 <button className='Logout' onClick={logout}>Logout </button>
             </div>
         </div>
         <div className='BottomPanel'>
             <div className='TopInfo'>
-                <CloudinaryContext cloudName={dataCld.cloudName}>
-                    <Image publicId={selectedConv.pic} className='ChatPfp'/>
-                </CloudinaryContext>
-                <div className='ChatName'>{selectedConv.title}</div>
+                <div className='Chatname'><Image publicId={selectedConv.pic} cloudName={dataCld.cloudName} className='ChatPfp'/>{selectedConv.title}</div>    
             </div>
 
             <div className='Chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
@@ -270,7 +243,7 @@ export default function MainPage(props) {
                             </div>
                             <div className='message-meta'>
                                 <p id="author">{messageContent.author}</p>
-                                <p id="time">{hours + ":" + minutes}</p>
+                                <span id="time">{hours + ":" + minutes}</span>
                             </div>
                     </div>
                 })}
@@ -280,7 +253,7 @@ export default function MainPage(props) {
                 <input 
                     type='text' 
                     className='InputMessage' 
-                    placeholder='type here...'
+                    placeholder='Type here...'
                     onChange={e => setCurrentMessage(e.target.value)}
                     onKeyDown={(event) => {
                         event.key === "Enter" && sendMessage();
@@ -291,7 +264,7 @@ export default function MainPage(props) {
                 <button 
                     className='SendMessage' 
                     onClick={sendMessage}
-                    > &#8594;
+                    >&#8594;
                 </button>
             </div>
         </div> {/*Chat Window*/}

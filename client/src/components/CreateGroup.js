@@ -40,6 +40,9 @@ function CreateGroup(props) {
                 pic: pfpId
             }
             socket.emit('create_new_chat', chatData);
+            socket.on('chat_created', data =>{
+                if(data == true) props.fetchUserInfo();
+            });
         }
     },[pfpId]);
     return (

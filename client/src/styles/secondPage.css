@@ -1,101 +1,103 @@
-.Container{
-    height: 920px;
-    padding: 5px;
-    display: flex;
-    justify-items: center;
-}
 
-/*-------------------------------- */
-
-/* SELECT CHAT TAB */
 .LeftPanel{
-    text-align: center;
-    border: 1px solid black;
-    /* width: 500px; */
-    
-    flex: 0.25;
+    flex: 0.2;
 }
-.ChatsLabel{
-    font-size: 20px;
+.BottomPanel{
+    flex: 0.6;
 }
-.SearchInput{
-    width: 200px;
-    height: 30px;
+.RightPanel{
+    flex:0.2;
 }
-.createNewChatBtn{
-    margin-right: 5px;
-    float: right;
-    width: 40px;
-    height: 30px;
+
+.search{
+    width: calc(fit-content + 5%);
+    font-size: 15px;
+    border: none;
+    border-radius: 5px;
+}
+.search:hover{
+    background-color: azure;
 }
 .ChatList{
-    margin-top: 25px;
-    border: 0.5px black solid;
-    height: 650px;
+    text-align: left;
+    height: 70%;
 }
-.UserProfile{
-    margin-top: 4px;
-    border: 0.5px black solid;
-    height: 150px;
+.convTitle{
+    font-size: 18px;
 }
 
-.conversation{
+.convImg{
+    padding-right: 10px;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
+.UserProfile{
+    height: 15%;
+}
+
+
+.conversation, .conversationSelected{
     margin: 12px;
     width: 90%;
-    border: 0.5px black solid;
+    border: transparent solid;
+    background-color: rgb(255, 254, 252);
     border-radius: 10px;
 }
 .conversationSelected{
-    margin: 12px;
-    width: 90%;
-    border: 0.5px rgb(209, 94, 94) solid;
-    border-radius: 10px;
+    background-color: azure;
+}
+.conversation:hover, .conversationSelected:hover{
+    background-color: bisque;
 }
 /* SELECT CHAT TAB */
 
 /*-------------------------------- */
 
 /* CHAT AREA */
-.BottomPanel{
-    border: 1px solid black;
-    flex: 0.55;
-}
+
 .TopInfo{
-    border: 1px solid gray;
-    height: 9%;
-    padding: 10px;
-    font-size: 30px;
-    text-align: center;
+    height: 5%;
+    text-align: left;
+    /* border-bottom: ; */
+}
+.ChatName{
+    display: flex;
+    align-items: center;
 }
 .ChatPfp{
     width: 50px;
     height: 50px;
+    margin-right: 20px;
 }
 .Chat{
     display: flex;
     flex-direction: column;
-    border: 1px solid gray;
-    margin-top: 1px;
+    border: none;
     height: 80%;
-    padding: 10px;
     overflow: auto;
     overflow-y: scroll;
 }
 .BottomButtons{
-    margin: 3px;
-    border: 1px solid gray;
-    height:5%;
+    border: none;
+    height: 5%;
 }
 .InputMessage{
-    margin-left: 40px;
-    float: left;
-    width: 580px;
-    height: 40px;
+    padding-left: 5px;
+    margin-left: 0px;
+    width: 90%;
+    border-radius: 15px;
+    border: none;
+    background-color: whitesmoke;
 }
 .SendMessage{
-    margin: 3px;
-    height: 40px;
-    width: 80px;
+    width: 5%;
+    border-radius: 15px;
+    border: none;
+    background-color: whitesmoke;
+}
+.SendMessage:hover, .InputMessage:hover{
+    background-color: azure;
 }
 .message{
     width: fit-content;
@@ -135,12 +137,7 @@
 /*-------------------------------- */
 
 /* CHAT INFORMATION TAB */
-.RightPanel{
-    border: 1px solid black;
-    /* width: 200px; */
-    
-    flex:0.2;
-}
+
 .ChatInfo{
     border: 0.5px solid black;
     height: 50vh;
@@ -174,7 +171,6 @@
     font-size: 15px;
 }
 .manageUser{
-    /* text-align:inherit; */
     border: transparent;
     font-size: 25px;
     border-radius: 20%;
