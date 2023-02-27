@@ -74,84 +74,77 @@ function SignupPage() {
       socket.emit('create_new_account', accountData);
     }
   }
-  return (<>
-    <div className='ContainerTab'>
-        <div className='LoginLabel'>Signup Page</div>
-        <div className='Inputs'>
-                <input 
-                  type="email" 
-                  placeholder='E-mail...' 
-                  onChange={(event) => {
-                    var regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-                    setEmailValid(regex.test(event.target.value));
-                    setEmailAddress(event.target.value);
-                    
-                  }}
-                  className='emailInput2'
-                />
-                {emailValid || emailAddress =='' ? <></> : <p>The email is not valid</p>}
-                
-                <input 
-                  type='text' 
-                  placeholder='Username...' 
-                  onChange={(event) =>{
-                    //VALIDATE USERNAME
-                    var usernameRegex = /^[a-z0-9_\.]+$/;
-                    setUsernameValid(usernameRegex.test(event.target.value));
-                    if(usernameValid){
-                      setUsername(event.target.value);
-                    }
-                  }} 
-                  className='usernameInput2'
-                />
-              
-              {usernameValid || username =='' ? <></> : <p>Your username is not valid</p>}
+  return (
+    <div className='containerTab'>
+      <div className='loginLabel'>Signup</div>
+      <input 
+        type="email"
+        placeholder='E-mail...' 
+        onChange={(event) => {
+          var regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+          setEmailValid(regex.test(event.target.value));
+          setEmailAddress(event.target.value);
+        }}
+        className='emailInput'
+      />
+      {emailValid || emailAddress =='' ? <></> : <p>The email is not valid</p>}
+      <input 
+        type='text' 
+        placeholder='Username...' 
+        onChange={(event) =>{
+          var usernameRegex = /^[a-z0-9_\.]+$/;
+          setUsernameValid(usernameRegex.test(event.target.value));
+          if(usernameValid){
+            setUsername(event.target.value);
+          }
+        }} 
+        className='usernameInput'
+      />
+      {usernameValid || username =='' ? <></> : <p>Your username is not valid</p>}
 
-              <CloudinaryContext cloudName={dataCld.cloudName}>
-                <input type='file' onChange={e => {
-                    const file = e.target.files[0];
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                      setPfpFile(reader.result);
-                    };
-                    reader.readAsDataURL(file);
-                }}/>
-              </CloudinaryContext>
-              <img src={pfpFile}/>
+      <CloudinaryContext cloudName={dataCld.cloudName}>
+        <input type='file' onChange={e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = () => {
+              setPfpFile(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }}/>
+      </CloudinaryContext>
+      <img src={pfpFile}/>
 
-              <input 
-                type='password'
-                placeholder='Password...' 
-                className='passwordInput2'
-                onChange={(event) =>{
-                  setPassword1(event.target.value);
-                  var passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
-                  setPasswordValid(passwordRegex.test(event.target.value));
-                }}
-              ></input>
-              {passwordValid || password1=='' ? <></> : <p>Password must be 8-20 letter long, with at least a symbol, upper and lower case letters and a number</p>}
-              <input 
-                type='password' 
-                placeholder='Confirm password...' 
-                className='passwordInput2'
-                onChange={(event) =>{ 
-                  setPassword2(event.target.value);
-                }}
-              ></input>
-              {password1 !=='' && password2 !=='' ? <p> Password does {passwordMatch ? 'match' : 'not match'} </p> : <></>}
-              
-        </div>
-        <div className='Buttons'>
-            <button 
-            className='submit2'
-            onClick={CreateNewAccount}
-            >Sign up</button>
-        
-            <hr className='lineBreak2'></hr>
-            <p className='createAccount2' ><Link to={"/Login"}>Have an account? Click here!</Link> </p>
-        </div>
-    </div>       
-  </>)
+      <input 
+        type='password'
+        placeholder='Password...' 
+        className='passwordInput'
+        onChange={(event) =>{
+          setPassword1(event.target.value);
+          var passwordRegex = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,20}$/;
+          setPasswordValid(passwordRegex.test(event.target.value));
+        }}
+      ></input>
+      {passwordValid || password1=='' ? <></> : <p>Password must be 8-20 letter long, with at least a symbol, upper and lower case letters and a number</p>}
+      <input 
+        type='password' 
+        placeholder='Confirm password...' 
+        className='passwordInput'
+        onChange={(event) =>{ 
+          setPassword2(event.target.value);
+        }}
+      />
+      {password1 !=='' && password2 !=='' ? <p> Password does {passwordMatch ? 'match' : 'not match'} </p> : <></>}   
+    
+      <input
+        type='sub'
+        className='submit'
+        onClick={CreateNewAccount}
+        value='Sign up'
+      ></input>
+    <hr className='lineBreak'></hr>
+    <p className='createAccount'><Link to={"/Login"}>Have an account? Click here!</Link> </p>
+  </div>
+  )
 }
 
 export default SignupPage

@@ -1,47 +1,83 @@
-.ContainerTab{
-    margin-top: 100px;
-    margin-left: 550px;
-    position: relative;
+body{
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    background: url("https://cdn.unenvironment.org/2022-09/nicolai-kramer-unsplash.jpg");
+    background-size: cover;
+
+}
+.containerTab{
+    background-color: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+
+    margin: auto;
+    margin-top: 5%;
     padding: 50px;
-    height: 500px;
-    width: 700px;
-    border: 1px solid black;
+    height: 600px;
+    width: 40%;
+    border: 2px solid #393E46;
+    border-radius: 10px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-.Inputs{
-    padding-left: 19%;
+.loginLabel, .emailInput, .passwordInput, .submit, .lineBreak, .link {
+  margin: 10px 0;
 }
-.Buttons{
-    padding-top: 3%;
-    padding-left: 19%;
+
+input:not([type='submit']){
+    background-color: transparent;
 }
-.LoginLabel{
-    font-size: 50px;
-    font-family:Arial, Helvetica, sans-serif;
-    text-align: center;
+.loginLabel{
+    font-size: 40px;
 }
-.emailInput{
-    font-size: 15px;
-    width: 400px;
-    height: 30px;
-    position: absolute;
+
+input:not(:placeholder-shown):not(:focus):valid{
+    border-bottom: 2px solid rgb(1, 186, 1);
+}
+  
+input:not(:placeholder-shown):not(:focus):invalid{
+    border-bottom: 2px solid red;
 }
 .passwordInput{
-    font-size: 15px;
-    width: 400px;
-    height: 30px;
-    margin-top: 36px;
-    position: relative;
+    margin-top: 50px;
 }
+.emailInput, .passwordInput{
+    font-size: 15px;
+    width: 70%;
+    height: 5%;
+    padding-left: 20px;
+    padding: 5px;
+    border: none;
+    border-bottom: 2px solid gray;
+}
+.emailInput:focus, .passwordInput:focus{
+    outline: none;
+    border-bottom: 2px solid;
+}
+
 .submit{
     font-size: large;
-    width: 410px;
+    margin-top: 5%;
+    width: 50%;
     height: 30px;
+    border: none;
+    border-radius: 15px;
+    background-color: rgb(160, 238, 255);
+    transition-duration: 0.3s;
+
 }
-.createAccount{
-    margin-left: 60px;
+.submit:hover{
+    background-color: rgb(85, 221, 252);
 }
 .lineBreak{
-    margin-top: 50px;
-    margin-left: -50px;
+    margin-top: 100px;
     width: 90%;
+}
+a{
+    color: rgb(155, 55, 22);
+    transition-duration: 0.3s;
+
+}
+a:hover{
+    color: rgb(235, 61, 3);
+
 }

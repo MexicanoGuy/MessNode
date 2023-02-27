@@ -1,15 +1,8 @@
 import '../styles/loginPage.css';
-import {useState, useEffect, useLayoutEffect} from 'react';
-
-import React, { Component } from 'react'
+import {useState, useLayoutEffect} from 'react';
+import React from 'react'
 import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
-
-import {useCookies} from 'react-cookie';
-
-
-import LoadingPage from '../components/LoadingPage';
-
 const socket = io.connect("localhost:3001");
 
 export default function LoginPage() {
@@ -17,7 +10,6 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [errorMsg, setErrorMsg] = useState(false);
-  const [cookies, setCookie, removeCookie] = useCookies(['user']);
   const navigate = useNavigate();
   
   
@@ -34,17 +26,17 @@ export default function LoginPage() {
   },[]);
     
     function Login(){
-      const userData = {
-        email: email,
-        pwd: pwd,
+      if(email && pwd){
+        const userData = {
+          email: email,
+          pwd: pwd,
+        }
+        socket.emit("request_login_info", userData);
       }
-      socket.emit("request_login_info", userData);
     }
       
       socket.on("receive_login_info", (result) =>{
-        if(result.result == true){
-          //RENDER CHAT APP
-          //alert('You have successfully logged in!');
+        if(result.result === true){
           setErrorMsg(false);
           localStorage.setItem('email',email);
           localStorage.setItem('pwd', pwd);
@@ -57,41 +49,37 @@ export default function LoginPage() {
         }
       });
 
-    return (<>
-    
-    <div className='ContainerTab'>
-        <div className='LoginLabel'>Login Page</div>
-        <div className='Inputs'>
-              <input 
-                type='text' 
-                placeholder='E-mail...'
-                onChange={(event) =>{
-                  setEmail(event.target.value);
-                }}
-                className='emailInput'>
-              </input>
-              <input 
-                type='password' 
-                placeholder='Password...'
-                onChange={(event) =>{
-                  setPwd(event.target.value);
-                }}
-                onKeyPress={(event)=>{
-                  event.key === "Enter" && Login();
-                }}
-                className='passwordInput'> 
-              </input>
-              {errorMsg ? <p>The credentials you've entered are incorrect!</p> : <p></p>}
-        </div>
-        <div className='Buttons'>
-            <button  className='submit'  onClick={Login} >LOGIN</button>
-            <hr className='lineBreak'></hr>
-            <p className='createAccount'> <Link to={"/Signup"}> Don't have an account yet?  Sign up here!</Link> </p>
-            
-        </div>
-
-    </div>
-  
-  </>)
-  
-  }
+    return (
+    <div className='containerTab'>
+        <div className='loginLabel'>Login</div>
+        <label for='emailInput'>Email</label>
+        <input 
+          type='email'
+          placeholder='Email'
+          onChange={(event) =>{
+            setEmail(event.target.value);
+          }}
+          className='emailInput' required>
+        </input>
+        <input 
+          type='password' 
+          placeholder='Password...'
+          className='passwordInput'
+          onChange={(event) =>{
+            setPwd(event.target.value);
+          }}
+          onKeyDown={(event)=>{
+            event.key === "Enter" && Login();
+          }}
+          pattern="^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9a-zA-Z]).{8,}$"
+          required
+          > 
+        </input>
+        {errorMsg ? <p>The credentials you've entered are incorrect!</p> : <></>}
+        
+        <input type='submit' className='submit'  onClick={Login} value='LOGIN'></input>
+        <hr className='lineBreak'></hr>
+        <p className='link'> <Link to={"/Signup"}> Don't have an account yet?  Sign up here!</Link> </p> 
+        
+    </div>)
+}
