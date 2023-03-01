@@ -2,10 +2,9 @@ body{
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     background: url("https://cdn.unenvironment.org/2022-09/nicolai-kramer-unsplash.jpg");
     background-size: cover;
-
 }
 .containerTab{
-    background-color: rgba(255, 255, 255, 0.5); /* White with 50% opacity */
+    background-color: rgba(255, 255, 255, 0.5);
 
     margin: auto;
     margin-top: 5%;
@@ -26,21 +25,30 @@ body{
 input:not([type='submit']){
     background-color: transparent;
 }
+
 .loginLabel{
     font-size: 40px;
 }
 
-input:not(:placeholder-shown):not(:focus):valid{
+input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid{
     border-bottom: 2px solid rgb(1, 186, 1);
 }
-  
-input:not(:placeholder-shown):not(:focus):invalid{
+
+input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     border-bottom: 2px solid red;
 }
-.passwordInput{
-    margin-top: 50px;
+.filePfp{
+    display: none;
 }
-.emailInput, .passwordInput{
+.labelFile{
+    margin-top: 20px;
+    border: none;
+    color: white;
+}
+.passwordInput, .usernameInput, .filePfp{
+    margin-top: 40px;
+}
+.emailInput, .passwordInput, .usernameInput{
     font-size: 15px;
     width: 70%;
     height: 5%;
@@ -49,7 +57,7 @@ input:not(:placeholder-shown):not(:focus):invalid{
     border: none;
     border-bottom: 2px solid gray;
 }
-.emailInput:focus, .passwordInput:focus{
+.emailInput:focus, .passwordInput:focus, .usernameInput:focus{
     outline: none;
     border-bottom: 2px solid;
 }
@@ -65,6 +73,7 @@ input:not(:placeholder-shown):not(:focus):invalid{
     transition-duration: 0.3s;
 
 }
+
 .submit:hover{
     background-color: rgb(85, 221, 252);
 }

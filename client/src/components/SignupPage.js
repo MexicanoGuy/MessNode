@@ -1,13 +1,15 @@
 import React from 'react'
-import '../styles/signupPage.css';
+import '../styles/loginPage.css';
 import {useRef, useState, useEffect} from 'react';
 import {Link, useParams, useLocation} from 'react-router-dom';
 import io from 'socket.io-client';
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
+import { Dropzone } from "dropzone";
+
 const socket = io.connect("localhost:3001");
 
 function SignupPage() {
-
+  const dropzone = new Dropzone("div#labelFile", { url: "/file/post" });
   const [emailValid, setEmailValid] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
 
@@ -103,14 +105,19 @@ function SignupPage() {
       {usernameValid || username =='' ? <></> : <p>Your username is not valid</p>}
 
       <CloudinaryContext cloudName={dataCld.cloudName}>
-        <input type='file' onChange={e => {
+        <div id='labelFile' htmlFor='filePfp'>Choose File</div>
+        <input 
+          type='file'
+          className='filePfp'
+          onChange={e => {
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = () => {
               setPfpFile(reader.result);
             };
             reader.readAsDataURL(file);
-        }}/>
+          }}
+        />
       </CloudinaryContext>
       <img src={pfpFile}/>
 
@@ -136,7 +143,7 @@ function SignupPage() {
       {password1 !=='' && password2 !=='' ? <p> Password does {passwordMatch ? 'match' : 'not match'} </p> : <></>}   
     
       <input
-        type='sub'
+        type='submit'
         className='submit'
         onClick={CreateNewAccount}
         value='Sign up'

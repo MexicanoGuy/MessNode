@@ -49,10 +49,9 @@ export default function LoginPage() {
         }
       });
 
-    return (
+    return (<>
     <div className='containerTab'>
         <div className='loginLabel'>Login</div>
-        <label for='emailInput'>Email</label>
         <input 
           type='email'
           placeholder='Email'
@@ -81,5 +80,6 @@ export default function LoginPage() {
         <hr className='lineBreak'></hr>
         <p className='link'> <Link to={"/Signup"}> Don't have an account yet?  Sign up here!</Link> </p> 
         
-    </div>)
+    </div>
+    </>)
 }
