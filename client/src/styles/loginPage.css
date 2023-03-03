@@ -78,7 +78,7 @@ input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     background-color: rgb(85, 221, 252);
 }
 .lineBreak{
-    margin-top: 100px;
+    margin-top: 50px;
     width: 90%;
 }
 a{
@@ -89,4 +89,9 @@ a{
 a:hover{
     color: rgb(235, 61, 3);
 
+}
+img{
+    width: 50px;
+    height: 50px;
+    border-radius: 14px;
 }

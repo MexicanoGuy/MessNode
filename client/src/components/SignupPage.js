@@ -4,12 +4,12 @@ import {useRef, useState, useEffect} from 'react';
 import {Link, useParams, useLocation} from 'react-router-dom';
 import io from 'socket.io-client';
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
-import { Dropzone } from "dropzone";
+import ImgDrop from './dropzone/imgDrop';
 
 const socket = io.connect("localhost:3001");
 
 function SignupPage() {
-  const dropzone = new Dropzone("div#labelFile", { url: "/file/post" });
+
   const [emailValid, setEmailValid] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
 
@@ -22,8 +22,9 @@ function SignupPage() {
   const [passwordValid, setPasswordValid] = useState(false);
   
   const [pfpId, setPfpId] = useState('');
-  const [pfpFile , setPfpFile] = useState('');
-  
+  const [file, setFile] = useState(null);
+  const [fileData, setFileData] = useState([]);
+
   const dataCld = {
     cloudName: 'dbz9t4cb6',
     apiKey: '487621486735284',
@@ -31,7 +32,7 @@ function SignupPage() {
   }
   const handleUpload = () =>{
     const formData = new FormData();
-    formData.append('file', pfpFile);
+    formData.append('file', fileData);
     formData.append('upload_preset', 'r1l3esxv');
     formData.append('cloud_name', 'dbz9t4cb6');
 
@@ -60,12 +61,14 @@ function SignupPage() {
         alert("Account succesfully created!");
       }
     })
-  }, [])
-  
-  //SEND REQUEST TO CREATE NEW ACCOUNT TO SERVER
+  }, []);
+  const onDrop = async(data, fileR) =>{
+    setFileData(data);
+    setFile(fileR);
+  };
   const CreateNewAccount = async() =>{
-    handleUpload()
-    if(emailValid && usernameValid && pfpId){
+    if(emailValid && usernameValid && file){
+      handleUpload();
       const accountData = {
         id: socket.id,
         email: emailAddress,
@@ -103,23 +106,10 @@ function SignupPage() {
         className='usernameInput'
       />
       {usernameValid || username =='' ? <></> : <p>Your username is not valid</p>}
-
-      <CloudinaryContext cloudName={dataCld.cloudName}>
-        <div id='labelFile' htmlFor='filePfp'>Choose File</div>
-        <input 
-          type='file'
-          className='filePfp'
-          onChange={e => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = () => {
-              setPfpFile(reader.result);
-            };
-            reader.readAsDataURL(file);
-          }}
-        />
-      </CloudinaryContext>
-      <img src={pfpFile}/>
+      
+      {file ? <img src={file} alt='no image'></img> : null}
+      <ImgDrop  onDrop={onDrop}/>
+      {/* <ImgDrop setFile={setFileData} onDrop={onDrop}/> */}
 
       <input 
         type='password'
