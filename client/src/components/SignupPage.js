@@ -92,7 +92,7 @@ function SignupPage() {
         }}
         className='emailInput'
       />
-      {emailValid || emailAddress =='' ? <></> : <p>The email is not valid</p>}
+      {emailValid || emailAddress =='' ? <></> : <p className='errorText'>The email is not valid</p>}
       <input 
         type='text' 
         placeholder='Username...' 
@@ -105,11 +105,7 @@ function SignupPage() {
         }} 
         className='usernameInput'
       />
-      {usernameValid || username =='' ? <></> : <p>Your username is not valid</p>}
-      
-      {file ? <img src={file} alt='no image'></img> : null}
-      <ImgDrop  onDrop={onDrop}/>
-      {/* <ImgDrop setFile={setFileData} onDrop={onDrop}/> */}
+      {usernameValid || username =='' ? <></> : <p className='errorText'>Your username is not valid</p>}
 
       <input 
         type='password'
@@ -121,7 +117,7 @@ function SignupPage() {
           setPasswordValid(passwordRegex.test(event.target.value));
         }}
       ></input>
-      {passwordValid || password1=='' ? <></> : <p>Password must be 8-20 letter long, with at least a symbol, upper and lower case letters and a number</p>}
+      {passwordValid || password1=='' ? null : <p className='errorText'>Password must be 8-20 letter long, with at least a symbol, upper and lower case letters and a number</p>}
       <input 
         type='password' 
         placeholder='Confirm password...' 
@@ -130,8 +126,11 @@ function SignupPage() {
           setPassword2(event.target.value);
         }}
       />
-      {password1 !=='' && password2 !=='' ? <p> Password does {passwordMatch ? 'match' : 'not match'} </p> : <></>}   
-    
+      {password1 !=='' && password2 !=='' ? <p className='errorText'> Password does {passwordMatch ? 'match' : 'not match'} </p> : <></>}   
+      
+      {file ? <img className='pfpImg' src={file} alt='no image'></img> : null}
+      <ImgDrop onDrop={onDrop}/>
+      
       <input
         type='submit'
         className='submit'

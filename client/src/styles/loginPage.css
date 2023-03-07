@@ -57,6 +57,9 @@ input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     border: none;
     border-bottom: 2px solid gray;
 }
+input::placeholder{
+    color: rgb(70, 70, 70);
+}
 .emailInput:focus, .passwordInput:focus, .usernameInput:focus{
     outline: none;
     border-bottom: 2px solid;
@@ -69,7 +72,7 @@ input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     height: 30px;
     border: none;
     border-radius: 15px;
-    background-color: rgb(160, 238, 255);
+    background-color: rgba(155, 243, 230, 0.783);
     transition-duration: 0.3s;
 
 }
@@ -90,8 +93,14 @@ a:hover{
     color: rgb(235, 61, 3);
 
 }
-img{
+.pfpImg{
     width: 50px;
     height: 50px;
     border-radius: 14px;
+}
+.errorText{
+    color: rgb(237, 50, 50);
+    width: 70%;
+    height: 100px;
+    text-align: center;
 }

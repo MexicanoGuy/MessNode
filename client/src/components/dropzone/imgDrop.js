@@ -14,16 +14,14 @@ function ImgDrop(props) {
     }
   };
   return (
-    <div>
       <Dropzone onDrop={onDrop} maxFiles={1}>
         {({ getRootProps, getInputProps }) => (
           <div className='drop' {...getRootProps()}>
-            <input {...getInputProps()} />
-            <p>Drop file here</p>
+            <input {...getInputProps()}/>
+            <p><img className='attach' src={require('../../img/attach.png')}></img>Drop file here</p>
           </div>
         )}
       </Dropzone>
-    </div>
   )
 }
 
