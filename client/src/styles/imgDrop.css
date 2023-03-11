@@ -1,11 +1,13 @@
 .drop{
     display: flex;
+    /* align-self:baseline; */
+    /* margin-left: 20%; */
     margin-top: 20px;
-    background-color: rgba(214, 204, 204, 0.635);
+    background-color: #CCE3DE;
     border: transparent;
     border-radius: 15px;
     font-size: 18px;
-    width: 50%;
+    width: 40%;
     height: 40px;
     text-align: center;
     justify-content: center;
@@ -14,6 +16,10 @@
 }
 .drop:hover{
     background-color: #BFDCE5;
+}
+.pfpInside{
+    width: 25px;
+    height: 25px;
 }
 .attach{
     width: 20px;

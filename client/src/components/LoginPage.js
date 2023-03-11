@@ -74,7 +74,7 @@ export default function LoginPage() {
           required
           > 
         </input>
-        {errorMsg ? <p>The credentials you've entered are incorrect!</p> : <></>}
+        {errorMsg ? <p className='errorText'>The credentials you've entered are incorrect!</p> : <></>}
         
         <input type='submit' className='submit'  onClick={Login} value='LOGIN'></input>
         <hr className='lineBreak'></hr>

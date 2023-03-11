@@ -1,23 +1,58 @@
+:root{
+    --insideColor: #F6FFF8;
+    --outsideColor: #EAF4F4;
+
+    --distractColor: #E5C1BD;
+
+    --submitColor: #6B9080;
+    --submitHoverColor: #ffbbaa;
+
+    --textColor: #AAAAAA;
+    --errorColor: rgb(253, 75, 75);
+    
+    --linkColor: #6B9080;
+    --linkHoverColor: #2a45b1;
+}
 body{
-    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    background: url("https://cdn.unenvironment.org/2022-09/nicolai-kramer-unsplash.jpg");
-    background-size: cover;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    background-color: var(--outsideColor);
 }
 .containerTab{
-    background-color: rgba(255, 255, 255, 0.5);
-
-    margin: auto;
-    margin-top: 5%;
-    padding: 50px;
-    height: 600px;
-    width: 40%;
-    border: 2px solid #393E46;
-    border-radius: 10px;
-
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 600px;
+    width: 40%;
+    margin: auto;
+    overflow: auto;
+    margin-top: 5%;
+    padding: 50px;
+
+    background-color: var(--insideColor);
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
 }
+::-moz-selection{
+    color: var(--linkColor);
+    background-color: var(--distractColor);
+}
+::selection{
+    color: var(--linkColor);
+    background-color: var(--distractColor);
+}
+.containerTab::-webkit-scrollbar{
+    width: 20px;
+}
+.containerTab::-webkit-scrollbar-thumb{
+    background-color: #d6dee1;
+    border-radius: 20px;
+    border: 6px solid transparent;
+    background-clip: content-box;
+    transition-duration: 0.3s;
+}
+.containerTab::-webkit-scrollbar-thumb:hover{
+    background-color: rgb(144, 144, 212);
+}
+
 .loginLabel, .emailInput, .passwordInput, .submit, .lineBreak, .link {
   margin: 10px 0;
 }
@@ -37,6 +72,17 @@ input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus
 input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     border-bottom: 2px solid red;
 }
+input:focus::placeholder{
+    color: transparent;
+    transition-duration: 0.15s;
+}
+.pfpImg{
+    margin-top: 40px;
+    width: 100px;
+    height: 100px;
+    border-radius: 14px;
+}
+
 .filePfp{
     display: none;
 }
@@ -66,41 +112,36 @@ input::placeholder{
 }
 
 .submit{
-    font-size: large;
+    font-size: 22px;
     margin-top: 5%;
-    width: 50%;
-    height: 30px;
+    width: 60%;
+    height: 40px;
     border: none;
-    border-radius: 15px;
-    background-color: rgba(155, 243, 230, 0.783);
+    border-radius: 14px;
+    background-color: var(--distractColor);
     transition-duration: 0.3s;
-
 }
 
 .submit:hover{
-    background-color: rgb(85, 221, 252);
+    background-color: var(--submitHoverColor);
 }
 .lineBreak{
     margin-top: 50px;
     width: 90%;
 }
 a{
-    color: rgb(155, 55, 22);
+    color: var(--linkColor);
     transition-duration: 0.3s;
 
 }
 a:hover{
-    color: rgb(235, 61, 3);
+    color: var(--linkHoverColor);
 
 }
-.pfpImg{
-    width: 50px;
-    height: 50px;
-    border-radius: 14px;
-}
 .errorText{
-    color: rgb(237, 50, 50);
+    color: var(--errorColor);
     width: 70%;
     height: 100px;
     text-align: center;
+    font-size: 16px;
 }
