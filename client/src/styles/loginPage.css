@@ -1,4 +1,4 @@
-:root{
+:local(:root){
     --insideColor: #F6FFF8;
     --outsideColor: #EAF4F4;
 
@@ -13,10 +13,11 @@
     --linkColor: #6B9080;
     --linkHoverColor: #2a45b1;
 }
-body{
+:local(body){
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     background-color: var(--outsideColor);
 }
+
 .containerTab{
     display: flex;
     flex-direction: column;
@@ -31,11 +32,11 @@ body{
     background-color: var(--insideColor);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
 }
-::-moz-selection{
+:local(::-moz-selection){
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
-::selection{
+:local(::selection){
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
@@ -57,7 +58,7 @@ body{
   margin: 10px 0;
 }
 
-input:not([type='submit']){
+:local(input:not([type='submit'])){
     background-color: transparent;
 }
 
@@ -65,25 +66,25 @@ input:not([type='submit']){
     font-size: 40px;
 }
 
-input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid{
+:local(input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid){
     border-bottom: 2px solid rgb(1, 186, 1);
 }
 
-input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
+:local(input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid){
     border-bottom: 2px solid red;
 }
-input:focus::placeholder{
+:local(input:focus::placeholder){
     color: transparent;
     transition-duration: 0.15s;
 }
-.pfpImg{
+:local(.pfpImg){
     margin-top: 40px;
     width: 100px;
     height: 100px;
     border-radius: 14px;
 }
 
-.filePfp{
+:local(.filePfp){
     display: none;
 }
 .labelFile{
@@ -103,7 +104,7 @@ input:focus::placeholder{
     border: none;
     border-bottom: 2px solid gray;
 }
-input::placeholder{
+:local(input::placeholder){
     color: rgb(70, 70, 70);
 }
 .emailInput:focus, .passwordInput:focus, .usernameInput:focus{
@@ -111,7 +112,7 @@ input::placeholder{
     border-bottom: 2px solid;
 }
 
-.submit{
+:local(.submit){
     font-size: 22px;
     margin-top: 5%;
     width: 60%;
@@ -129,12 +130,12 @@ input::placeholder{
     margin-top: 50px;
     width: 90%;
 }
-a{
+:local(a){
     color: var(--linkColor);
     transition-duration: 0.3s;
 
 }
-a:hover{
+:local(a:hover){
     color: var(--linkHoverColor);
 
 }

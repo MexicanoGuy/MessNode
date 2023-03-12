@@ -26,7 +26,7 @@
     height: 20px;
     margin-right: 5px;
 }
-p{
+:local(p){
     padding-right: 20px;
     align-items: center;
 }

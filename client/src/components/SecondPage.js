@@ -220,8 +220,8 @@ export default function MainPage(props) {
             }
             </div>
             <div className='UserProfile'>
-                <p><Image cloudName={dataCld.cloudName} publicId={userData.pfp}/>{userData.username}</p>
-                    
+                <Image className='userProfileMain' cloudName={dataCld.cloudName} publicId={userData.pfp}/>
+                <p>{userData.username}</p> 
                 <button className='Logout' onClick={logout}>Logout </button>
             </div>
         </div>

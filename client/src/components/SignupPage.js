@@ -1,17 +1,16 @@
 import React from 'react'
 import '../styles/loginPage.css';
 import {useRef, useState, useEffect} from 'react';
-import {Link, useParams, useLocation} from 'react-router-dom';
+import {Link, useParams, useLocation, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 import ImgDrop from './dropzone/imgDrop';
-import dotenv from 'dotenv';
 
-dotenv.config({path: '.env'});
 const socket = io.connect("localhost:3001");
 
 function SignupPage() {
-  console.log(process.env)
+  const navigate = useNavigate();
+
   const [emailValid, setEmailValid] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
 
@@ -22,38 +21,37 @@ function SignupPage() {
   const [password2, setPassword2] = useState('');
   const [passwordMatch, setPasswordMatch] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
+
+  const [accountCreated, setAccountCreated] = useState('');
   
-  const [pfpId, setPfpId] = useState('');
+  const [pfpId, setPfpId] = useState(null);
   const [file, setFile] = useState(null);
   const [fileData, setFileData] = useState([]);
 
-  /*const dataCld = {
-    cloudName: process.env.CNAME,
-    apiKey: process.env.CAPIKEY,
-    apiSecret: process.env.CAPISECRET,
-    uploadPreset: process.env.CUPLOAD_PRESET
-    // cloudName: 'dbz9t4cb6',
-    // apiKey: '487621486735284',
-    // apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY',
-    // uploadPreset: 'r1l3esxv'
-  }*/
-  // const handleUpload = () =>{
-  //   const formData = new FormData();
-  //   formData.append('file', fileData);
-  //   formData.append('upload_preset', dataCld.uploadPreset);
-  //   formData.append('cloud_name', dataCld.cloudName);
+  const dataCld = {
+    cloudName: process.env.REACT_APP_CNAME,
+    apiKey: process.env.REACT_APP_CAPIKEY,
+    apiSecret: process.env.REACT_APP_CSECRET,
+    uploadPreset: process.env.REACT_APP_CUPLOAD_PRESET
+  }
 
-  //   fetch(`https://api.cloudinary.com/v1_1/${dataCld.cloudName}/image/upload`, {
-  //     method: 'POST',
-  //     body: formData
-  //   })
-  //     .then(response => response.json())
-  //     .then(data => {
-  //       setPfpId(data.public_id);
-  //     }).catch((err) =>{
-  //         console.log(err)
-  //     });
-  // }
+  const handleUpload = () =>{
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', dataCld.uploadPreset);
+    formData.append('cloud_name', dataCld.cloudName);
+
+    fetch(`https://api.cloudinary.com/v1_1/${dataCld.cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      setPfpId(data.public_id);
+    }).catch((err) =>{
+        // console.log(err)
+    });
+  }
 
   useEffect(() =>{
     if(password2 == password1 && password2 != '' && password2 !=''){
@@ -76,6 +74,10 @@ function SignupPage() {
   const CreateNewAccount = async() =>{
     if(emailValid && usernameValid && file && passwordValid){
       handleUpload();
+    }
+  }
+  useEffect(() =>{
+    if(emailValid && usernameValid && file && passwordValid){
       const accountData = {
         id: socket.id,
         email: emailAddress,
@@ -85,7 +87,19 @@ function SignupPage() {
       }
       socket.emit('create_new_account', accountData);
     }
-  }
+  },[pfpId]);
+  useEffect(() =>{
+    socket.off('account_status').on('account_status', (data) =>{
+      if(data === true){
+        setAccountCreated(true);
+        alert('Account successfully created!');
+        navigate('/Login');
+      }
+      else if(data === false){
+        setAccountCreated(false);
+      }
+    });
+  }, [socket]);
   return (
     <div className='containerTab'>
       <div className='loginLabel'>Sign up</div>
@@ -108,7 +122,6 @@ function SignupPage() {
         onChange={(event) =>{
           var usernameRegex = /^[a-zA-Z0-9_.-]*$/;
           setUsernameValid(usernameRegex.test(event.target.value));
-          console.log(usernameValid)
           if(usernameValid){
             setUsername(event.target.value);
           }
@@ -123,7 +136,6 @@ function SignupPage() {
         onChange={(event) =>{
           var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,20}$/;
           setPasswordValid(passwordRegex.test(event.target.value));
-          console.log(passwordValid);
           if(passwordValid){
             setPassword1(event.target.value);
           }
@@ -149,6 +161,7 @@ function SignupPage() {
         onClick={CreateNewAccount}
         value='Sign up'
       ></input>
+      {accountCreated === false ? <p className='errorText'>Account with given email already exists</p> : null}
     <hr className='lineBreak'></hr>
     <p className='createAccount'><Link to={"/Login"}>Have an account? Click here!</Link> </p>
   </div>
