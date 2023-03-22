@@ -1,5 +1,5 @@
 import React from 'react'
-import '../styles/loginPage.css';
+import '../styles/signupPage.css';
 import {useRef, useState, useEffect} from 'react';
 import {Link, useParams, useLocation, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
@@ -101,8 +101,8 @@ function SignupPage() {
     });
   }, [socket]);
   return (
-    <div className='containerTab'>
-      <div className='loginLabel'>Sign up</div>
+    <div className='containerRegisterPage'>
+      <div className='registerLabel'>Sign up</div>
       <input 
         type="email"
         placeholder='E-mail...' 
@@ -111,13 +111,13 @@ function SignupPage() {
           setEmailValid(regex.test(event.target.value));
           setEmailAddress(event.target.value);
         }}
-        className='emailInput'
+        className='emailInputRegister'
       />
-      {emailValid || emailAddress =='' ? null : <p className='errorText'>The email is not valid</p>}
+      {emailValid || emailAddress =='' ? null : <p className='errorTextRegister'>The email is not valid</p>}
       <input 
         type='text' 
         placeholder='Username...'
-        className='usernameInput'
+        className='usernameInputRegister'
         pattern='^[a-zA-Z0-9_.-]*$'
         onChange={(event) =>{
           var usernameRegex = /^[a-zA-Z0-9_.-]*$/;
@@ -127,12 +127,12 @@ function SignupPage() {
           }
         }} 
       />
-      {usernameValid || username =='' ? null : <p className='errorText'>Your username is not valid</p>}
+      {usernameValid || username =='' ? null : <p className='errorTextRegister'>Your username is not valid</p>}
 
       <input 
         type='password'
         placeholder='Password...' 
-        className='passwordInput'
+        className='passwordInputRegister'
         onChange={(event) =>{
           var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,20}$/;
           setPasswordValid(passwordRegex.test(event.target.value));
@@ -141,29 +141,29 @@ function SignupPage() {
           }
         }}
       ></input>
-      {passwordValid || password1=='' ? null : <ul className='errorText'>Password must contain: <br/>8-20 letter long, one a symbol, upper and lower case letters and a one number</ul>}
+      {passwordValid || password1=='' ? null : <ul className='errorTextRegister'>Password must contain: <br/>8-20 letter long, one a symbol, upper and lower case letters and a one number</ul>}
       <input 
         type='password' 
         placeholder='Confirm password...' 
-        className='passwordInput'
+        className='passwordInputRegister'
         onChange={(event) =>{ 
           setPassword2(event.target.value);
         }}
       />
-      {password1 !=='' && password2 !=='' ? <p className='errorText'> Password does {passwordMatch ? 'match' : 'not match'} </p> : null}   
+      {password1 !=='' && password2 !=='' ? <p className='errorTextRegister'> Password does {passwordMatch ? 'match' : 'not match'} </p> : null}   
       
       {file ? <img className='pfpImg' src={file} alt='no image'></img> : null}
       <ImgDrop onDrop={onDrop}/>
 
       <input
         type='submit'
-        className='submit'
+        className='registerInput'
         onClick={CreateNewAccount}
         value='Sign up'
       ></input>
-      {accountCreated === false ? <p className='errorText'>Account with given email already exists</p> : null}
-    <hr className='lineBreak'></hr>
-    <p className='createAccount'><Link to={"/Login"}>Have an account? Click here!</Link> </p>
+      {accountCreated === false ? <p className='errorTextRegister'>Account with given email already exists</p> : null}
+    <hr className='lineBreakRegister'></hr>
+    <p><Link to={"/Login"} className='linkRegister'>Have an account? Click here!</Link> </p>
   </div>
   )
 }

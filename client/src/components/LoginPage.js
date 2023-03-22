@@ -49,8 +49,8 @@ export default function LoginPage() {
         }
       });
 
-    return (<>
-    <div className='containerTab'>
+    return (
+    <div className='containerLoginPage'>
         <div className='loginLabel'>Login</div>
         <input 
           type='email'
@@ -58,12 +58,12 @@ export default function LoginPage() {
           onChange={(event) =>{
             setEmail(event.target.value);
           }}
-          className='emailInput' required>
+          className='emailInputLogin' required>
         </input>
         <input 
           type='password' 
           placeholder='Password...'
-          className='passwordInput'
+          className='passwordInputLogin'
           onChange={(event) =>{
             setPwd(event.target.value);
           }}
@@ -74,12 +74,11 @@ export default function LoginPage() {
           required
           > 
         </input>
-        {errorMsg ? <p className='errorText'>The credentials you've entered are incorrect!</p> : <></>}
+        {errorMsg ? <p className='errorTextLogin'>The credentials you've entered are incorrect!</p> : null}
         
-        <input type='submit' className='submit'  onClick={Login} value='LOGIN'></input>
-        <hr className='lineBreak'></hr>
-        <p className='link'> <Link to={"/Signup"}> Don't have an account yet?  Sign up here!</Link> </p> 
+        <input type='submit' className='loginInput' onClick={Login} value='LOGIN'></input>
+        <hr className='lineBreakLogin'></hr>
+        <p> <Link to={"/Signup"} className='linkLogin'> Don't have an account yet?  Sign up here!</Link> </p> 
         
-    </div>
-    </>)
+    </div>)
 }

@@ -31,11 +31,17 @@ export default function MainPage(props) {
     const msgContainerRef = useRef(null);
 
     let navigate = useNavigate()
+    // const dataCld = {
+    //     cloudName: 'dbz9t4cb6',
+    //     apiKey: '487621486735284',
+    //     apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY',
+    //     uploadPreset: 'r1l3esxv'
+    //   }
     const dataCld = {
-        cloudName: 'dbz9t4cb6',
-        apiKey: '487621486735284',
-        apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY',
-        uploadPreset: 'r1l3esxv'
+        cloudName: process.env.REACT_APP_CNAME,
+        apiKey: process.env.REACT_APP_CAPIKEY,
+        apiSecret: process.env.REACT_APP_CSECRET,
+        uploadPreset: process.env.REACT_APP_CUPLOAD_PRESET
       }
 
     const userData ={
