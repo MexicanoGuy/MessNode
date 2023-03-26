@@ -1,0 +1,34 @@
+\copy conversation to C:\Users\Jan\Downloads\sqlCopy\conversation.csv;
+
+\copy users to C:\Users\Jan\Downloads\sqlCopy\users.csv;
+
+\copy messages to C:\Users\Jan\Downloads\sqlCopy\messages.csv;
+
+
+CREATE TABLE messages(
+    msgId SERIAL PRIMARY KEY,
+    content TEXT NOT NULL,
+    timestamp TIMESTAMP,
+    author VARCHAR(30) NOT NULL,
+    convNo INTEGER NOT NULL
+);
+
+CREATE TABLE users(
+    userId SERIAL PRIMARY KEY,
+    email VARCHAR(30) NOT NULL, 
+    username VARCHAR(30) NOT NULL,
+    pwd VARCHAR NOT NULL,
+    pfp VARCHAR NOT NULL,
+    activity VARCHAR NOT NULL DEFAULT 'Offline'
+);
+
+CREATE TABLE conversation (
+    conversationId SERIAL PRIMARY KEY,
+    conversationTitle VARCHAR(50) NOT NULL,
+    pic VARCHAR(255) DEFAULT 'conv_cga93k.jpg',
+    creator INTEGER NOT NULL,
+    participants INTEGER[],
+    admins INTEGER[]
+);
+
+COPY conversation FROM '/path/to/mytable.csv' DELIMITER ',' CSV HEADER;
