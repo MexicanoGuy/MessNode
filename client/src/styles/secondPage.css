@@ -1,4 +1,9 @@
-
+body{
+    background-color: transparent;
+}
+.containerConversationPage{
+    display: flex;
+}
 .LeftPanel{
     flex: 0.2;
 }

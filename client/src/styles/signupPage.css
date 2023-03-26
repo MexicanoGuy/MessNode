@@ -1,5 +1,5 @@
 :root{
-    --insideColor: #F6FFF8;
+    /* --insideColor: #F6FFF8;
     --outsideColor: #EAF4F4;
 
     --distractColor: #E5C1BD;
@@ -11,10 +11,10 @@
     --errorColor: rgb(253, 75, 75);
     
     --linkColor: #6B9080;
-    --linkHoverColor: #2a45b1;
+    --linkHoverColor: #2a45b1; */
 }
 body{
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
     background-color: var(--outsideColor);
 }
 
@@ -32,11 +32,11 @@ body{
     background-color: var(--insideColor);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
 }
-::-moz-selection{
+.containerRegisterPage::-moz-selection{
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
-::selection{
+.containerRegisterPage::selection{
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
@@ -58,7 +58,7 @@ body{
   margin: 10px 0;
 }
 
-input:not([type='submit']){
+.containerRegisterPage > input:not([type='submit']){
     background-color: transparent;
 }
 
@@ -66,32 +66,29 @@ input:not([type='submit']){
     font-size: 40px;
 }
 
-input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid{
+.containerRegisterPage > input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid{
     border-bottom: 2px solid rgb(1, 186, 1);
 }
 
-input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
+.containerRegisterPage > input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     border-bottom: 2px solid red;
 }
-input:focus::placeholder{
+.containerRegisterPage > input:focus::placeholder{
     color: transparent;
     transition-duration: 0.15s;
 }
-.pfpImg{
+.pfpRegister{
     margin-top: 40px;
     width: 100px;
     height: 100px;
     border-radius: 14px;
 }
 
-.filePfp{
-    display: none;
-}
-.labelFile{
+/* .labelFile{
     margin-top: 20px;
     border: none;
     color: white;
-}
+} */
 .passwordInputRegister, .usernameInputRegister, .filePfp{
     margin-top: 40px;
 }

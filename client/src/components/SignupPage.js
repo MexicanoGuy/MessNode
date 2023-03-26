@@ -152,7 +152,7 @@ function SignupPage() {
       />
       {password1 !=='' && password2 !=='' ? <p className='errorTextRegister'> Password does {passwordMatch ? 'match' : 'not match'} </p> : null}   
       
-      {file ? <img className='pfpImg' src={file} alt='no image'></img> : null}
+      {file ? <img className='pfpRegister' src={file} alt='no image'></img> : null}
       <ImgDrop onDrop={onDrop}/>
 
       <input

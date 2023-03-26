@@ -1,5 +1,5 @@
 import React, { Component, useLayoutEffect, useEffect, useState, useRef } from 'react'
-import '../styles/mainPage.css';
+// import '../styles/mainPage.css';
 import ManageUser from '../components/ManageUser';
 import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';

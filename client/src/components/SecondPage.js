@@ -9,7 +9,6 @@ import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 
 export default function MainPage(props) {
     const socket = props.socket;
-    const [newChatName, setNewChatName] = useState('');
     
     const [conversationList, setConversationList] = useState([]);
     const [conversationIndex, setConversationIndex] = useState(0);
@@ -195,7 +194,7 @@ export default function MainPage(props) {
     {toggleLeaveGroup && !toggleAddUser && !toggleCreateGroup ? <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}></LeaveGroup> : <></>}
     {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser ? <CreateGroup toggle={createGroupToggle} userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}> </CreateGroup> : <></>}
     
-    <div className='Container'>
+    <div className='containerConversationPage'>
         <div className='LeftPanel'>
             <button
                 className='search'
