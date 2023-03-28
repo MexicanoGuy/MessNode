@@ -1,19 +1,40 @@
+:root{
+    --deviceHeight: 95vh;
+
+    --topHeight: 10vh;
+
+    --bottomHeight: 10vh;
+
+    --userProfileHeight: 14vh;
+}
 body{
     background-color: transparent;
 }
 .containerConversationPage{
     display: flex;
+    border: 1px solid black;
+    height: var(--deviceHeight);
 }
-.LeftPanel{
+.leftPanel{
     flex: 0.2;
+    border: 1px solid black;
+    
 }
-.BottomPanel{
+.bottomPanel{
     flex: 0.6;
+    border: 1px solid black;
+
 }
-.RightPanel{
+.rightPanel{
     flex:0.2;
+    border: 1px solid black;
+
 }
 
+.topSearch{
+    border: 1px solid black;
+    height: var(--topHeight);
+}
 .search{
     width: calc(fit-content + 5%);
     font-size: 15px;
@@ -23,7 +44,7 @@ body{
 .search:hover{
     background-color: azure;
 }
-.ChatList{
+.chatList{
     text-align: left;
     height: 70%;
 }
@@ -32,10 +53,15 @@ body{
 }
 
 .convImg{
-    padding-right: 10px;
-    border-radius: 50%;
+    /* padding-right: 10px; */
+    border-radius: 40%;
     width: 30px;
     height: 30px;
+}
+
+.userProfile{
+    border: 1px solid black;
+    height: var(--userProfileHeight);
 }
 .userProfileMain{
     width: 60px;
@@ -62,21 +88,22 @@ body{
 
 /* CHAT AREA */
 
-.TopInfo{
-    height: 5%;
+.topInfo{
+    border: 1px solid black;
+    height: var(--topHeight);
     text-align: left;
     /* border-bottom: ; */
 }
-.ChatName{
+.chatName{
     display: flex;
     align-items: center;
 }
-.ChatPfp{
+.chatPfp{
     width: 50px;
     height: 50px;
     margin-right: 20px;
 }
-.Chat{
+.chat{
     display: flex;
     flex-direction: column;
     border: none;
@@ -84,11 +111,11 @@ body{
     overflow: auto;
     overflow-y: scroll;
 }
-.BottomButtons{
+.bottomButtons{
     border: none;
     height: 5%;
 }
-.InputMessage{
+.inputMessage{
     padding-left: 5px;
     margin-left: 0px;
     width: 90%;
@@ -96,13 +123,13 @@ body{
     border: none;
     background-color: whitesmoke;
 }
-.SendMessage{
+.sendMessage{
     width: 5%;
     border-radius: 15px;
     border: none;
     background-color: whitesmoke;
 }
-.SendMessage:hover, .InputMessage:hover{
+.sendMessage:hover, .inputMessage:hover{
     background-color: azure;
 }
 .message{
@@ -144,16 +171,16 @@ body{
 
 /* CHAT INFORMATION TAB */
 
-.ChatInfo{
+.chatInfo{
     border: 0.5px solid black;
     height: 50vh;
     width: 100%;
 }
-.Participants{
+.participants{
     width: 100%;
     height: 50vh;
 }
-.Member{
+.member{
     width: 100%;
     height: 40px;
 }

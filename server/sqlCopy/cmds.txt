@@ -1,8 +1,9 @@
 \copy conversation to C:\Users\Jan\Downloads\sqlCopy\conversation.csv;
 
-\copy users to C:\Users\Jan\Downloads\sqlCopy\users.csv;
+\copy conversation to C:\Users\EZN\Desktop\MessNode-main\server\sqlCopy\conversation.csv;
+\copy users to C:\Users\EZN\Desktop\MessNode-main\server\sqlCopy\users.csv;
 
-\copy messages to C:\Users\Jan\Downloads\sqlCopy\messages.csv;
+\copy messages to C:\Users\EZN\Desktop\MessNode-main\server\sqlCopy\messages.csv
 
 
 CREATE TABLE messages(

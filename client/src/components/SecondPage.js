@@ -27,6 +27,7 @@ export default function MainPage(props) {
     const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
     const [toggleCreateGroup, setToggleCreateGroup] = useState(false);
     
+    const [lastMsgName, setLastMsgName] = useState(null);
     const msgContainerRef = useRef(null);
 
     let navigate = useNavigate()
@@ -195,18 +196,20 @@ export default function MainPage(props) {
     {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser ? <CreateGroup toggle={createGroupToggle} userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}> </CreateGroup> : <></>}
     
     <div className='containerConversationPage'>
-        <div className='LeftPanel'>
-            <button
-                className='search'
-            >Search</button> <br></br>            
-            <button
-                className='search'
-                onClick={e => {
-                    createGroupToggle();
-                }
-                }>+
-            </button>
-            <div className='ChatList'>
+        <div className='leftPanel'>
+            <div className='topSearch'>
+                <button
+                    className='search'
+                >Search</button> <br></br>            
+                <button
+                    className='search'
+                    onClick={e => {
+                        createGroupToggle();
+                    }
+                    }>+
+                </button>
+            </div>
+            <div className='chatList'>
             {conversationList.map((content) =>(
                  <div 
                     className={
@@ -219,30 +222,42 @@ export default function MainPage(props) {
                     onClick={e => handleConvChange(e, content)}>
                     <p className='convTitle'>
                         <Image className='convImg' cloudName={dataCld.cloudName} publicId={content.pic}></Image>
-                        {content.title}</p>
+                        {content.title}
+                    </p>
                  </div>
             ))
             }
             </div>
-            <div className='UserProfile'>
+            <div className='userProfile'>
                 <Image className='userProfileMain' cloudName={dataCld.cloudName} publicId={userData.pfp}/>
                 <p>{userData.username}</p> 
-                <button className='Logout' onClick={logout}>Logout </button>
+                <button className='logout' onClick={logout}>Logout </button>
             </div>
         </div>
-        <div className='BottomPanel'>
-            <div className='TopInfo'>
-                <div className='Chatname'><Image publicId={selectedConv.pic} cloudName={dataCld.cloudName} className='ChatPfp'/>{selectedConv.title}</div>    
+        <div className='bottomPanel'>
+            <div className='topInfo'>
+                <div className='chatname'>
+                    <Image publicId={selectedConv.pic} cloudName={dataCld.cloudName} className='chatPfp'/>
+                    {selectedConv.title}
+                </div>    
             </div>
 
-            <div className='Chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
-                {messageList.map((messageContent) =>{
+            <div className='chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
+                {messageList.map((messageContent, lastAuthor) =>{
                     const date = new Date(messageContent.timestamp);
                     var hours = date.getHours();
                     var minutes = date.getMinutes();
                     if(minutes < 10) minutes = '0' + minutes;
                     var clName = `message ${userData.username === messageContent.author ? "you" : "other"}`;
-                    return <div className={clName} key={messageContent.msgId} >
+                    
+                    // lastAuthor = messageContent.msgId;
+                    // console.log(lastAuthor)
+
+                    if(lastAuthor === messageContent.author){
+                        // DONT ADD MESSAGE'S USERNAME
+                        // console.log('test')
+                    }else{
+                        return <div className={clName} key={messageContent.msgId}>
                             <div className='message-content'>
                                 <p>{messageContent.content}</p>
                             </div>
@@ -250,14 +265,15 @@ export default function MainPage(props) {
                                 <p id="author">{messageContent.author}</p>
                                 <span id="time">{hours + ":" + minutes}</span>
                             </div>
-                    </div>
+                        </div>
+                    }
                 })}
             </div>
             
-            <div className='BottomButtons'>
+            <div className='bottomButtons'>
                 <input 
                     type='text' 
-                    className='InputMessage' 
+                    className='inputMessage' 
                     placeholder='Type here...'
                     onChange={e => setCurrentMessage(e.target.value)}
                     onKeyDown={(event) => {
@@ -267,16 +283,16 @@ export default function MainPage(props) {
                     >  
                     </input>
                 <button 
-                    className='SendMessage' 
+                    className='sendMessage' 
                     onClick={sendMessage}
                     >&#8594;
                 </button>
             </div>
         </div> {/*Chat Window*/}
-        <div className='RightPanel'>
-            <div className='Participants'>
+        <div className='rightPanel'>
+            <div className='participants'>
                 {memberList.map((content) =>{
-                    return <div className='Member' key={content.userId}>
+                    return <div className='member' key={content.userId}>
                         <Image className='memberImage' cloudName={dataCld.cloudName} publicId={content.pfp}></Image>
                         <button className='manageUser' onClick={e =>{
                             setToggleManageMember((oldId) =>{

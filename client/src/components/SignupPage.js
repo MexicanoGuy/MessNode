@@ -34,7 +34,6 @@ function SignupPage() {
     apiSecret: process.env.REACT_APP_CSECRET,
     uploadPreset: process.env.REACT_APP_CUPLOAD_PRESET
   }
-
   const handleUpload = () =>{
     const formData = new FormData();
     formData.append('file', file);
@@ -85,6 +84,7 @@ function SignupPage() {
         pwd: password2,
         pfpId: pfpId
       }
+      console.log(accountData)
       socket.emit('create_new_account', accountData);
     }
   },[pfpId]);

@@ -1,7 +1,6 @@
 module.exports = (io, socket, pool) =>{
     const bcrypt = require('bcrypt');
     socket.on("create_new_account", async (data) =>{
-        console.log(data);
         var accountStatus = false;
         pool.connect();
         const findUser = await pool.query("SELECT email, pwd from users WHERE email=$1", [data.email]);
