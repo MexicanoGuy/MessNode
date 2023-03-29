@@ -22,6 +22,7 @@ export default function MainPage(props) {
     });
 
     const [messageList, setMessageList] = useState([]);
+    const [guiMessageList, setguiMessageList] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
 
     const [memberList, setMemberList] = useState([]);
@@ -196,29 +197,50 @@ export default function MainPage(props) {
     }
     const loadMessages = () =>{
         if(messageList == null){
-            
+            return null;
         }else{
-            messageList.reduce((prevMsg, currentMsg, index) =>{
+            var guiMessageList = messageList.reduce((acc, ) =>{
                 const date = new Date(currentMsg.timestamp);
                 var hours = date.getHours();
                 var minutes = date.getMinutes();
                 if(minutes < 10) minutes = '0' + minutes;
                 var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
-    
-                if(prevMsg.author == currentMsg.author || index == 0){
-                    console.log('title')
-                }else{
-                    // return <div className={clName} key={currentMsg.msgId}>
-                    //     <div className='message-content'>
-                    //         <p>{currentMsg.content}</p>
-                    //     </div>
-                    //     <div className='message-meta'>
-                    //         <p id="author">{currentMsg.author}</p>
-                    //         <span id="time">{hours + ":" + minutes}</span>
-                    //     </div>
-                    // </div>
+                
+                if(index === 0){
+                    messagesReady.push(
+                        <div key={prevMsg.msgId}>Author is: {prevMsg.author}</div>
+                    );
+                return messagesReady;
                 }
-            });
+                if(prevMsg.author === currentMsg.author && index > 0){
+                    console.log(prevMsg)
+                    messagesReady.push(
+                        <div className={clName} key={currentMsg.msgId}>
+                        <div className='message-content'>
+                            <p>{currentMsg.content}</p>
+                        </div>
+                        <div className='message-meta'>
+                            {/* <p id="author">{currentMsg.author}</p> */}
+                            <span id="time">{hours + ":" + minutes}</span>
+                        </div>
+                    </div>
+                    );
+                }else{
+                    messagesReady.push(
+                    <div className={clName} key={currentMsg.msgId}>
+                        <div className='message-content'>
+                            <p>{currentMsg.content}</p>
+                        </div>
+                        <div className='message-meta'>
+                            {/* <p id="author">{currentMsg.author}</p> */}
+                            <span id="time">{hours + ":" + minutes}</span>
+                        </div>
+                    </div>);
+                }
+                return messagesReady;
+            }, []);
+            console.log(guiMessageList)
+            // return guiMessageList;
         }
         
     }
@@ -275,27 +297,28 @@ export default function MainPage(props) {
 
             <div className='chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
                 {
-                     messageList.reduce((prevMsg, currentMsg, index) =>{
-                        const date = new Date(currentMsg.timestamp);
-                        var hours = date.getHours();
-                        var minutes = date.getMinutes();
-                        if(minutes < 10) minutes = '0' + minutes;
-                        var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
+                    loadMessages()
+                    //  messageList.reduce((prevMsg, currentMsg, index) =>{
+                    //     const date = new Date(currentMsg.timestamp);
+                    //     var hours = date.getHours();
+                    //     var minutes = date.getMinutes();
+                    //     if(minutes < 10) minutes = '0' + minutes;
+                    //     var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
             
-                        if(prevMsg.author == currentMsg.author || index == 0){
-                            console.log('title')
-                        }else{
-                            // return <div className={clName} key={currentMsg.msgId}>
-                            //     <div className='message-content'>
-                            //         <p>{currentMsg.content}</p>
-                            //     </div>
-                            //     <div className='message-meta'>
-                            //         <p id="author">{currentMsg.author}</p>
-                            //         <span id="time">{hours + ":" + minutes}</span>
-                            //     </div>
-                            // </div>
-                        }
-                    })
+                    //     if(prevMsg.author == currentMsg.author || index == 0){
+                    //         console.log('title')
+                    //     }else{
+                    //         // return <div className={clName} key={currentMsg.msgId}>
+                    //         //     <div className='message-content'>
+                    //         //         <p>{currentMsg.content}</p>
+                    //         //     </div>
+                    //         //     <div className='message-meta'>
+                    //         //         <p id="author">{currentMsg.author}</p>
+                    //         //         <span id="time">{hours + ":" + minutes}</span>
+                    //         //     </div>
+                    //         // </div>
+                    //     }
+                    // })
                 }
                 {/* {messageList.map((messageContent, lastAuthor) =>{
                     const date = new Date(messageContent.timestamp);

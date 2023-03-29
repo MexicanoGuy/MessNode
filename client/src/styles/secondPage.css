@@ -17,7 +17,6 @@
     
     --colorHover: #ABC4FF;
 }
-@import url('https://fonts.cdnfonts.com/css/visby');
 body{
     background-color: var(--colorBG);
     font-family: Arial, Helvetica, sans-serif
