@@ -1,24 +1,36 @@
 :root{
-    --deviceHeight: 95vh;
+    --deviceHeight: 100vh;
 
     --topHeight: 10vh;
 
     --bottomHeight: 10vh;
 
     --userProfileHeight: 14vh;
+
+    --colorLight: #DDD8C4;
+    --colorDark: #50808E;
+    --colorBG: #f7f7f2;
+
+    --colorMain: #BFD7FF;
+    --colorMid: #9BB1FF;
+    --colorAccent: #788BFF;
+    
+    --colorHover: #ABC4FF;
 }
+@import url('https://fonts.cdnfonts.com/css/visby');
 body{
-    background-color: transparent;
+    background-color: var(--colorBG);
+    font-family: Arial, Helvetica, sans-serif
 }
 .containerConversationPage{
     display: flex;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     height: var(--deviceHeight);
 }
 .leftPanel{
     flex: 0.2;
-    border: 1px solid black;
-    
+    /* border: 1px solid black; */
+    background-color: var(--colorMain);
 }
 .bottomPanel{
     flex: 0.6;
@@ -34,54 +46,85 @@ body{
 .topSearch{
     border: 1px solid black;
     height: var(--topHeight);
+    display: flex;
+    align-items: center;
 }
-.search{
-    width: calc(fit-content + 5%);
+.searchInConv{
+    margin: 25px;
+    margin-right: 5px;
+    width: 70%;
+    height: 20px;
     font-size: 15px;
     border: none;
     border-radius: 5px;
+    background-color: rgb(246, 246, 233);
 }
-.search:hover{
+.searchInConv:hover{
     background-color: azure;
 }
+
 .chatList{
     text-align: left;
     height: 70%;
 }
-.convTitle{
-    font-size: 18px;
-}
-
-.convImg{
-    /* padding-right: 10px; */
-    border-radius: 40%;
-    width: 30px;
-    height: 30px;
-}
-
-.userProfile{
-    border: 1px solid black;
-    height: var(--userProfileHeight);
-}
-.userProfileMain{
-    width: 60px;
-    height: 60px;
-}
-
-
 .conversation, .conversationSelected{
     margin: 12px;
     width: 90%;
     border: transparent solid;
-    background-color: rgb(255, 254, 252);
+    background-color: transparent;
     border-radius: 10px;
+    height: 55px;
+    display: flex;
+    align-items: center;
 }
 .conversationSelected{
-    background-color: azure;
+    background-color: var(--colorAccent);
 }
 .conversation:hover, .conversationSelected:hover{
-    background-color: bisque;
+    background-color: var(--colorHover);
 }
+.convTitle{
+    font-size: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 80%;
+}
+.convImg{
+    padding: 7px;
+    border-radius: 40%;
+    width: 30px;
+    height: 30px;
+}
+.userProfile{
+    background-color: var(--colorMid);
+    vertical-align: bottom;
+    height: var(--userProfileHeight);
+    display: flex;
+    align-items: center;
+}
+.userProfileMain{
+    margin: 15px;
+    width: 50px;
+    height: 50px;
+    border-radius: 18px;
+
+}
+.userProfileUsername{
+    font-size: large;
+    overflow-wrap: break-word;
+}
+.logoutIcon{
+    text-align: end;
+    width: 30px;
+    height: 30px;
+    margin-left: 150px;
+}
+.logoutIcon:hover{
+    background-color: rgba(128, 128, 128, 0.29);
+    border-radius: 10px;
+}
+
 /* SELECT CHAT TAB */
 
 /*-------------------------------- */
@@ -89,19 +132,20 @@ body{
 /* CHAT AREA */
 
 .topInfo{
-    border: 1px solid black;
-    height: var(--topHeight);
-    text-align: left;
-    /* border-bottom: ; */
-}
-.chatName{
     display: flex;
+    border-bottom: 1px solid black;
+    
+    height: var(--topHeight);
     align-items: center;
 }
-.chatPfp{
+.topInfoPic{
     width: 50px;
     height: 50px;
-    margin-right: 20px;
+    margin: 15px;
+    border-radius: 16px;
+}
+.topInfoTitle{
+    font-size: large;
 }
 .chat{
     display: flex;
@@ -134,6 +178,8 @@ body{
 }
 .message{
     width: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
     margin: 10px; 
     border-radius: 10px;
     border: 0.5px solid rgb(41, 116, 117);

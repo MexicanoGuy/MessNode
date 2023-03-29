@@ -5,6 +5,10 @@ import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 import CreateGroup from './CreateGroup';
+import userIcon from '../img/user.png';
+import addNewIcon from '../img/addNew.png';
+import logoutIcon from '../img/logout.png';
+
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 
 export default function MainPage(props) {
@@ -42,7 +46,7 @@ export default function MainPage(props) {
         apiKey: process.env.REACT_APP_CAPIKEY,
         apiSecret: process.env.REACT_APP_CSECRET,
         uploadPreset: process.env.REACT_APP_CUPLOAD_PRESET
-      }
+    }
 
     const userData ={
         username: localStorage.getItem('username'),
@@ -110,6 +114,7 @@ export default function MainPage(props) {
         socket.off('receive_message').on('receive_message', (data) =>{
             setMessageList((list) => [...list, data]);
         });
+        
     }, [messageList]);
 
 
@@ -189,6 +194,34 @@ export default function MainPage(props) {
         }
         else setToggleCreateGroup(false);
     }
+    const loadMessages = () =>{
+        if(messageList == null){
+            
+        }else{
+            messageList.reduce((prevMsg, currentMsg, index) =>{
+                const date = new Date(currentMsg.timestamp);
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                if(minutes < 10) minutes = '0' + minutes;
+                var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
+    
+                if(prevMsg.author == currentMsg.author || index == 0){
+                    console.log('title')
+                }else{
+                    // return <div className={clName} key={currentMsg.msgId}>
+                    //     <div className='message-content'>
+                    //         <p>{currentMsg.content}</p>
+                    //     </div>
+                    //     <div className='message-meta'>
+                    //         <p id="author">{currentMsg.author}</p>
+                    //         <span id="time">{hours + ":" + minutes}</span>
+                    //     </div>
+                    // </div>
+                }
+            });
+        }
+        
+    }
     return (
     <>
     {toggleAddUser && !toggleLeaveGroup && !toggleLeaveGroup ?  <AddUser memberList={memberList} convId={conversationIndex} roomId={conversationIndex}></AddUser> : <></>}
@@ -198,20 +231,21 @@ export default function MainPage(props) {
     <div className='containerConversationPage'>
         <div className='leftPanel'>
             <div className='topSearch'>
-                <button
-                    className='search'
-                >Search</button> <br></br>            
-                <button
-                    className='search'
+                <input
+                    className='searchInConv'
+                    placeholder='search...'
+                />        
+                <img
+                    src={addNewIcon}
+                    className='addNewConv'
                     onClick={e => {
                         createGroupToggle();
-                    }
-                    }>+
-                </button>
+                    }}
+                />
             </div>
             <div className='chatList'>
             {conversationList.map((content) =>(
-                 <div 
+                <div 
                     className={
                         conversationIndex === content.convId
                             ? 'conversationSelected'
@@ -219,43 +253,59 @@ export default function MainPage(props) {
                     }
                     key={content.convId}
                     meta-index={content.convId}
-                    onClick={e => handleConvChange(e, content)}>
-                    <p className='convTitle'>
-                        <Image className='convImg' cloudName={dataCld.cloudName} publicId={content.pic}></Image>
-                        {content.title}
-                    </p>
-                 </div>
+                    onClick={e => handleConvChange(e, content)}
+                >
+                    <Image className='convImg' cloudName={dataCld.cloudName} publicId={content.pic}/>
+                    <p className='convTitle'>{content.title}</p>
+                </div>
             ))
             }
             </div>
             <div className='userProfile'>
                 <Image className='userProfileMain' cloudName={dataCld.cloudName} publicId={userData.pfp}/>
-                <p>{userData.username}</p> 
-                <button className='logout' onClick={logout}>Logout </button>
+                <p className='userProfileUsername'>{userData.username}</p>
+                <img src={logoutIcon} className='logoutIcon' onClick={logout}/>
             </div>
         </div>
         <div className='bottomPanel'>
             <div className='topInfo'>
-                <div className='chatname'>
-                    <Image publicId={selectedConv.pic} cloudName={dataCld.cloudName} className='chatPfp'/>
-                    {selectedConv.title}
-                </div>    
+                <Image className='topInfoPic' publicId={selectedConv.pic} cloudName={dataCld.cloudName} />
+                <p className='topInfoTitle'>{selectedConv.title}</p> 
             </div>
 
             <div className='chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
-                {messageList.map((messageContent, lastAuthor) =>{
+                {
+                     messageList.reduce((prevMsg, currentMsg, index) =>{
+                        const date = new Date(currentMsg.timestamp);
+                        var hours = date.getHours();
+                        var minutes = date.getMinutes();
+                        if(minutes < 10) minutes = '0' + minutes;
+                        var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
+            
+                        if(prevMsg.author == currentMsg.author || index == 0){
+                            console.log('title')
+                        }else{
+                            // return <div className={clName} key={currentMsg.msgId}>
+                            //     <div className='message-content'>
+                            //         <p>{currentMsg.content}</p>
+                            //     </div>
+                            //     <div className='message-meta'>
+                            //         <p id="author">{currentMsg.author}</p>
+                            //         <span id="time">{hours + ":" + minutes}</span>
+                            //     </div>
+                            // </div>
+                        }
+                    })
+                }
+                {/* {messageList.map((messageContent, lastAuthor) =>{
                     const date = new Date(messageContent.timestamp);
                     var hours = date.getHours();
                     var minutes = date.getMinutes();
                     if(minutes < 10) minutes = '0' + minutes;
                     var clName = `message ${userData.username === messageContent.author ? "you" : "other"}`;
-                    
-                    // lastAuthor = messageContent.msgId;
-                    // console.log(lastAuthor)
 
                     if(lastAuthor === messageContent.author){
-                        // DONT ADD MESSAGE'S USERNAME
-                        // console.log('test')
+
                     }else{
                         return <div className={clName} key={messageContent.msgId}>
                             <div className='message-content'>
@@ -267,7 +317,7 @@ export default function MainPage(props) {
                             </div>
                         </div>
                     }
-                })}
+                })}  */}
             </div>
             
             <div className='bottomButtons'>
