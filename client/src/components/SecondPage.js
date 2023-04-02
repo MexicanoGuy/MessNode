@@ -199,48 +199,55 @@ export default function MainPage(props) {
         if(messageList == null){
             return null;
         }else{
-            var guiMessageList = messageList.reduce((acc, ) =>{
-                const date = new Date(currentMsg.timestamp);
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
+            return messageList.map((message, index) =>{
+                const dateCurrentMsg = new Date(message.timestamp);
+                var hours = dateCurrentMsg.getHours();
+                var minutes = dateCurrentMsg.getMinutes();
                 if(minutes < 10) minutes = '0' + minutes;
-                var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
+                var clName = `message ${userData.username === message.author ? "you" : "other"}`;
                 
                 if(index === 0){
-                    messagesReady.push(
-                        <div key={prevMsg.msgId}>Author is: {prevMsg.author}</div>
-                    );
-                return messagesReady;
-                }
-                if(prevMsg.author === currentMsg.author && index > 0){
-                    console.log(prevMsg)
-                    messagesReady.push(
-                        <div className={clName} key={currentMsg.msgId}>
-                        <div className='message-content'>
-                            <p>{currentMsg.content}</p>
-                        </div>
-                        <div className='message-meta'>
-                            {/* <p id="author">{currentMsg.author}</p> */}
-                            <span id="time">{hours + ":" + minutes}</span>
-                        </div>
-                    </div>
-                    );
-                }else{
-                    messagesReady.push(
-                    <div className={clName} key={currentMsg.msgId}>
-                        <div className='message-content'>
-                            <p>{currentMsg.content}</p>
-                        </div>
-                        <div className='message-meta'>
-                            {/* <p id="author">{currentMsg.author}</p> */}
+                    return (
+                    <div key={message.msgId}>
+                        <div className='author'>{message.author}</div>
+                        <div className={clName} >
+                            <div className='message-content'>
+                                <p>{message.content}</p>
+                            </div>
                             <span id="time">{hours + ":" + minutes}</span>
                         </div>
                     </div>);
                 }
-                return messagesReady;
+                else{
+                    const prevMsg = messageList[index - 1];
+                    const datePrevMsg = new Date(prevMsg.timestamp);
+                    var isMinuteSame = (dateCurrentMsg - datePrevMsg);
+
+                    console.log(isMinuteSame)
+                    if(prevMsg.author === message.author){
+                        return(
+                        <div className={clName} key={message.msgId}>
+                            <div className='message-content'>
+                                <p>{message.content}</p>
+                            </div>
+                            <span id="time">{hours + ":" + minutes}</span>
+                        </div>
+                        );
+                    }else{
+                        return(
+                        <div key={message.msgId}>
+                            <div className='author'>{message.author}</div>
+                            <div className={clName}>
+                                <div className='message-content'>
+                                    <p>{message.content}</p>
+                                </div>
+                            </div>
+                            <span id="time">{hours + ":" + minutes}</span>
+                        </div>);
+                    }
+                }
+                
             }, []);
-            console.log(guiMessageList)
-            // return guiMessageList;
         }
         
     }
@@ -298,27 +305,7 @@ export default function MainPage(props) {
             <div className='chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
                 {
                     loadMessages()
-                    //  messageList.reduce((prevMsg, currentMsg, index) =>{
-                    //     const date = new Date(currentMsg.timestamp);
-                    //     var hours = date.getHours();
-                    //     var minutes = date.getMinutes();
-                    //     if(minutes < 10) minutes = '0' + minutes;
-                    //     var clName = `message ${userData.username === currentMsg.author ? "you" : "other"}`;
-            
-                    //     if(prevMsg.author == currentMsg.author || index == 0){
-                    //         console.log('title')
-                    //     }else{
-                    //         // return <div className={clName} key={currentMsg.msgId}>
-                    //         //     <div className='message-content'>
-                    //         //         <p>{currentMsg.content}</p>
-                    //         //     </div>
-                    //         //     <div className='message-meta'>
-                    //         //         <p id="author">{currentMsg.author}</p>
-                    //         //         <span id="time">{hours + ":" + minutes}</span>
-                    //         //     </div>
-                    //         // </div>
-                    //     }
-                    // })
+                    
                 }
                 {/* {messageList.map((messageContent, lastAuthor) =>{
                     const date = new Date(messageContent.timestamp);
