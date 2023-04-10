@@ -2,21 +2,26 @@ module.exports = (io, socket, pool) =>{
   
     socket.on('get_chat_data', async (data) =>{
       var convId = data.convId;
-        const queryInfo = await pool.query("SELECT * FROM (SELECT * FROM messages INNER JOIN conversation ON convno = $1 AND conversationid = $1 ORDER BY timestamp DESC LIMIT 10) sub ORDER BY timestamp ASC",[convId]);
+        const queryInfo = await pool.query(`
+          SELECT * FROM (SELECT * FROM messages 
+          INNER JOIN conversation ON convno = $1 AND conversationid = $1 
+          INNER JOIN users ON messages.authorno = users.userid
+          ORDER BY timestamp DESC LIMIT 10) 
+          sub ORDER BY timestamp ASC`,[convId]);
         pool.end;
-        const messagesData = [];
+        let messagesData = [];
         const membersInfo = [];
         if(queryInfo.rowCount > 0){
-  
-          for(let i=0; i < queryInfo.rowCount; i++){
-            let obj1 = {
-              msgId: queryInfo.rows[i].msgid,
-              content: queryInfo.rows[i].content,
-              author: queryInfo.rows[i].author,
-              timestamp: queryInfo.rows[i].timestamp,
-            }
-            messagesData.push(obj1);
-          }
+          messagesData = queryInfo.rows.map(row =>({
+            msgId: row.msgid,
+            authorName: row.username,
+            authorId: row.userid,
+            authorPfp: row.pfp,
+            content: row.content,
+            timestamp: row.timestamp,
+            convId: row.convno
+          }));
+          
           // SEARCH FOR PARTICIPANTS
           const members = queryInfo.rows[0].participants;
           if(members !== null){        
