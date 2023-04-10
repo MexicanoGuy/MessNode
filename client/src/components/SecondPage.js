@@ -2,12 +2,16 @@ import React, { Component, useLayoutEffect, useEffect, useState, useRef } from '
 import '../styles/secondPage.css';
 import ManageUser from './ManageUser';
 import AddUser from './AddUser';
-import {useNavigate } from 'react-router-dom';
+import {NavLink, useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 import CreateGroup from './CreateGroup';
+
 import userIcon from '../img/user.png';
 import addNewIcon from '../img/addNew.png';
 import logoutIcon from '../img/logout.png';
+import emojiIcon from '../img/emoji.png';
+
+import EmojiPicker from 'emoji-picker-react';
 
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 
@@ -35,13 +39,10 @@ export default function MainPage(props) {
     const [lastMsgName, setLastMsgName] = useState(null);
     const msgContainerRef = useRef(null);
 
+    const [emojiActive, setEmojiActive] = useState(false);
+
     let navigate = useNavigate()
-    // const dataCld = {
-    //     cloudName: 'dbz9t4cb6',
-    //     apiKey: '487621486735284',
-    //     apiSecret: '5iFhTeV3myX13qcc-_llf0_lhfY',
-    //     uploadPreset: 'r1l3esxv'
-    //   }
+    
     const dataCld = {
         cloudName: process.env.REACT_APP_CNAME,
         apiKey: process.env.REACT_APP_CAPIKEY,
@@ -148,12 +149,11 @@ export default function MainPage(props) {
             }
             socket.emit('fetch_more_messages', chatData);
             socket.on('receive_more_messages', (data) =>{
-                if(data.length !== 0){
+                if(data.length !== 0 && data !== false){
                     setMessageList([...data, ...messageList]);
                     msgContainerRef.current.scrollTop = 40;
                 }
             });
-            
         }
     }
     const sendMessage = async () =>{
@@ -161,7 +161,9 @@ export default function MainPage(props) {
         if (currentMessage !== "" && conversationIndex !== "") {
             const messageData = {
                 msgId: messageList.length+1,
-                author: userData.username,
+                authorName: userData.username,
+                authorId: userData.userId,
+                authorPfp: userData.pfp,
                 content: currentMessage,
                 timestamp: new Date().toISOString(),
                 convId: conversationIndex,
@@ -195,61 +197,67 @@ export default function MainPage(props) {
         }
         else setToggleCreateGroup(false);
     }
-    const loadMessages = () =>{
+    const renderMessages = () =>{
         if(messageList == null){
             return null;
         }else{
             return messageList.map((message, index) =>{
                 const dateCurrentMsg = new Date(message.timestamp);
-                var hours = dateCurrentMsg.getHours();
-                var minutes = dateCurrentMsg.getMinutes();
-                if(minutes < 10) minutes = '0' + minutes;
-                var clName = `message ${userData.username === message.author ? "you" : "other"}`;
-                
+                var hoursCurrent = dateCurrentMsg.getHours();
+                var minutesCurrent = dateCurrentMsg.getMinutes();
+                if(minutesCurrent < 10) minutesCurrent = '0' + minutesCurrent;
+                var clName = `${parseInt(userData.userId) === parseInt(message.authorId) ? "you" : "other"}`;
+                    
                 if(index === 0){
-                    return (
-                    <div key={message.msgId}>
-                        <div className='author'>{message.author}</div>
-                        <div className={clName} >
-                            <div className='message-content'>
-                                <p>{message.content}</p>
-                            </div>
-                            <span id="time">{hours + ":" + minutes}</span>
-                        </div>
-                    </div>);
-                }
-                else{
+                    var sortByTime = false;
+                    var diffDay = true;
+                    var prevAuthorId = null;
+                }else{
                     const prevMsg = messageList[index - 1];
                     const datePrevMsg = new Date(prevMsg.timestamp);
-                    var isMinuteSame = (dateCurrentMsg - datePrevMsg);
+                    var dateDiff = dateCurrentMsg - datePrevMsg;
+                    var inMinutes = Math.floor(dateDiff / 60_000);
 
-                    console.log(isMinuteSame)
-                    if(prevMsg.author === message.author){
-                        return(
-                        <div className={clName} key={message.msgId}>
-                            <div className='message-content'>
-                                <p>{message.content}</p>
-                            </div>
-                            <span id="time">{hours + ":" + minutes}</span>
-                        </div>
-                        );
-                    }else{
-                        return(
-                        <div key={message.msgId}>
-                            <div className='author'>{message.author}</div>
-                            <div className={clName}>
+                    var sortByTime = inMinutes <= 5 ? true : false;
+                    var diffDay = inMinutes >= (60*24) ? true : false;
+
+                    var prevAuthorId = parseInt(prevMsg.authorId);
+                }
+                var dateFormatDm = dateCurrentMsg.getDate() + ", " + dateCurrentMsg.toLocaleString('default', {month: 'long'});
+                var hourFormat = hoursCurrent + ":" + minutesCurrent;
+
+                return(
+                    <div className='messageGroup' key={message.msgId}>
+                        
+                        { diffDay ?
+                            <span className="spanNewDay" key={dateFormatDm}>{dateFormatDm}</span>
+                        :
+                            null
+                        }
+                        <div className={clName}>
+                            {prevAuthorId === parseInt(message.authorId) ?
+                                null
+                            : 
+                            <>
+                                <div className='author'>
+                                    <Image className='msgImg' cloudName={dataCld.cloudName} publicId={message.authorPfp}></Image>
+                                    {message.authorName}
+                                </div>
+                            </>}
+                            <div className='message' key={message.msgId}>
                                 <div className='message-content'>
                                     <p>{message.content}</p>
                                 </div>
+                                {(sortByTime && (prevAuthorId === parseInt(message.authorId))) ?
+                                    <span className="tooltipTime">{hourFormat}</span>
+                                : <span className="timeMessage">{hourFormat}</span>
+                                }
                             </div>
-                            <span id="time">{hours + ":" + minutes}</span>
-                        </div>);
-                    }
-                }
-                
+                        </div>
+                    </div>
+                );
             }, []);
         }
-        
     }
     return (
     <>
@@ -287,8 +295,7 @@ export default function MainPage(props) {
                     <Image className='convImg' cloudName={dataCld.cloudName} publicId={content.pic}/>
                     <p className='convTitle'>{content.title}</p>
                 </div>
-            ))
-            }
+            ))}
             </div>
             <div className='userProfile'>
                 <Image className='userProfileMain' cloudName={dataCld.cloudName} publicId={userData.pfp}/>
@@ -303,34 +310,17 @@ export default function MainPage(props) {
             </div>
 
             <div className='chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
+                <div className='chatBeginning'>
+                    <Image className='topInfoPic' publicId={selectedConv.pic} cloudName={dataCld.cloudName} />
+                    <p className='beginTitle'><b>{selectedConv.title}</b></p> 
+                    <p className='beginText'>This is the beginning of the chat...</p>
+                </div>
                 {
-                    loadMessages()
-                    
+                    renderMessages()
                 }
-                {/* {messageList.map((messageContent, lastAuthor) =>{
-                    const date = new Date(messageContent.timestamp);
-                    var hours = date.getHours();
-                    var minutes = date.getMinutes();
-                    if(minutes < 10) minutes = '0' + minutes;
-                    var clName = `message ${userData.username === messageContent.author ? "you" : "other"}`;
-
-                    if(lastAuthor === messageContent.author){
-
-                    }else{
-                        return <div className={clName} key={messageContent.msgId}>
-                            <div className='message-content'>
-                                <p>{messageContent.content}</p>
-                            </div>
-                            <div className='message-meta'>
-                                <p id="author">{messageContent.author}</p>
-                                <span id="time">{hours + ":" + minutes}</span>
-                            </div>
-                        </div>
-                    }
-                })}  */}
             </div>
             
-            <div className='bottomButtons'>
+            <div className='bottomOptions'>
                 <input 
                     type='text' 
                     className='inputMessage' 
@@ -340,15 +330,25 @@ export default function MainPage(props) {
                         event.key === "Enter" && sendMessage();
                     }}
                     value={currentMessage}
-                    >  
-                    </input>
-                <button 
+                />
+                <div className='emojiContainer'>
+                    {emojiActive === true ? 
+                    <div className='emojiPicker'>
+                        <EmojiPicker onEmojiClick={(e) => {setCurrentMessage(currentMessage + e.emoji)}}/>
+                    </div>
+                    : null}
+                    <div onClick={() => setEmojiActive(!emojiActive)}>
+                        <img src={emojiIcon} className='emojiIcon'></img>
+                    </div>
+                </div>
+                
+                <input 
                     className='sendMessage' 
                     onClick={sendMessage}
-                    >&#8594;
-                </button>
+                    defaultValue='&#8594;'
+                />
             </div>
-        </div> {/*Chat Window*/}
+        </div>
         <div className='rightPanel'>
             <div className='participants'>
                 {memberList.map((content) =>{
