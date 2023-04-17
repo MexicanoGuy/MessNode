@@ -1,12 +1,13 @@
 module.exports = (io, socket, pool) =>{
 
-    socket.on("addNewMember", async (data) =>{
+    socket.on("add_member", async (data) =>{
+        console.log(data);
         const room = data.roomId;
         var userId = data.userId;
-        await pool.query(`UPDATE conversation SET participants = array_append(participants, $1) WHERE conversationid = $2`,[userId,data.convId]);
+        await pool.query(`UPDATE conversation SET participants = array_append(participants, $1) WHERE conversationid = $2`,[userId, data.convId]);
 
         const user = await pool.query(`SELECT * FROM users WHERE userid = $1`, [userId]);
-        console.log(userId)
+        console.log("'",userId,"'")
         userId = userId.toString().trim();
         if(user.rowCount > 0){
             var userData = {

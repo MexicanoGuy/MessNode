@@ -28,10 +28,13 @@ module.exports = (io, socket, pool) =>{
             for(let i=0; i<members.length; i++){
               let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
               if(userQuery.rowCount > 0){
+                var member = userQuery.rows[0];
                 let obj2 = {
-                  userId: userQuery.rows[0].userid,
-                  username: userQuery.rows[0].username,
-                  pfp: userQuery.rows[0].pfp
+                  userId: member.userid, 
+                  username: member.username,
+                  pfp: member.pfp,
+                  activity: member.activity,
+                  customActivity: member.customActivity
                 }
                 membersInfo.push(obj2);
               }
@@ -46,10 +49,13 @@ module.exports = (io, socket, pool) =>{
               for(let i=0; i<members.length; i++){
                 let userQuery = await pool.query("SELECT * FROM users WHERE userid=$1 ORDER BY username ASC", [members[i]]);
                 if(userQuery.rowCount > 0){
+                  var member = userQuery.rows[0];
                   let obj2 = {
-                    userId: userQuery.rows[0].userid,
-                    username: userQuery.rows[0].username,
-                    pfp: userQuery.rows[0].pfp
+                    userId: member.userid, 
+                    username: member.username,
+                    pfp: member.pfp,
+                    activity: member.activity,
+                    customActivity: member.customActivity
                   }
                   membersInfo.push(obj2);
                 }

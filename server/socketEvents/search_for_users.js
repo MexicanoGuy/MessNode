@@ -22,6 +22,7 @@ module.exports = (io, socket, pool) =>{
             userId: queryUsers.rows[i].userid,
             username: queryUsers.rows[i].username,
             email: queryUsers.rows[i].email,
+            pfp: queryUsers.rows[i].pfp,
             isAdded: isAdded
           }
           usersData.push(userObject);
