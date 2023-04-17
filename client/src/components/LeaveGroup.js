@@ -13,13 +13,17 @@ export default function LeaveGroup(props) {
         props.toggle();
     }
     return (
-    <div className='ContainerLeaveGroup'>
-        <h1>You are about to leave group</h1>
-        <button className='collapseComponent' onClick={props.toggle}>X</button>
-        <p>If you leave you won't be able to access this conversation no more. Do you want to proceed?</p>
-        <button onClick={props.toggle}>Cancel</button>
-        <button onClick={leaveGroup}>Proceed</button>
+        <div className='blurBackground'>
+            <div className='containerLeaveGroup'>
+                <button className='xClose3' onClick={props.toggle}>X</button>
+                <p className='titleLeave'>You are about to leave group</p>
+                <p className='convDescLeave'>If you leave you won't be able to access this conversation no more. Do you want to proceed?</p>
+                <div className='buttonsLeave'>
+                    <button className='cancelLeave' onClick={props.toggle}>Cancel</button>
+                    <button className='proceedLeave' onClick={leaveGroup}>Proceed</button>
+                </div>
+                
+            </div>
     </div>
-    
   )
 }

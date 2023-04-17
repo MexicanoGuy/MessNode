@@ -84,7 +84,6 @@ function SignupPage() {
         pwd: password2,
         pfpId: pfpId
       }
-      console.log(accountData)
       socket.emit('create_new_account', accountData);
     }
   },[pfpId]);

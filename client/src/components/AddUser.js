@@ -1,12 +1,15 @@
 import {React, useState, useEffect, useLayoutEffect} from 'react'
 import '../styles/addUser.css'; 
-
+import {Image} from 'cloudinary-react';
+import defaultPfp from '../img/pfpDefault.png';
 import io from 'socket.io-client';
 const socket = io.connect("localhost:3001");
 
 function AddUser(props) {
     const [searchValue, setSearchValue] = useState('');
     const [foundUsers, setFoundUsers] = useState([]);
+    const [firstSearch, setFirstSearch] = useState(true);
+
     const Search = () =>{
         if(searchValue !== ''){
             var dataToSend = {
@@ -15,7 +18,12 @@ function AddUser(props) {
             }
             socket.emit('searchForUsers', dataToSend)
             socket.on("receive_searched_users", (usersData) =>{
-                setFoundUsers(usersData);
+                if(usersData.length > 0){
+                    setFoundUsers(usersData);
+                    setFirstSearch(true);
+                }else{
+                    setFirstSearch(false);
+                }
             });
         } 
     }
@@ -27,44 +35,56 @@ function AddUser(props) {
                 convId: props.convId,
                 roomId: props.roomId
             }
-            socket.emit('addNewMember', dataM);
+            socket.emit('add_member', dataM);
         }
         
     };
-    return (<>
-        <div className='ContainerAddUser'>
-            <input type='search' className='inputSearchUser' placeholder='Search...' onChange={e =>{ setSearchValue(e.target.value);
-            }}/>
-            <button className='searchBtn' onClick={Search}>&#10095;</button>
-            <div className='searchedUsers'>
-                {foundUsers.map((content) => (
-                    <div className='userFound' key={content.userId}>
-                        {content.isAdded ? 
-                        <input 
-                            className='alreadyAddedBtn' 
-                            type='button' 
-                            value='Add'
-                        ></input> 
-                        : 
-                        <input 
-                            className='addUserBtn'
-                            type='button' 
-                            value='Add' 
-                            onClick={e => {
-                                AddNewMember(content.userId, e)
-                                Search()
-                            }}
-                        ></input>
-                        }
-                        <img className='imageFound' src='https://i.pinimg.com/550x/20/0d/72/200d72a18492cf3d7adac8a914ef3520.jpg'></img>
-                        <a className='usernameFound'>{content.username}</a>
-                        <a className='emailFound'>{content.email}</a>
-                    </div>
-                ))}
+    return (
+        <div className='blurBackground'>
+            <div className='containerAddUser'>
+                <div className='xClose' onClick={props.toggle}>X</div>
+                <p className='titleAddUser'>Add new users</p>
+                <div className='searchAreaAdd'>
+                    <input type='search' className='inputSearchUser' placeholder='Search...' onChange={e => setSearchValue(e.target.value)}/>
+                    <button className='searchBtn' onClick={Search}>&#10095;</button>
+                </div>
+                <div className='searchedUsersList'>
+                    {firstSearch ? foundUsers.map((content) => (
+                        <div className='userSearched' key={content.userId}>
+                            {content.isAdded ? 
+                            <input 
+                                className='alreadyAddedBtn' 
+                                type='button' 
+                                value='Add'
+                            ></input> 
+                            : 
+                            <input 
+                                className='addUserBtn'
+                                type='button' 
+                                value='Add' 
+                                onClick={e => {
+                                    AddNewMember(content.userId, e)
+                                    Search()
+                                }}
+                            ></input>
+                            }
+                            <Image className='imageSearched' cloudName={props.dataCld.cloudName} publicId={content.pfp} 
+                                onError={() =>{
+                                    return(<img className='imageSearched' src={defaultPfp}></img>)
+                                }}
+                            ></Image>
+                            <div className='usernameEmail'>
+                                <p className='usernameSearched'>{content.username}</p>
+                                <p className='emailSearched'>{content.email}</p>
+                            </div>
+                        </div>
+                    )):
+                        <div className='noUsersSearched'>No users found</div>
+                    }
+                </div>
             </div>
         </div>
-    
-    </>)
+    )
 }
 
 export default AddUser

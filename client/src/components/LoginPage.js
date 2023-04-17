@@ -1,5 +1,5 @@
 import '../styles/loginPage.css';
-import {useState, useLayoutEffect} from 'react';
+import {useState, useLayoutEffect, useEffect} from 'react';
 import React from 'react'
 import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
@@ -25,29 +25,34 @@ export default function LoginPage() {
     }
   },[]);
     
-    function Login(){
-      if(email && pwd){
-        const userData = {
-          email: email,
-          pwd: pwd,
-        }
-        socket.emit("request_login_info", userData);
+  function Login(){
+    if(email && pwd){
+      const userData = {
+        email: email,
+        pwd: pwd,
       }
+      socket.emit("request_login_info", userData);
     }
-      
-      socket.on("receive_login_info", (result) =>{
-        if(result.result === true){
-          setErrorMsg(false);
-          localStorage.setItem('email',email);
-          localStorage.setItem('pwd', pwd);
-          localStorage.setItem('username', result.username);
-          localStorage.setItem('userId', result.userId)
-          localStorage.setItem('pfp', result.pfp)
-          navigate("/MainPage");
-        }else{
-          setErrorMsg(true);
-        }
-      });
+  }
+  useEffect(() =>{
+    socket.off("receive_login_info").on("receive_login_info", async (result) =>{
+      if(result.result === true){
+        setErrorMsg(false);
+        localStorage.setItem('email',email);
+        localStorage.setItem('pwd', pwd);
+        localStorage.setItem('username', result.username);
+        localStorage.setItem('userId', result.userId);
+        localStorage.setItem('pfp', result.pfp);
+  
+        await socket.emit('join_room', {convId: result.userId})
+        await socket.emit('user_login', {userId: result.userId})
+        navigate("/MainPage");
+      }else{
+        setErrorMsg(true);
+      }
+    });
+  }, [socket])    
+  
 
     return (
     <div className='containerLoginPage'>
