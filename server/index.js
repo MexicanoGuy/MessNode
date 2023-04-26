@@ -23,7 +23,14 @@ io.on("connection", (socket) => {
   });
     console.log(`The ${socket.id} connected!`);
 });
-
+io.sockets.on("connection", (socket) =>{
+    socket.on("disconnect", (data) =>{
+        // HANDLE USER LOGOUT FUNCTION --- TODO IMPORTANT ---
+        console.log(`Dissconnected: ${socket, ' || ', socket.userId}`);
+        // const logoutEvent = require(`${eventsFolder}/user_logout`);
+        // logoutEvent(io, socket, pool);
+    });
+});
 io.on("disconnect", (socket) =>{
     console.log(`Socket ${socket} disconnected! `);
 })

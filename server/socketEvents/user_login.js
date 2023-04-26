@@ -1,42 +1,42 @@
 module.exports = (io, socket, pool) =>{
     socket.on('user_login', async (data) =>{
         var userId = data.userId;
-        var socketsInRoom = new Set([...io.sockets.adapter.rooms.get(userId)]);
-        var otherSockets = [...socketsInRoom].filter(socketId => socketId !== socket.id);
-        // console.log(`Current socket: ${socket.id}`)
-        // console.log(`All sockets: `, socketsInRoom)
-        // console.log(`Filtered sockets: '${otherSockets}'`)
-        if(!otherSockets || otherSockets == ''){
-            var statusData = await pool.query(`SELECT activity, customActivity FROM users WHERE userid=$1`,[userId]);
-            if(statusData.rowCount > 0){
-                var customActivity = statusData.rows[0].customactivity;
-                if(customActivity != null){
-                    var userStatus = 'Custom';
-                }else{
-                    var userStatus = 'Online';
-                }
-                var user = await pool.query(`UPDATE users SET activity = $1 WHERE userid=$2 RETURNING *`, [userStatus, userId]);
-                console.log(`Changed users ${userId} activity status to ${userStatus}`);
-
-                // ADVERTISE TO ACTIVE CONVS
-                var userConvs = await pool.query(`SELECT conversationId FROM conversation WHERE $1 = ANY (participants)`, [parseInt(userId)]);
-                
-                if(userConvs.rowCount > 0 && user.rowCount > 0){
-                    var userRow = user.rows[0];
-                    var memberData = {
-                        userId: userRow.userid, 
-                        username: userRow.username,
-                        pfp: userRow.pfp,
-                        activity: userRow.activity,
-                        customActivity: userRow.customActivity
+        var roomExists = io.sockets.adapter.rooms.has(userId);
+        if(roomExists){
+            var socketsInRoom = Array.from(io.sockets.adapter.rooms.get(userId));
+            var otherSockets = socketsInRoom.filter(socketId => socketId !== socket.id);
+            if(!otherSockets || otherSockets == '' || socketsInRoom == otherSockets){
+                var statusData = await pool.query(`SELECT activity, customActivity FROM users WHERE userid=$1`,[userId]);
+                if(statusData.rowCount > 0){
+                    var customActivity = statusData.rows[0].customactivity;
+                    if(customActivity != null){
+                        var userStatus = 'Custom';
+                    }else{
+                        var userStatus = 'Online';
                     }
-                    userConvs.rows.forEach(conv => {
-                        console.log("emitting to", conv.conversationid)
-                        io.to(conv.conversationid).emit("user_status_change", memberData);
-                    });
+                    var user = await pool.query(`UPDATE users SET activity = $1 WHERE userid=$2 RETURNING *`, [userStatus, userId]);
+                    console.log(`Changed users ${userId} activity status to ${userStatus}`);
+
+                    // ADVERTISE TO ACTIVE CONVS
+                    var userConvs = await pool.query(`SELECT conversationId FROM conversation WHERE $1 = ANY (participants)`, [parseInt(userId)]);
+                    
+                    if(userConvs.rowCount > 0 && user.rowCount > 0){
+                        var userRow = user.rows[0];
+                        var memberData = {
+                            userId: userRow.userid, 
+                            username: userRow.username,
+                            pfp: userRow.pfp,
+                            activity: userRow.activity,
+                            customActivity: userRow.customActivity
+                        }
+                        userConvs.rows.forEach(conv => {
+                            console.log("emitting to", conv.conversationid)
+                            io.to(conv.conversationid).emit("user_status_change", memberData);
+                        });
+                    }
                 }
+                pool.end;
             }
-            pool.end;
         }
 
     });
