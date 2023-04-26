@@ -34,8 +34,6 @@ export default function MainPage(props) {
     const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
     const [toggleCreateGroup, setToggleCreateGroup] = useState(false);
     
-    const [lastMsgName, setLastMsgName] = useState(null);
-    
     const msgContainerRef = useRef(null);
     const emojiCtRef = useRef(false);
     const [emojiActive, setEmojiActive] = useState(false);
@@ -56,22 +54,22 @@ export default function MainPage(props) {
     useLayoutEffect(() =>{
         fetchUserInfo();
     },[])
-    // useEffect(() =>{
-    //     window.addEventListener('unload', handleUnload);   
+    useEffect(() =>{
+        window.addEventListener('unload', handleUnload);   
         
-    //     return () =>{
-    //         window.removeEventListener('unload', handleUnload);
-    //     }        
-    // }, []);
+        return () =>{
+            window.removeEventListener('unload', handleUnload);
+        }        
+    }, []);
     
-    // const handleUnload = () =>{
-    //     const perfNavigation = performance.getEntriesByType('navigation')[0];
-    //     if(perfNavigation.type === 'reload'){
-    //         return;
-    //     }
-    //     socket.emit('user_logout', userData.userId);
-    //     localStorage.clear();
-    // }
+    const handleUnload = () =>{
+        const perfNavigation = performance.getEntriesByType('navigation')[0];
+        if(perfNavigation.type === 'reload'){
+            return;
+        }
+        socket.emit('user_logout', userData.userId);
+        localStorage.clear();
+    }
     useEffect(() =>{
         setToggleAddUser(false);
         setToggleLeaveGroup(false);
@@ -114,6 +112,9 @@ export default function MainPage(props) {
             fetchUserInfo();
             alert('You were kicked from the conversation!');
         });
+        // socket.on("disconnect", () =>{
+        //     socket.emit("user_logout", userData.userId);
+        // });
     }, [socket]);
 
     useEffect(() =>{
@@ -158,13 +159,13 @@ export default function MainPage(props) {
 
 
     const logout = async () =>{
-        console.log(userData)
         await socket.emit('user_logout', userData.userId);
         // localStorage.clear();
         // navigate('/Login');
     }
     const fetchUserInfo = () =>{
         socket.emit('get_user_data', userData);
+        socket.emit('join_room', userData.userId);
         socket.on('receive_user_data', (data) =>{
             if(data[0] === undefined){
 
@@ -197,7 +198,6 @@ export default function MainPage(props) {
     }
 
     const sendMessage = async () =>{
-        
         if (currentMessage !== "" && conversationIndex !== "") {
             const messageData = {
                 msgId: messageList.length+1,
