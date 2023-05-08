@@ -11,7 +11,7 @@ const socket = io.connect(
 
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename='/Login'>
         <App socket={socket}/>
     </BrowserRouter>
   </React.StrictMode>
