@@ -15,30 +15,48 @@ const io = new Server(server, {
 });
 const pool = require("./db");
 const eventsFolder = "./socketEvents";
+let socketCustomUserId = {};
+
 io.on("connection", (socket) => {
-  fs.readdirSync(eventsFolder).forEach((file) =>{
-    const event = require(`${eventsFolder}/${file}`);
-    // const eventName = file.split(".")[0];
-    event(io, socket, pool);
-  });
+    fs.readdirSync(eventsFolder).forEach((file) =>{
+        const event = require(`${eventsFolder}/${file}`);
+        event(io, socket, pool);
+    });
+    socket.on("assign_socket_userId", (data) =>{
+        if(!socketCustomUserId.hasOwnProperty(String(socket.id))){
+            socketCustomUserId[String(socket.id)] = { userId: data};            
+        }
+    });
     console.log(`The ${socket.id} connected!`);
 });
+
+let reconnectTimeout;
+let disconnected = {};
 io.sockets.on("connection", (socket) =>{
-    socket.on("disconnect", (data) =>{
-        // HANDLE USER LOGOUT FUNCTION --- TODO IMPORTANT ---
-        console.log(`Dissconnected: ${socket, ' || ', socket.userId}`);
-        // const logoutEvent = require(`${eventsFolder}/user_logout`);
-        // logoutEvent(io, socket, pool);
+    socket.on("disconnect", () =>{
+        if(!disconnected[socket.id]){
+            reconnectTimeout = setTimeout(() =>{
+                if(socketCustomUserId.hasOwnProperty(socket.id) && socketCustomUserId[socket.id].userId){
+                    var socketUserId = socketCustomUserId[socket.id].userId;
+                    const event = require(`${eventsFolder}/user_logout`);
+                    event(io, socket, pool, socketUserId);
+                }
+                delete socketCustomUserId[socket.id];
+                disconnected[socket.id] = true;
+            }, 5000);
+        }        
+    });
+    socket.on("connect", () =>{
+        if(!disconnected[socket.id]){
+            clearTimeout(reconnectTimeout);
+        }
+        disconnected[socket.id] = false;
     });
 });
+
 io.on("disconnect", (socket) =>{
-    console.log(`Socket ${socket} disconnected! `);
-})
+    console.log(`Socket ${socket} disconnected!`);
+});
 server.listen(3001, () => {
-    console.log("Server is on!")
-})
-
-
-
-
-// use socket io for isTyping function TODO \\\\\\\\\\\\\\\\\\
+    console.log("Server is on!");
+});

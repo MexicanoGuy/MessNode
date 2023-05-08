@@ -4,7 +4,6 @@ module.exports = (io, socket, pool) =>{
         const conversations = [];
         if(findUserConv.rowCount > 0){
           for(let i=0; i < findUserConv.rowCount; i++){
-            // console.log(findUserConv.rows[0])
             let obj1 = {
               convId: findUserConv.rows[i].conversationid,
               title: findUserConv.rows[i].conversationtitle,
