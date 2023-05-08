@@ -1,18 +1,22 @@
-.container{
-    width: 20%;
-    height: 250px;
-    background-color:#e5e4e7;
-    z-index: 9;
+.containerManageUser{
+    width: 15%;
+    background-color: var(--colorMid);
+    border-radius: 5px;
+    z-index: 3;
     position: absolute;
-    border-radius: 3%;
-    display: inline-grid;
-    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-#customizeUser{
-    font-size: 20px;
+.customizeUser{
+    font-size: 16px;
+    height: 40px;
+    width: 95%;
+    background-color: transparent;
     border: transparent;
-    width: auto;
+    border-radius: 12px;
+    margin: 2px;
 }
-#customizeUser:hover{
-    background-color: #e5e4e7;
+.customizeUser:hover{
+    background-color: var(--colorHover);
 }

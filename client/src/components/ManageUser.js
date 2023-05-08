@@ -47,28 +47,26 @@ function ManageUser(props) {
     props.toggle();
   }
   return (
-    <div className='container'>
-        <button id='customizeUser' className='dm'>Message</button>
-        <button id='customizeUser' className='viewProfile'>View profile</button>
-        <button id='customizeUser' className='block'>Block</button>
+    <div className='containerManageUser'>
+        <button className='customizeUser dmUser'>Message</button>
+        <button className='customizeUser viewProfile'>View profile</button>
+        <button className='customizeUser blockUser'>Block</button>
         {userIsAdmin ?
         <>
           {!memberIsAdmin ?
-          <button id='customizeUser' className='removeMember' onClick={RemoveMember}>Remove member</button> 
-          : <></>
+            <button className='customizeUser removeMember' onClick={RemoveMember}>Remove member</button> 
+          : null
           }
           {!memberIsAdmin ?
-            <button id='customizeUser' className='adminPerms' onClick={GiveAdmin}>Make admin</button>
-            : ''
+            <button className='customizeUser adminPerms' onClick={GiveAdmin}>Make admin</button>
+            : null
           }
-          {memberIsAdmin && !permData.userId == permData.memberId ?<>
-          
-          <button id='customizeUser' className='adminPerms' onClick={RemoveAdmin}>Remove admin</button>
-          </>
-          :<></>
+          {memberIsAdmin && !permData.userId == permData.memberId ?
+            <button className='customizeUser adminPerms' onClick={RemoveAdmin}>Remove admin</button>
+          : null
           }
         </>
-        : <></>}
+        : null}
     </div>
   )
 }

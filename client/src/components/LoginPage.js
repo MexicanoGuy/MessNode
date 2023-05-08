@@ -38,13 +38,13 @@ export default function LoginPage() {
     socket.off("receive_login_info").on("receive_login_info", async (result) =>{
       if(result.result === true){
         setErrorMsg(false);
-        localStorage.setItem('email',email);
+        localStorage.setItem('email', email);
         localStorage.setItem('pwd', pwd);
         localStorage.setItem('username', result.username);
         localStorage.setItem('userId', result.userId);
         localStorage.setItem('pfp', result.pfp);
-  
-        await socket.emit('join_room', {convId: result.userId})
+
+        await socket.emit('join_room', result.userId)
         await socket.emit('user_login', {userId: result.userId})
         navigate("/MainPage");
       }else{

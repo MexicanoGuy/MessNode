@@ -56,7 +56,7 @@ function AddUser(props) {
                                 className='alreadyAddedBtn' 
                                 type='button' 
                                 value='Add'
-                            ></input> 
+                            /> 
                             : 
                             <input 
                                 className='addUserBtn'
@@ -66,13 +66,13 @@ function AddUser(props) {
                                     AddNewMember(content.userId, e)
                                     Search()
                                 }}
-                            ></input>
+                            />
                             }
                             <Image className='imageSearched' cloudName={props.dataCld.cloudName} publicId={content.pfp} 
                                 onError={() =>{
-                                    return(<img className='imageSearched' src={defaultPfp}></img>)
+                                    return(<img className='imageSearched' src={defaultPfp}/>)
                                 }}
-                            ></Image>
+                            />
                             <div className='usernameEmail'>
                                 <p className='usernameSearched'>{content.username}</p>
                                 <p className='emailSearched'>{content.email}</p>

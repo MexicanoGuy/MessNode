@@ -7,19 +7,46 @@
 
     --userProfileHeight: 15vh;
 
-    --colorLight: #DDD8C4;
+    /* --colorLight: #DDD8C4;
     --colorDark: #50808E;
-    --colorBG: #f7f7f2;
+    --colorBG: #f7f7f2; */
+    --distractColor: #E5C1BD;
+    --linkColor: #6B9080;
 
-    --colorMain: #BFD7FF;
-    --colorMid: #9BB1FF;
-    --colorAccent: #788BFF;
+    --colorMain: #fafafa;
+    --colorMid: #dfe1e2;
+    --colorAccent: #e1e2e9;
     
-    --colorHover: #ABC4FF;
+    --colorHover: #efeff0;
 
-    --dateContent: '';
     --dateFont: open sans-serif;
 }
+.topSearch{
+    background-color: var(--colorAccent);
+}
+.chat, .bottomOptions{
+    background-color: var(--colorMain);
+}
+.leftPanel{
+    background-color: var(--colorMain);
+}
+.bottomPanel{
+    background-color: var(--colorMain);
+    border-left: 1px solid black;
+}
+.inputBar{
+    background-color: var(--colorMain);
+}
+.topInfo{
+    background-color: var(--colorMid);
+}
+.rightPanel{
+    background-color: var(--colorMain);
+}
+.convSettings{
+    background-color: var(--colorMid);
+}
+
 body{
     border: 0;
     margin: 0;
@@ -31,9 +58,16 @@ body{
     width: 100%;
     height: var(--deviceHeight);
 }
+.chat::-moz-selection{
+    color: var(--linkColor);
+    background-color: var(--distractColor);
+}
+.chat::selection{
+    color: var(--linkColor);
+    background-color: var(--distractColor);
+}
 .leftPanel{
     flex: 0.2;
-    background-color: var(--colorMain);
 }
 .bottomPanel{
     flex: 0.6;
@@ -146,6 +180,7 @@ body{
 .topInfoTitle{
     font-size: large;
 }
+
 .chat{
     display: flex;
     flex-direction: column;
@@ -184,7 +219,7 @@ body{
 
 .bottomOptions{
     height: var(--bottomOptionsHeight);
-    /* background-color: rgb(244, 219, 219); */
+    display: flex;
 }
 .inputBar{
     display: flex;
@@ -350,10 +385,6 @@ body{
 }
 
 
-/* .message:hover > .tooltipTimeCont{
-    display: block;
-} */
-
 .timeMessage{
     font-size: 12px;
 }
@@ -370,12 +401,11 @@ body{
     /* width: 100%; */
 }
 .convSettings{
-    height: (var(--topInfoHeight) + 10vh);
+    height: calc( var(--topInfoHeight) + 10vh);
     display: flex;
     flex-direction: column;
     align-items: center;
     border-bottom: 1px solid black;
-    margin-top: 20px;
 }
 .convSettings > .topInfoPic{
     width: 60px;
@@ -388,17 +418,46 @@ body{
 }
 .participants{
     width: 95%;
-    height: 50vh;
+    height: 70vh;
 }
 .member{
-    width: 90%;
+    border-radius: 16px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-left: 15px;
+    /* width: 90%; */
     height: 40px;
+}
+.member:hover{
+    background-color: var(--colorHover);
+}
+.imageAndStatus{
+    width: fit-content;
+    position: relative;
 }
 .memberImage{
     border-radius: 40%;
     float: left;
     width: 35px;
     height: 35px;
+}
+.Online, .Offline, .Custom{
+    position: absolute;
+    border-radius: 100%;
+    border: 1px solid black;
+    width: 8px;
+    height: 8px;
+    right: 0;
+    top: 0;
+}
+.Online{
+    background-color: rgb(0, 190, 0);
+}
+.Offline{
+    background-color: rgb(219, 2, 2);
+}
+.Custom{
+    background-color: purple;
 }
 .flexMember{
     width: 80%;
@@ -420,36 +479,32 @@ body{
     width: fit-content;
     height: fit-content;
     float: right;
+    text-align: center;
 }
+
+
 .addMemberContainer, .leaveGroupContainer{
     margin-top: 20px;
     border-radius: 10px;
     background-color: transparent;
     border: transparent;
-    display: flex;
     font-size: 22px;
-    width: 100%;
     height: 40px;
+    display: flex;
+    align-items: center;
+}
+.addMemberContainer:hover, .leaveGroupContainer:hover{
+    background-color: var(--colorHover);
+}
+.addMemberImg, .leaveGroupImg{
+    width: 25px;
+    height: 25px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.addMemberImg, .addMemberText{
+    float: left;
 }
 
-.addMemberContainer:hover, .leaveGroupContainer:hover{
-    background-color: aliceblue;
-}
-.addNewMemberBtn, .leaveGroup{
-    border-radius: 50px;
-    border: 0.5px solid black;
-    flex: 0.2;
-    width: 50px;
-}
-.leaveGroup{
-    -moz-transform: scale(-1, 1);
-    -webkit-transform: scale(-1, 1);
-    -o-transform: scale(-1, 1);
-    -ms-transform: scale(-1, 1);
-    transform: scale(-1, 1);
-}
-.addMemberA, .leaveGroupA{
-    flex: 0.8;
-    margin-right: -10px;
-}
+
 /* CHAT INFORMATION TAB */

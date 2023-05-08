@@ -9,6 +9,7 @@ import userIcon from '../img/user.png';
 import addNewIcon from '../img/addNew.png';
 import logoutIcon from '../img/logout.png';
 import emojiIcon from '../img/emoji.png';
+import addMemberImg from '../img/addPerson.png';
 import EmojiPicker from 'emoji-picker-react';
 
 import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
@@ -53,23 +54,8 @@ export default function MainPage(props) {
     }
     useLayoutEffect(() =>{
         fetchUserInfo();
-    },[])
-    useEffect(() =>{
-        window.addEventListener('unload', handleUnload);   
-        
-        return () =>{
-            window.removeEventListener('unload', handleUnload);
-        }        
-    }, []);
-    
-    const handleUnload = () =>{
-        const perfNavigation = performance.getEntriesByType('navigation')[0];
-        if(perfNavigation.type === 'reload'){
-            return;
-        }
-        socket.emit('user_logout', userData.userId);
-        localStorage.clear();
-    }
+    },[]);
+
     useEffect(() =>{
         setToggleAddUser(false);
         setToggleLeaveGroup(false);
@@ -79,7 +65,7 @@ export default function MainPage(props) {
                 convId: conversationIndex,
             }
             socket.emit('get_chat_data', convData);
-            socket.emit('join_room', convData);
+            socket.emit('join_room', convData.convId);
             socket.on('receive_chat_data', (data) =>{
                 setMessageList(data.msgList);
                 setMemberList(data.memberList);
@@ -112,9 +98,6 @@ export default function MainPage(props) {
             fetchUserInfo();
             alert('You were kicked from the conversation!');
         });
-        // socket.on("disconnect", () =>{
-        //     socket.emit("user_logout", userData.userId);
-        // });
     }, [socket]);
 
     useEffect(() =>{
@@ -126,7 +109,6 @@ export default function MainPage(props) {
             setMemberList(filteredList);
         });
         socket.off('user_status_change').on('user_status_change', (data) =>{
-            console.log('Member status changed!', data)
             const index = memberList.findIndex(member => member.userId === data.userId);
             if(index !== -1){
                 const updatedList = memberList.map((member, i) =>{
@@ -160,8 +142,8 @@ export default function MainPage(props) {
 
     const logout = async () =>{
         await socket.emit('user_logout', userData.userId);
-        // localStorage.clear();
-        // navigate('/Login');
+        localStorage.clear();
+        navigate('/Login');
     }
     const fetchUserInfo = () =>{
         socket.emit('get_user_data', userData);
@@ -170,6 +152,8 @@ export default function MainPage(props) {
             if(data[0] === undefined){
 
             }else{
+                // socket.data.userId = userData.userId
+                socket.emit('assign_socket_userId', userData.userId);
                 setConversationIndex(data[0].convId);
                 setSelectedConv(prevState => ({
                     ...prevState,
@@ -381,14 +365,14 @@ export default function MainPage(props) {
             
             <div className='bottomOptions'>
                 <div className='inputBar'>
-                    <input
+                    {/* <input
                         type='submit'
                         className='addAttachment'
                         value='&#x2b;'
                         onKeyDown={(event) => {
 
                         }}
-                    />
+                    /> */}
                     <input
                         type='text' 
                         className='inputMessage' 
@@ -399,15 +383,12 @@ export default function MainPage(props) {
                         }}
                         value={currentMessage}
                     />
-                    <div className='emojiContainer'>
+                    <div className='emojiContainer' onClick={() => setEmojiActive(!emojiActive)}>
                         {emojiActive === true ?
                         <div className='emojiPicker' ref={emojiCtRef}>
                             <EmojiPicker onEmojiClick={(e) => {setCurrentMessage(currentMessage + e.emoji)}}/>
-                        </div>
-                        : null}
-                        <div onClick={() => setEmojiActive(!emojiActive)}>
-                            <img src={emojiIcon} className='emojiIcon'></img>
-                        </div>
+                        </div> : null}
+                        <img src={emojiIcon} className='emojiIcon'></img>
                     </div>
                     
                     <input 
@@ -432,36 +413,56 @@ export default function MainPage(props) {
             </div>
             <div className='participants'>
                 {memberList.map((content) =>{
-                    return <div className='member' key={content.userId}>
-                        <Image className='memberImage' cloudName={dataCld.cloudName} publicId={content.pfp}></Image>
-                        <button className='manageUser' onClick={e =>{
+                    return <div className='member' 
+                                key={content.userId}
+                                onClick={e =>{
+                                    setToggleManageMember((oldId) =>{
+                                        return oldId == content.userId ? null : content.userId;
+                                    });
+                                } }
+                            >
+                        <div className='imageAndStatus'>
+                            <Image className='memberImage' cloudName={dataCld.cloudName} publicId={content.pfp}/>
+                            <div className={
+                                (content.activity == 'Online') ? 
+                                'Online' 
+                                : (content.activity === 'Offline' ? 'Offline' : 'Custom')
+                            }/>
+                        </div>
+                        {/* <button className='manageUser' onClick={e =>{
                             setToggleManageMember((oldId) =>{
                                 return oldId == content.userId ? null : content.userId;
                             });
-                        } }>...</button>
+                        } }>...</button> */}
                         <div className='flexMember'>
                             <p className='memberUsername'>{content.username}</p>
                             <p className='memberStatus'>{content.activity}</p>
                         </div>
-                        {toggleManageMember == content.userId  ? <ManageUser toggle={manageMemberToggle} memberId={content.userId} convId={conversationIndex}></ManageUser>  : '' }
-                        
+                        {toggleManageMember == content.userId  ? 
+                            <ManageUser toggle={manageMemberToggle} memberId={content.userId} convId={conversationIndex}/>  : null }
                     </div>
                 })}
             { conversationIndex !== 0 
             ?
-                <><button className='addMemberContainer' onClick={e =>{
-                    if(toggleAddUser == true) setToggleAddUser(false)
-                    else setToggleAddUser(true);
-                }}>
-                <div className='addNewMemberBtn'>&#10010;</div> <a className='addMemberA'>Add new user</a> 
-                </button>
-                <button className='leaveGroupContainer' onClick={e =>{
-                    if(toggleLeaveGroup == true) setToggleLeaveGroup(false)
-                    else setToggleLeaveGroup(true);
-                }}>
-                    <div className='leaveGroup'>&#10149;</div> <a className='leaveGroupA'>Leave group</a> 
-                </button> </>
-            : <></>}
+                <div>
+                    <div className='addMemberContainer' onClick={e =>{
+                            if(toggleAddUser == true) setToggleAddUser(false)
+                            else setToggleAddUser(true);
+                        }}>
+                        <img className='addMemberImg' 
+                            src={addMemberImg}
+                        />
+                        <p className='addMemberText'>Add new user</p>
+                    </div>
+                    <div className='leaveGroupContainer' onClick={e =>{
+                        if(toggleLeaveGroup == true) setToggleLeaveGroup(false)
+                        else setToggleLeaveGroup(true);
+                    }}>
+                        <img className='leaveGroupImg' src={logoutIcon}/>
+                        <p className='leaveGroupText'>Leave group</p>
+                    </div> 
+                </div>
+            : null}
             </div>
         </div>
     </div>
