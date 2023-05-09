@@ -1,4 +1,4 @@
-import {React, useState, useEffect, useLayoutEffect} from 'react'
+import React, {useState } from 'react';
 import '../styles/addUser.css'; 
 import {Image} from 'cloudinary-react';
 import defaultPfp from '../img/pfpDefault.png';
@@ -70,7 +70,7 @@ function AddUser(props) {
                             }
                             <Image className='imageSearched' cloudName={props.dataCld.cloudName} publicId={content.pfp} 
                                 onError={() =>{
-                                    return(<img className='imageSearched' src={defaultPfp}/>)
+                                    return(<img className='imageSearched' src={defaultPfp} alt='no image'/>)
                                 }}
                             />
                             <div className='usernameEmail'>

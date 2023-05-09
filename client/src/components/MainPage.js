@@ -1,18 +1,18 @@
-import React, { Component, useLayoutEffect, useEffect, useState, useRef } from 'react'
+import React, {useLayoutEffect, useEffect, useState, useRef } from 'react'
 import '../styles/mainPage.css';
 import ManageUser from './ManageUser';
 import AddUser from './AddUser';
-import {NavLink, useNavigate } from 'react-router-dom';
+import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 import CreateGroup from './CreateGroup';
-import userIcon from '../img/user.png';
+// import userIcon from '../img/user.png';
 import addNewIcon from '../img/addNew.png';
 import logoutIcon from '../img/logout.png';
 import emojiIcon from '../img/emoji.png';
 import addMemberImg from '../img/addPerson.png';
 import EmojiPicker from 'emoji-picker-react';
 
-import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
+import {Image} from 'cloudinary-react';
 
 export default function MainPage(props) {
     const socket = props.socket;
@@ -25,7 +25,6 @@ export default function MainPage(props) {
     });
 
     const [messageList, setMessageList] = useState([]);
-    const [guiMessageList, setguiMessageList] = useState([]);
     const [currentMessage, setCurrentMessage] = useState('');
 
     const [memberList, setMemberList] = useState([]);

@@ -1,8 +1,7 @@
 import React from 'react'
 import '../styles/createGroup.css';
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 import ImgDrop from './dropzone/imgDrop';
 import defaultImg from '../img/conv.png';
 

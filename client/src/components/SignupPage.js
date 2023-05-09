@@ -1,9 +1,8 @@
 import React from 'react'
 import '../styles/signupPage.css';
-import {useRef, useState, useEffect} from 'react';
-import {Link, useParams, useLocation, useNavigate} from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
-import {CloudinaryContext, Image, ImageUploader} from 'cloudinary-react';
 import ImgDrop from './dropzone/imgDrop';
 
 const socket = io.connect("localhost:3001");
