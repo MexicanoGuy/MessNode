@@ -41,7 +41,7 @@ io.sockets.on("connection", (socket) =>{
                     const event = require(`${eventsFolder}/user_logout`);
                     event(io, socket, pool, socketUserId);
                 }
-                delete socketCustomUserId[socket.id];
+//                 delete socketCustomUserId[socket.id];
                 disconnected[socket.id] = true;
             }, 5000);
         }        
