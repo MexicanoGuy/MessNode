@@ -6,7 +6,7 @@ import {BrowserRouter} from 'react-router-dom';
 import io from 'socket.io-client';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 const socket = io.connect(
-  "localhost:3001",
+  "https://messnode-backend.onrender.com:3001",
 );
 
 root.render(
