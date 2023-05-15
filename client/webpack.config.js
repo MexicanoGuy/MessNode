@@ -47,7 +47,9 @@ module.exports = {
     ],
   },
   plugins: [
-    new Dotenv(),
+    new Dotenv({
+        systemvars: true
+    }),
     new CompressionPlugin(), // Enable compression for the bundled file
   ],
 };
