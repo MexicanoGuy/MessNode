@@ -5,7 +5,6 @@ import AddUser from './AddUser';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 import CreateGroup from './CreateGroup';
-// import userIcon from '../img/user.png';
 import addNewIcon from '../img/addNew.png';
 import logoutIcon from '../img/logout.png';
 import emojiIcon from '../img/emoji.png';

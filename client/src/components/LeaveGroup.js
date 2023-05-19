@@ -1,7 +1,7 @@
 import React from 'react'
 import '../styles/leaveGroup.css'; 
 import io from 'socket.io-client';
-const socket = io.connect("localhost:3001");
+const socket = io.connect("https://messnode-backend.onrender.com:3001");
 
 export default function LeaveGroup(props) {
     var convData = {

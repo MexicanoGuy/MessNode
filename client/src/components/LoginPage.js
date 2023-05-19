@@ -3,7 +3,7 @@ import {useState, useLayoutEffect, useEffect} from 'react';
 import React from 'react'
 import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
-const socket = io.connect("localhost:3001");
+const socket = io.connect("https://messnode-backend.onrender.com:3001");
 
 export default function LoginPage() {
   

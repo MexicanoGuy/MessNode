@@ -2,7 +2,7 @@ import React from 'react'
 import '../styles/manageUser.css';
 import { useState, useEffect, useLayoutEffect } from 'react';
 import { io } from 'socket.io-client';
-const socket = io.connect("localhost:3001");
+const socket = io.connect("https://messnode-backend.onrender.com:3001");
 
 function ManageUser(props) {
   const [userIsAdmin, setUserIsAdmin] = useState(false);

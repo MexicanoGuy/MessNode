@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import ImgDrop from './dropzone/imgDrop';
 import defaultImg from '../img/conv.png';
 
-const socket = io.connect("localhost:3001");
+const socket = io.connect("https://messnode-backend.onrender.com:3001");
 
 function CreateGroup(props) {
     const dataCld = props.dataCld;

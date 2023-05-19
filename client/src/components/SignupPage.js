@@ -5,7 +5,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import ImgDrop from './dropzone/imgDrop';
 
-const socket = io.connect("localhost:3001");
+const socket = io.connect("https://messnode-backend.onrender.com:3001");
 
 function SignupPage() {
   const navigate = useNavigate();

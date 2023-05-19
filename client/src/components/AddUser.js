@@ -3,7 +3,7 @@ import '../styles/addUser.css';
 import {Image} from 'cloudinary-react';
 import defaultPfp from '../img/pfpDefault.png';
 import io from 'socket.io-client';
-const socket = io.connect("localhost:3001");
+const socket = io.connect("https://messnode-backend.onrender.com:3001");
 
 function AddUser(props) {
     const [searchValue, setSearchValue] = useState('');
