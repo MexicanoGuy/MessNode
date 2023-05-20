@@ -58,5 +58,5 @@ io.on("disconnect", (socket) =>{
     console.log(`Socket ${socket} disconnected!`);
 });
 server.listen(3001, () => {
-    console.log("Server is on!");
+    console.log(`Server ${server.address().port} is on!`);
 });
