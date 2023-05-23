@@ -9,7 +9,8 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
-        origin: "https://messnode.netlify.app:3000",
+        // origin: "https://messnode.netlify.app:3000",
+        origin: "https://messnode.netlify.app",
         methods: ["GET", "POST"],
     },
 });
