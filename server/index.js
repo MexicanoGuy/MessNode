@@ -4,7 +4,7 @@ const http = require("http");
 const {Server} = require('socket.io');
 const fs = require('fs');
 const cors = require("cors");
-app.options('*', cors());
+app.use(cors());
 
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -57,6 +57,10 @@ io.sockets.on("connection", (socket) =>{
 io.on("disconnect", (socket) =>{
     console.log(`Socket ${socket} disconnected!`);
 });
-server.listen(3001, () => {
+app.get("/", (req, res) =>{
+    res.send("Hello to the backend server!");
+});
+app.get('/favicon.ico', (req, res) => res.status(204));
+server.listen(3001, () =>{
     console.log(`Server ${server.address().port} is on!`);
 });
