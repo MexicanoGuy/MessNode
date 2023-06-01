@@ -9,6 +9,7 @@ app.use(cors());
 const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
+        path: '/socket.io',
         origin: "https://messnode.netlify.app",
 //         origin: "*",
         methods: ["GET", "POST"],
