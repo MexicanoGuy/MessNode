@@ -3,7 +3,7 @@ import {useState, useLayoutEffect, useEffect} from 'react';
 import React from 'react'
 import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
-const socket = io.connect("https://messnode-backend.onrender.com:3001");
+const socket = io.connect(process.env.REACT_APP_BACKEND_SERVER_URL);
 
 export default function LoginPage() {
   
@@ -12,10 +12,8 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState(false);
   const navigate = useNavigate();
   
-  
   useLayoutEffect(() =>{
     // <LoadingPage/>
-
     if(localStorage.getItem('email')){
       const userData = {
         email: localStorage.getItem('email'),

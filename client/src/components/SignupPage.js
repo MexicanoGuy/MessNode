@@ -5,7 +5,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import ImgDrop from './dropzone/imgDrop';
 
-const socket = io.connect("https://messnode-backend.onrender.com:3001");
+const socket = io.connect(process.env.REACT_APP_BACKEND_SERVER_URL);
 
 function SignupPage() {
   const navigate = useNavigate();
@@ -52,10 +52,10 @@ function SignupPage() {
   }
 
   useEffect(() =>{
-    if(password2 == password1 && password2 != '' && password2 !=''){
+    if(password2 === password1 && password2 != '' && password2 !=''){
       setPasswordMatch(true)
     }else setPasswordMatch(false);
-  },[password2])
+  },[password1, password2]);
   useEffect(() =>{
     socket.on("account_creation_status", (data) =>{
       if(data.new==false){
@@ -69,13 +69,15 @@ function SignupPage() {
     setFileData(data);
     setFile(fileR);
   };
-  const CreateNewAccount = async() =>{
+  const CreateNewAccount = () =>{
     if(emailValid && usernameValid && file && passwordValid){
+    console.log('test click')
       handleUpload();
     }
   }
   useEffect(() =>{
-    if(emailValid && usernameValid && file && passwordValid){
+    if(emailValid && usernameValid && passwordValid){
+      console.log('inside valids')
       const accountData = {
         id: socket.id,
         email: emailAddress,
@@ -87,13 +89,14 @@ function SignupPage() {
     }
   },[pfpId]);
   useEffect(() =>{
-    socket.off('account_status').on('account_status', (data) =>{
+    socket.on('account_status', (data) =>{
+      console.log('status')
       if(data === true){
         setAccountCreated(true);
         alert('Account successfully created!');
         navigate('/Login');
       }
-      else if(data === false){
+      else{
         setAccountCreated(false);
       }
     });
@@ -125,32 +128,35 @@ function SignupPage() {
           }
         }} 
       />
-      {usernameValid || username =='' ? null : <p className='errorTextRegister'>Your username is not valid</p>}
+      {usernameValid || username == '' ? null : <p className='errorTextRegister'>Your username is not valid</p>}
 
       <input 
         type='password'
         placeholder='Password...' 
         className='passwordInputRegister'
+        pattern="(?=.*[A-Z])(?=.*[\W_]).{8,20}"
         onChange={(event) =>{
-          var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,20}$/;
+          var passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{8,20}$/;
           setPasswordValid(passwordRegex.test(event.target.value));
+          console.log(passwordValid)
           if(passwordValid){
             setPassword1(event.target.value);
           }
         }}
-      ></input>
-      {passwordValid || password1=='' ? null : <ul className='errorTextRegister'>Password must contain: <br/>8-20 letter long, one a symbol, upper and lower case letters and a one number</ul>}
+      />
+      {passwordValid || password1 =='' ? null : <ul className='errorTextRegister'>Password must contain: <br/>8-20 letter long, one a symbol, upper and lower case letters and a one number</ul>}
       <input 
         type='password' 
         placeholder='Confirm password...' 
         className='passwordInputRegister'
+        pattern="(?=.*[A-Z])(?=.*[\W_]).{8,20}"
         onChange={(event) =>{ 
           setPassword2(event.target.value);
         }}
       />
       {password1 !=='' && password2 !=='' ? <p className='errorTextRegister'> Password does {passwordMatch ? 'match' : 'not match'} </p> : null}   
       
-      {file ? <img className='pfpRegister' src={file} alt='no image'></img> : null}
+      {file ? <img className='pfpRegister' src={file} alt='no image'/> : null}
       <ImgDrop onDrop={onDrop}/>
 
       <input
@@ -158,7 +164,7 @@ function SignupPage() {
         className='registerInput'
         onClick={CreateNewAccount}
         value='Sign up'
-      ></input>
+      />
       {accountCreated === false ? <p className='errorTextRegister'>Account with given email already exists</p> : null}
     <hr className='lineBreakRegister'></hr>
     <p><Link to={"/Login"} className='linkRegister'>Have an account? Click here!</Link> </p>
