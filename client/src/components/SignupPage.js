@@ -71,13 +71,11 @@ function SignupPage() {
   };
   const CreateNewAccount = () =>{
     if(emailValid && usernameValid && file && passwordValid){
-    console.log('test click')
       handleUpload();
     }
   }
   useEffect(() =>{
     if(emailValid && usernameValid && passwordValid){
-      console.log('inside valids')
       const accountData = {
         id: socket.id,
         email: emailAddress,
@@ -90,7 +88,6 @@ function SignupPage() {
   },[pfpId]);
   useEffect(() =>{
     socket.on('account_status', (data) =>{
-      console.log('status')
       if(data === true){
         setAccountCreated(true);
         alert('Account successfully created!');
@@ -138,7 +135,6 @@ function SignupPage() {
         onChange={(event) =>{
           var passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{8,20}$/;
           setPasswordValid(passwordRegex.test(event.target.value));
-          console.log(passwordValid)
           if(passwordValid){
             setPassword1(event.target.value);
           }
