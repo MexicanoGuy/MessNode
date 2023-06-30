@@ -78,7 +78,15 @@ Login Page
 
 App Page
 ![No screenshot](/client/src/img/screenshot2.png?raw=true "Image Error")
+## Testing Live
+
+App is being hosted on vercel: https://mess-node.vercel.app
 ## Author
 
 - [@MexicanoGuy](https://www.github.com/MexicanoGuy)
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
 
