@@ -11,6 +11,7 @@ Purpose of this project was to learn new libraries such as Reactjs and achieve r
 | Cloudinary | Image Database/Storing images(chats, user Pfp) |
 | EmojiPicker | Custom emoji picking component |
 | WebPack | Simple webpack configuration |
+| Express | Retrieving data on backend server from sockets |
 | Socket.io | Handling app events |
 | Postgresql | Relational DB for storing user, chat data |
 | Dotenv | Required to store sensitive credentials(DB, APIs) |
