@@ -2,7 +2,7 @@
 # MessNode
 
 A fullstack messenger-like app using Reactjs and Nodejs backend.
-Purpose of this project was to learn new libraries such as Reactjs and achieve realtime data handling.## Color Reference
+Purpose of this project was to learn new libraries such as Reactjs and achieve realtime data handling.
 
 | Feature             | Description                                                                |
 | ----------------- | ------------------------------------------------------------------ |
