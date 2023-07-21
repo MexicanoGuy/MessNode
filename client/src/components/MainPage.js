@@ -1,24 +1,31 @@
 import React, {useLayoutEffect, useEffect, useState, useRef } from 'react'
 import '../styles/mainPage.css';
+import '../styles/mainPageMobile.css';
 import ManageUser from './ManageUser';
 import AddUser from './AddUser';
+import SettingsPage from './SettingsPage';
 import {useNavigate } from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 import CreateGroup from './CreateGroup';
 import addNewIcon from '../img/addNew.png';
 import logoutIcon from '../img/logout.png';
+import convIcon from '../img/conv.png';
 import emojiIcon from '../img/emoji.png';
-import addMemberImg from '../img/addPerson.png';
+import userIcon from '../img/pfpDefault.png';
+import addMemberIcon from '../img/addPerson.png';
+import sendMessageIcon from '../img/sendMessage.png';
+import settingsIcon from '../img/settingsIcon.png';
 import EmojiPicker from 'emoji-picker-react';
-
 import {Image} from 'cloudinary-react';
+import AttachmentDrop from './dropzone/attachmentDrop';
 
 export default function MainPage(props) {
     const socket = props.socket;
-    
+    var isDesktop = props.isDesktop;
     const [conversationList, setConversationList] = useState([]);
     const [conversationIndex, setConversationIndex] = useState(0);
     const [selectedConv, setSelectedConv] = useState({
+        convid: 0,
         title: 'Conversation',
         pic: 'conv_cga93k.jpg',
     });
@@ -32,10 +39,17 @@ export default function MainPage(props) {
     const [toggleAddUser, setToggleAddUser] = useState(false);
     const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
     const [toggleCreateGroup, setToggleCreateGroup] = useState(false);
+    const [settingsToggle, setSettingsToggle] = useState(false);
     
     const msgContainerRef = useRef(null);
     const emojiCtRef = useRef(false);
     const [emojiActive, setEmojiActive] = useState(false);
+
+    const [searchConv, setSearchConv] = useState('');
+    const [searchActivated, setSearchActivated] = useState(false);
+
+    const [fileBottomId, setFileBottomId] = useState(null);
+    const [fileBottom, setFileBottom] = useState(null);
 
     let navigate = useNavigate()
     const dataCld = {
@@ -55,10 +69,58 @@ export default function MainPage(props) {
     },[]);
 
     useEffect(() =>{
+        const handleUpload = () =>{
+            if(fileBottom !== null){
+                const formData = new FormData();
+                formData.append('file', fileBottom);
+                formData.append('upload_preset', dataCld.uploadPreset);
+                formData.append('cloud_name', dataCld.cloudName);
+
+                fetch(`https://api.cloudinary.com/v1_1/${dataCld.cloudName}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    setFileBottomId(data.public_id);
+                }).catch((err) =>{
+                    // console.log(err)
+                });
+            }
+        }
+        handleUpload()
+    }, [fileBottom]);
+    useEffect(() =>{
+        if(fileBottomId !== null){
+            const messageData = {
+                msgId: messageList.length+1,
+                authorName: userData.username,
+                authorId: userData.userId,
+                authorPfp: userData.pfp,
+                content: fileBottomId,
+                messageType: 'image',
+                timestamp: new Date().toISOString(),
+                convId: conversationIndex,
+                
+            };
+            socket.emit('send_message', messageData);
+    
+            setMessageList((list) => [...list, messageData]);
+            setCurrentMessage("");
+            setFileBottom(null);
+            setFileBottomId(null);
+        }
+    }, [fileBottomId]);
+    
+    const onDrop = async(data, fileR) =>{
+        setFileBottom(fileR);
+    };
+
+    useEffect(() =>{
         setToggleAddUser(false);
         setToggleLeaveGroup(false);
         setToggleManageMember(false);
-        if(conversationIndex !== 0){
+        if(conversationIndex !== 0 && !searchActivated){
             var convData = {
                 convId: conversationIndex,
             }
@@ -80,7 +142,6 @@ export default function MainPage(props) {
             if(emojiCtRef.current && !emojiCtRef.current.contains(e.target)){
                 setEmojiActive(false);
             }
-            
         }
         document.addEventListener('mousedown', handleClickOutside);
 
@@ -134,9 +195,7 @@ export default function MainPage(props) {
         socket.off('receive_message').on('receive_message', (data) =>{
             setMessageList((list) => [...list, data]);
         });
-        
     }, [messageList]);
-
 
     const logout = async () =>{
         await socket.emit('user_logout', userData.userId);
@@ -150,7 +209,6 @@ export default function MainPage(props) {
             if(data[0] === undefined){
 
             }else{
-                // socket.data.userId = userData.userId
                 socket.emit('assign_socket_userId', userData.userId);
                 setConversationIndex(data[0].convId);
                 setSelectedConv(prevState => ({
@@ -186,6 +244,7 @@ export default function MainPage(props) {
                 authorName: userData.username,
                 authorId: userData.userId,
                 authorPfp: userData.pfp,
+                messageType: 'text',
                 content: currentMessage,
                 timestamp: new Date().toISOString(),
                 convId: conversationIndex,
@@ -196,8 +255,7 @@ export default function MainPage(props) {
             setMessageList((list) => [...list, messageData])
             setCurrentMessage("");
         }
-    };
-
+    }
     const handleConvChange = (e, content) =>{
         setConversationIndex(content.convId);
         setSelectedConv(prevState => ({
@@ -206,26 +264,44 @@ export default function MainPage(props) {
             pic: content.pic,
         }));
     }
-    const convSettings = (e) =>{
-
-    }
-    const addUserToggle = () =>{
-        setToggleAddUser(false);
-    }
-    const leaveGroupToggle = () =>{
-        setToggleLeaveGroup(false);
-    }
-    const manageMemberToggle = () =>{
-        setToggleManageMember(false);
-    }
-    const createGroupToggle = () =>{
-        if(toggleCreateGroup == false){
-           setToggleCreateGroup(true);
+    const handleSearchConv = (e) =>{
+        if(searchConv !== ''){
+            var searchData = {
+                userId: userData.userId,
+                searchConv: searchConv
+            }
+            socket.emit('search_for_convs', searchData);
+            socket.off('receive_convs').on('receive_convs', (data) =>{
+                if(data !== null){
+                    setConversationList(data);
+                    setSelectedConv({
+                        title: data[0].title,
+                        pic: data[0].pic
+                    });
+                    setConversationIndex(data[0].convId);
+                }
+            });
+        }else{
+            fetchUserInfo();
         }
-        else setToggleCreateGroup(false);
     }
+    // const addUserToggle = () =>{
+    //     setToggleAddUser(false);
+    // }
+    // const leaveGroupToggle = () =>{
+    //     setToggleLeaveGroup(false);
+    // }
+    // const manageMemberToggle = () =>{
+    //     setToggleManageMember(false);
+    // }
+    // const createGroupToggle = () =>{
+    //     if(toggleCreateGroup === false){
+    //        setToggleCreateGroup(!toggle);
+    //     }
+    //     else setToggleCreateGroup(false);
+    // }
     const renderMessages = () =>{
-        if(messageList == null){
+        if(messageList === null){
             return null;
         }else{
             return messageList.map((message, index) =>{
@@ -237,7 +313,7 @@ export default function MainPage(props) {
                 var clName =  loggedUserIsMsgAuthor ? "you" : "other";
 
                 if(index === 0){
-                    var sortByTime = false;
+                    // var sortByTime = false;
                     var diffDay = true;
                     var prevAuthorId = null;
                 }else{
@@ -246,7 +322,7 @@ export default function MainPage(props) {
                     var dateDiff = dateCurrentMsg - datePrevMsg;
                     var inMinutes = Math.floor(dateDiff / 60_000);
 
-                    var sortByTime = inMinutes >= 5 ? true : false;
+                    // var sortByTime = inMinutes >= 5 ? true : false;
                     var diffDay = inMinutes >= (60 * 14) ? true : false;
 
                     var prevAuthorId = parseInt(prevMsg.authorId);
@@ -255,125 +331,179 @@ export default function MainPage(props) {
                 var hourFormat = hoursCurrent + ":" + minutesCurrent;
                 
                 const nextMsg = index+1 < messageList.length ? messageList[index+1] : message;
-                var messageClass = "message " + (parseInt(message.authorId) !== parseInt(nextMsg.authorId) ? "spaceBetween" : "");
-                
+                var messageType = message.messageType === 'image' ? 'image' : 'text';
+                var messageClass = 
+                    isDesktop ? "message" : "messageRes"
+                    + (parseInt(message.authorId) !== parseInt(nextMsg.authorId) ? " spaceBetween" : "");
+
                 return(
-                    <div className='messageChain' key={message.msgId}>
+                    <div className={isDesktop ? 'messageChain' : 'messageChainRes'} key={message.msgId}>
                         { diffDay  ?
-                            <p className="diffDay" key={dateFormatDm}>{dateFormatDm}</p>
+                            <p className={isDesktop ? 'diffDay' : 'diffDayRes' } key={dateFormatDm}>{dateFormatDm}</p>
                         :
                             null
                         }
                         <div className={clName}>
                             {(!loggedUserIsMsgAuthor && prevAuthorId !== message.authorId)  ?
                             // || (diffDay && !loggedUserIsMsgAuthor)
-                            <>
-                                <div className='author'>
-                                    <div className='tooltipPfp' data-tooltip={message.authorName}>
-                                    <Image className='msgImg' cloudName={dataCld.cloudName} publicId={message.authorPfp}></Image>
+                                <div className={isDesktop ? 'author' : 'authorRes'}>
+                                    <div className={isDesktop ? 'tooltipPfp' : 'tooltipPfpRes'} data-tooltip={message.authorName}>
+                                        <Image 
+                                            className={isDesktop ? 'msgImg' : 'msgImgRes'} 
+                                            cloudName={dataCld.cloudName} 
+                                            publicId={message.authorPfp}
+                                        />
                                     </div>
                                 </div>
-                            </>
                             : 
-                                <div className='emptySpace'/>
+                                <div className={isDesktop ? 'emptySpace' : 'emptySpaceRes'}/>
                             }
-                            
-                            <div className={messageClass} key={message.msgId}>
-                                <div className="message-content">
-                                    <div className='tooltipTime' data-tooltip={hourFormat}>{message.content}</div>
-                                </div>
+                            {messageType === 'text' ?
+                                <div className={messageClass} key={message.msgId}>
+                                    <div className={isDesktop ? 'message-content' : 'message-contentRes'}>
+                                        <div className={isDesktop ? 'tooltipTime' : 'tooltipTimeRes'} 
+                                            data-tooltip={hourFormat}>{message.content}
+                                        </div>
+                                    </div>
                                 {/* {(sortByTime && (prevAuthorId === parseInt(message.authorId))) ?
                                     <span className="tooltipTime" data-tooltip={hourFormat}></span>
                                 : null
                                     <p className="timeMessage">{hourFormat}</p>
                                 } */}
-                            </div>
+                                </div>
+                            :
+                                <div className={messageType}>
+                                    <Image 
+                                        className={(isDesktop ? 'chatImg ' : 'chatImgRes ') + clName} 
+                                        cloudName={dataCld.cloudName} 
+                                        publicId={message.content}
+                                    />
+                                </div>
+                            }
+                            
                         </div>
                     </div>
                 );
             }, []);
         }
     }
+    
     return (
     <>
-    {toggleAddUser && !toggleLeaveGroup && !toggleLeaveGroup ?  
-        <AddUser toggle={addUserToggle} memberList={memberList} convId={conversationIndex} roomId={conversationIndex} dataCld={dataCld}></AddUser> 
+    {toggleAddUser && !toggleLeaveGroup && !toggleLeaveGroup && !settingsToggle ?  
+        <AddUser toggle={setToggleAddUser(!toggleAddUser)} memberList={memberList} convId={conversationIndex} roomId={conversationIndex} dataCld={dataCld}/> 
             : null}
-    {toggleLeaveGroup && !toggleAddUser && !toggleCreateGroup ? 
-        <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}></LeaveGroup> 
+    {toggleLeaveGroup && !toggleAddUser && !toggleCreateGroup && !settingsToggle ?
+        <LeaveGroup toggle={setToggleLeaveGroup(!toggleLeaveGroup)} convId={conversationIndex} userId={userData.userId}/> 
             : null}
-    {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser ? 
-        <CreateGroup toggle={createGroupToggle} userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}> </CreateGroup> 
+    {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser && !settingsToggle ?
+        <CreateGroup toggle={setToggleCreateGroup(!toggleCreateGroup)} userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}/> 
             : null}
-    
-    <div className='containerConversationPage'>
-        <div className='leftPanel'>
-            <div className='topSearch'>
+    {settingsToggle && !toggleAddUser && !toggleCreateGroup && !toggleManageMember ?
+        <SettingsPage toggle={setSettingsToggle(!settingsToggle)}/> : null
+    }
+    <div className={ isDesktop ? 'containerConversationPage' : 'containerConversationPageRes'}>
+        <div className={ isDesktop ? 'leftPanel' : 'leftPanelRes'}>
+            <div className={ isDesktop ? 'topSearch' : 'topSearchRes'}>
                 <input
-                    className='searchInConv'
+                    className={ isDesktop ? 'searchInConv' : 'searchInConvRes'}
                     placeholder='search...'
+                    onChange={e => { setSearchConv(e.target.value) }}
+                    onBlur={e => handleSearchConv(e)}
                 />        
                 <img
                     src={addNewIcon}
-                    className='addNewConv'
-                    onClick={e => {
-                        createGroupToggle();
-                    }}
+                    className={ isDesktop ? 'addNewConv' : 'addNewConvRes'}
+                    // onClick={e => {
+                    //     setToggleCreateGroup(!toggleCreateGroup);
+                    // }}
                 />
             </div>
-            <div className='chatList'>
+            <div className={ isDesktop ? 'chatList' : 'chatListRes'}>
             {conversationList.map((content) =>(
                 <div 
                     className={
                         conversationIndex === content.convId
-                            ? 'conversationSelected'
-                            : 'conversation'
+                            ? isDesktop ? 'conversationSelected' : 'conversationSelectedRes'
+                            : isDesktop ? 'conversation' : 'conversationRes'
                     }
                     key={content.convId}
                     meta-index={content.convId}
                     onClick={e => handleConvChange(e, content)}
                 >
-                    <Image className='convImg' cloudName={dataCld.cloudName} publicId={content.pic}/>
-                    <p className='convTitle'>{content.title}</p>
+                    {content.pic !== null ?
+                        <Image
+                            className={isDesktop ? 'convImg' : 'convImgRes'} 
+                            cloudName={dataCld.cloudName}
+                            publicId={content.pic}/>
+                        :
+                        <img src={convIcon} className={ isDesktop ? 'convImg' : 'convImgRes'} />
+                    }
+                    <p className={isDesktop ? 'convTitle' : 'convTitleRes'}>{content.title}</p>
                 </div>
             ))}
             </div>
-            <div className='userProfile'>
-                <Image className='userProfileMain' cloudName={dataCld.cloudName} publicId={userData.pfp}/>
-                <p className='userProfileUsername'>{userData.username}</p>
-                <img src={logoutIcon} className='logoutIcon' onClick={logout}/>
+            <div className={isDesktop ? 'userProfile' : 'userProfileRes'}>
+                {userData.pfp !== null ?
+                    <Image 
+                        className={isDesktop ? 'userProfileMain' : 'userProfileMainRes'} 
+                        cloudName={dataCld.cloudName} 
+                        publicId={userData.pfp}
+                    />
+                    :
+                    <img src={userIcon} className={isDesktop ? 'userProfileMain' : 'userProfileMainRes'}/>
+                }
+                
+                <p className={isDesktop ? 'userProfileUsername' : 'userProfileUsernameRes'}>
+                    {userData.username}
+                </p>
+                <img src={settingsIcon} className={ isDesktop ? 'settingsIcon' : 'settingsIconRes'} 
+                    onClick={e => setSettingsToggle(!settingsToggle)}
+                />
+                <img src={logoutIcon} className={ isDesktop ? 'logoutIcon' : 'logoutIconRes'} 
+                    onClick={logout}/>
             </div>
         </div>
-        <div className='bottomPanel'>
-            <div className='topInfo'>
-                <Image className='topInfoPic' publicId={selectedConv.pic} cloudName={dataCld.cloudName} />
-                <p className='topInfoTitle'>{selectedConv.title}</p> 
+        <div className={ isDesktop ? 'bottomPanel' : 'bottomPanelRes'}>
+            <div className={ isDesktop ? 'topInfo' : 'topInfoRes'}>
+                {selectedConv.pic !== null ?
+                    <Image 
+                        className={isDesktop ? 'topInfoPic' : 'topInfoPicRes'} 
+                        publicId={selectedConv.pic} 
+                        cloudName={dataCld.cloudName}
+                    />
+                    :
+                    <img src={convIcon} className={isDesktop ? 'topInfoPic' : 'topInfoPicRes'}/>
+                }
+                <p className={ isDesktop ? 'topInfoTitle' : 'topInfoTitleRes'}>{selectedConv.title}</p> 
             </div>
-
-            <div className='chat' ref={msgContainerRef} onScroll={fetchMoreMessages}>
-                <div className='chatBeginning'>
-                    <Image className='topInfoPic' publicId={selectedConv.pic} cloudName={dataCld.cloudName} />
-                    <p className='beginTitle'><b>{selectedConv.title}</b></p> 
-                    <p className='beginText'>This is the beginning of the chat...</p>
+            <div className={ isDesktop ? 'chat' : 'chatRes'} ref={msgContainerRef} onScroll={fetchMoreMessages}>
+                <div className={ isDesktop ? 'chatBeginning' : 'chatBeginningRes'}>
+                    {selectedConv.pic !== null ? 
+                        <Image
+                            className={ isDesktop ? 'topInfoPic' : 'topInfoPicRes'} 
+                            publicId={selectedConv.pic} 
+                            cloudName={dataCld.cloudName}
+                        />
+                        :
+                        <img src={convIcon} alt='imgErr' className={ isDesktop ? 'topInfoPic' : 'topInfoPicRes'}/>
+                    }
+                    <p className={ isDesktop ? 'beginTitle' : 'beginTitleRes'}>
+                        <b>{selectedConv.title}</b>
+                    </p> 
+                    <p className={ isDesktop ? 'beginText' : 'beginTextRes'}>This is the beginning of the chat...</p>
                 </div>
                 {
                     renderMessages()
                 }
             </div>
             
-            <div className='bottomOptions'>
-                <div className='inputBar'>
-                    {/* <input
-                        type='submit'
-                        className='addAttachment'
-                        value='&#x2b;'
-                        onKeyDown={(event) => {
-
-                        }}
-                    /> */}
+            <div className={ isDesktop ? 'bottomOptions' : 'bottomOptionsRes'}>
+                <div className={ isDesktop ? 'inputBar' : 'inputBarRes'}>
+                    <AttachmentDrop onDrop={onDrop} isDesktop={isDesktop}/>
                     <input
                         type='text' 
-                        className='inputMessage' 
+                        className={ isDesktop ? 'inputMessage' : 'inputMessageRes'} 
                         placeholder='Type here...'
                         onChange={e => setCurrentMessage(e.target.value)}
                         onKeyDown={(event) => {
@@ -381,49 +511,70 @@ export default function MainPage(props) {
                         }}
                         value={currentMessage}
                     />
-                    <div className='emojiContainer' onClick={() => setEmojiActive(!emojiActive)}>
+                    <div 
+                        className={ isDesktop ? 'emojiContainer' : 'emojiContainerRes'} 
+                    >
                         {emojiActive === true ?
-                        <div className='emojiPicker' ref={emojiCtRef}>
+                        <div className={ isDesktop ? 'emojiPicker' : 'emojiPickerRes'} ref={emojiCtRef}>
                             <EmojiPicker onEmojiClick={(e) => {setCurrentMessage(currentMessage + e.emoji)}}/>
-                        </div> : null}
-                        <img src={emojiIcon} className='emojiIcon'></img>
+                        </div> 
+                        : null}
+                        <img 
+                            src={emojiIcon} 
+                            className={ isDesktop ? 'emojiIcon' : 'emojiIconRes'}
+                            onClick={e => setEmojiActive(!emojiActive)}
+                        />
                     </div>
-                    
-                    <input 
-                        className='sendMessage'
-                        type='submit'
+                    <img
+                        src={sendMessageIcon}
+                        className={ isDesktop ? 'sendMessage' : 'sendMessageRes'}
                         onClick={sendMessage}
-                        value='&#8594;'
                     />
                 </div>
             </div>
         </div>
-        <div className='rightPanel'>
-            <div className='convSettings'>
-                <Image className='topInfoPic' publicId={selectedConv.pic} cloudName={dataCld.cloudName} />
-                <p className='topInfoTitle'>{selectedConv.title}</p>
-                <input 
+        <div className={ isDesktop ? 'rightPanel' : 'rightPanel'}>
+            <div className={ isDesktop ? 'convSettings' : 'convSettingsRes'}>
+                {selectedConv.pic !== null ? 
+                <Image 
+                    className={ isDesktop ? 'topInfoPic' : 'topInfoPicRes'}
+                    publicId={selectedConv.pic}
+                    cloudName={dataCld.cloudName}
+                />
+                    :
+                <img src={convIcon} className={ isDesktop ? 'topInfoPic' : 'topInfoPicRes'}/>
+                }
+                <p className={ isDesktop ? 'topInfoTitle' : 'topInfoTitleRes'}>{selectedConv.title}</p>
+                {/* <input 
                     type='submit'
-                    className='inputConvSettings'
+                    className={ isDesktop ? 'inputConvSettings' : 'inputConvSettingsRes'}
                     value='...'
                     onClick={convSettings}
-                />
+                /> */}
             </div>
-            <div className='participants'>
+            <div className={ isDesktop ? 'participants' : 'participantsRes'}>
                 {memberList.map((content) =>{
-                    return <div className='member' 
+                    return <div className={ isDesktop ? 'member' : 'memberRes'} 
                                 key={content.userId}
                                 onClick={e =>{
                                     setToggleManageMember((oldId) =>{
-                                        return oldId == content.userId ? null : content.userId;
+                                        return oldId === content.userId ? null : content.userId;
                                     });
                                 } }
                             >
-                        <div className='imageAndStatus'>
-                            <Image className='memberImage' cloudName={dataCld.cloudName} publicId={content.pfp}/>
+                        <div className={ isDesktop ? 'imageAndStatus' : 'imageAndStatusRes'}>
+                            { content.pfp !== '' ?
+                            <Image 
+                                className={ isDesktop ? 'memberImage' : 'memberImageRes'}
+                                cloudName={dataCld.cloudName}
+                                publicId={content.pfp}
+                            />
+                            :
+                                <img src={userIcon} className={ isDesktop ? 'memberImage' : 'memberImageRes'}/>
+                            }
                             <div className={
-                                (content.activity == 'Online') ? 
-                                'Online' 
+                                (content.activity === 'Online') ? 
+                                'Online'
                                 : (content.activity === 'Offline' ? 'Offline' : 'Custom')
                             }/>
                         </div>
@@ -432,32 +583,28 @@ export default function MainPage(props) {
                                 return oldId == content.userId ? null : content.userId;
                             });
                         } }>...</button> */}
-                        <div className='flexMember'>
-                            <p className='memberUsername'>{content.username}</p>
-                            <p className='memberStatus'>{content.activity}</p>
+                        <div className={ isDesktop ? 'flexMember' : 'flexMemberRes'}>
+                            <p className={ isDesktop ? 'memberUsername' : 'memberUsernameRes'}>{content.username}</p>
+                            <p className={ isDesktop ? 'memberStatus' : 'memberStatusRes'}>{content.activity}</p>
                         </div>
-                        {toggleManageMember == content.userId  ? 
-                            <ManageUser toggle={manageMemberToggle} memberId={content.userId} convId={conversationIndex}/>  : null }
+                        {toggleManageMember === content.userId  ? 
+                            <ManageUser toggle={setToggleManageMember(!toggleManageMember)} memberId={content.userId} convId={conversationIndex}/>  : null }
                     </div>
                 })}
             { conversationIndex !== 0 
             ?
                 <div>
-                    <div className='addMemberContainer' onClick={e =>{
-                            if(toggleAddUser == true) setToggleAddUser(false)
-                            else setToggleAddUser(true);
-                        }}>
-                        <img className='addMemberImg' 
-                            src={addMemberImg}
+                    <div className={ isDesktop ? 'addMemberContainer' : 'addMemberContainerRes'} 
+                        onClick={e =>{ setToggleAddUser(!toggleAddUser)}}>
+                        <img className={ isDesktop ? 'addMemberImg' : 'addMemberImgRes'}
+                            src={addMemberIcon}
                         />
-                        <p className='addMemberText'>Add new user</p>
+                        <p className={ isDesktop ? 'addMemberText' : 'addMemberTextRes'}>Add new user</p>
                     </div>
-                    <div className='leaveGroupContainer' onClick={e =>{
-                        if(toggleLeaveGroup == true) setToggleLeaveGroup(false)
-                        else setToggleLeaveGroup(true);
-                    }}>
-                        <img className='leaveGroupImg' src={logoutIcon}/>
-                        <p className='leaveGroupText'>Leave group</p>
+                    <div className={ isDesktop ? 'leaveGroupContainer' : 'leaveGroupContainerRes'} onClick={e =>{
+                        setToggleLeaveGroup(!toggleLeaveGroup)}}>
+                        <img className={ isDesktop ? 'leaveGroupImg' : 'leaveGroupImgRes'} src={logoutIcon}/>
+                        <p className={ isDesktop ? 'leaveGroupText' : 'leaveGroupTextRes'}>Leave group</p>
                     </div> 
                 </div>
             : null}

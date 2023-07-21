@@ -1,9 +1,9 @@
 import React from 'react'
 import Dropzone from "react-dropzone";
-import '../../styles/imgDrop.css';
-import '../../styles/imgDropMobile.css';
+import '../../styles/attachmentDrop.css';
+// import '../../styles/attachmentDropMobile.css';
 
-function ImgDrop(props) {
+function AttachmentDrop(props) {
   var isDesktop = props.isDesktop;
   const onDrop = (acceptedFiles) => {
     const reader = new FileReader();
@@ -15,14 +15,13 @@ function ImgDrop(props) {
   return (
       <Dropzone onDrop={onDrop} maxFiles={1}>
         {({ getRootProps, getInputProps }) => (
-          <div className={isDesktop ? 'drop' : 'dropRes'} {...getRootProps()}>
+          <div className={isDesktop ? 'dropAttachment' : 'dropAttachmentRes'} {...getRootProps()}>
             <input {...getInputProps()}/>
-            <img className={ isDesktop ? 'attach' : 'attachRes'} src={require('../../img/attach.png')}></img>
-            <p>Choose an image or drop it here...</p>
+            <img className={ isDesktop ? 'attachFile' : 'attachFileRes'} src={require('../../img/sendImg.png')}/>
           </div>
         )}
       </Dropzone>
   );
 }
 
-export default ImgDrop
+export default AttachmentDrop

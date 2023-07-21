@@ -1,12 +1,13 @@
 import '../styles/loginPage.css';
+import '../styles/loginPageMobile.css';
 import {useState, useLayoutEffect, useEffect} from 'react';
 import React from 'react'
 import {Link, useNavigate} from 'react-router-dom';
-import io from 'socket.io-client';
-const socket = io.connect(process.env.REACT_APP_BACKEND_SERVER_URL);
 
-export default function LoginPage() {
+export default function LoginPage(props) {
   
+  const socket = props.socket;
+  const isDesktop = props.isDesktop;
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [errorMsg, setErrorMsg] = useState(false);
@@ -53,20 +54,21 @@ export default function LoginPage() {
   
 
     return (
-    <div className='containerLoginPage'>
-        <div className='loginLabel'>Login</div>
+    <div className={isDesktop  ? 'containerLoginPage' : 'containerLoginPageRes'}>
+        <div className={isDesktop  ? 'loginLabel' : 'loginLabelRes'}>Login</div>
         <input 
           type='email'
           placeholder='Email'
           onChange={(event) =>{
             setEmail(event.target.value);
           }}
-          className='emailInputLogin' required>
+          className={isDesktop  ? 'emailInputLogin' : 'emailInputLoginRes'}
+          required>
         </input>
         <input 
-          type='password' 
+          type='password'
           placeholder='Password...'
-          className='passwordInputLogin'
+          className={isDesktop  ? 'passwordInputLogin' : 'passwordInputLoginRes'}
           onChange={(event) =>{
             setPwd(event.target.value);
           }}
@@ -77,11 +79,14 @@ export default function LoginPage() {
           required
           > 
         </input>
-        {errorMsg ? <p className='errorTextLogin'>The credentials you've entered are incorrect!</p> : null}
+        {errorMsg ? <p className={isDesktop  ? 'errorTextLogin' : 'errorTextLoginRes'}>
+          The credentials you've entered are incorrect!
+        </p> : null}
         
-        <input type='submit' className='loginInput' onClick={Login} value='LOGIN'></input>
-        <hr className='lineBreakLogin'></hr>
-        <p> <Link to={"/Signup"} className='linkLogin'> Don't have an account yet?  Sign up here!</Link> </p> 
-        
-    </div>)
+        <input type='submit' className={isDesktop  ? 'loginInput' : 'loginInputRes'} onClick={Login} value='LOGIN'></input>
+        <hr className={isDesktop  ? 'lineBreakLogin' : 'lineBreakLoginRes'}/>
+        <p> <Link to={"/Signup"} className={isDesktop ? 'linkLogin' : 'linkLoginRes'}> 
+          Don't have an account yet?  Sign up here!
+        </Link> </p>
+    </div>);
 }

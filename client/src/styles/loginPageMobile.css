@@ -1,4 +1,4 @@
-/* :root{
+:root{
     --insideColor: #F6FFF8;
     --outsideColor: #EAF4F4;
 
@@ -12,132 +12,121 @@
     
     --linkColor: #6B9080;
     --linkHoverColor: #2a45b1;
-} */
+}
 body{
     /* font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; */
     background-color: var(--outsideColor);
 }
 
-.containerRegisterPage{
+.containerLoginPageRes{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 600px;
-    width: 40%;
+    width: 80%;
     margin: auto;
     overflow: auto;
     margin-top: 5%;
-    padding: 50px;
-
     background-color: var(--insideColor);
     box-shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
 }
-.containerRegisterPage::-moz-selection{
+.containerLoginPageRes::-moz-selection{
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
-.containerRegisterPage::selection{
+.containerLoginPageRes::selection{
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
-.containerRegisterPage::-webkit-scrollbar{
+.containerLoginPageRes::-webkit-scrollbar{
     width: 20px;
 }
-.containerRegisterPage::-webkit-scrollbar-thumb{
+.containerLoginPageRes::-webkit-scrollbar-thumb{
     background-color: #d6dee1;
     border-radius: 20px;
     border: 6px solid transparent;
     background-clip: content-box;
     transition-duration: 0.3s;
 }
-.containerRegisterPage::-webkit-scrollbar-thumb:hover{
+.containerLoginPageRes::-webkit-scrollbar-thumb:hover{
     background-color: rgb(144, 144, 212);
 }
 
-.registerLabel, .emailInputRegister, .passwordInputRegister, .registerInput, .lineBreakRegister, .linkRegister {
-  margin: 10px 0;
+.loginLabelRes, .emailInputLoginRes, .passwordInputLoginRes, .loginInputRes, .lineBreakLoginRes, .linkLoginRes{
+  margin: 20px 0;
 }
 
-.containerRegisterPage > input:not([type='submit']){
+.containerLoginPageRes > input:not([type='submit']){
     background-color: transparent;
 }
 
-.registerLabel{
-    font-size: 40px;
+.loginLabelRes{
+    margin-top: 60px;
+    font-size: 1.5rem;
 }
 
-.containerRegisterPage > input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid{
+.containerLoginPageRes > input:not([type='submit']):not([type='file']):not(:placeholder-shown):not(:focus):valid{
     border-bottom: 2px solid rgb(1, 186, 1);
 }
 
-.containerRegisterPage > input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
+.containerLoginPageRes > input:not([type='submit']):not(:placeholder-shown):not(:focus):invalid{
     border-bottom: 2px solid red;
 }
-.containerRegisterPage > input:focus::placeholder{
+.containerLoginPageRes > input:focus::placeholder{
     color: transparent;
     transition-duration: 0.15s;
 }
-.pfpRegister{
-    margin-top: 40px;
-    width: 100px;
-    height: 100px;
-    border-radius: 14px;
-}
 
-/* .labelFile{
-    margin-top: 20px;
-    border: none;
-    color: white;
-} */
-.passwordInputRegister, .usernameInputRegister, .filePfp{
+.passwordInputLoginRes, .usernameInputRes{
     margin-top: 40px;
 }
-.emailInputRegister, .passwordInputRegister, .usernameInputRegister{
-    font-size: 15px;
-    width: 70%;
+.emailInputLoginRes, .passwordInputLoginRes, .usernameInputRes{
+    font-size: 16sp;
+    width: 80%;
     height: 5%;
-    padding-left: 20px;
+    padding-left: 20sp;
     padding: 5px;
     border: none;
     border-bottom: 2px solid gray;
 }
-input::placeholder{
+.containerLoginPageRes > input::placeholder{
     color: rgb(70, 70, 70);
 }
-.emailInputRegister:focus, .passwordInputRegister:focus, .usernameInputRegister:focus{
+.emailInputLoginRes:focus, .passwordInputLoginRes:focus, .usernameInputLoginRes:focus{
     outline: none;
     border-bottom: 2px solid;
 }
 
-.registerInput{
-    font-size: 22px;
+.loginInputRes{
+    font-size: 14sp;
     margin-top: 5%;
-    width: 60%;
-    height: 40px;
+    width: 50%;
+    height: 30px;
     border: none;
-    border-radius: 14px;
+    border-radius: 10px;
     background-color: var(--distractColor);
     transition-duration: 0.3s;
 }
 
-.registerInput:hover{
+.loginInputRes:hover{
     background-color: var(--submitHoverColor);
 }
-.lineBreakRegister{
-    margin-top: 50px;
+.lineBreakLoginRes{
+    margin-top: 100px;
     width: 90%;
 }
-.linkRegister{
+.linkLoginRes{
     color: var(--linkColor);
     transition-duration: 0.3s;
 }
-.linkRegister:hover{
+.linkLoginRes:hover{
     color: var(--linkHoverColor);
 }
-.errorTextRegister{
+.errorTextLoginRes{
     color: var(--errorColor);
     width: 70%;
     height: 100px;
     text-align: center;
-    font-size: 16px;
+    font-size: 12sp;
 }

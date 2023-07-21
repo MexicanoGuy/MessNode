@@ -1,25 +1,25 @@
-.drop{
+.dropRes{
     display: flex;
     margin-top: 20px;
     background-color: #CCE3DE;
     border: transparent;
-    border-radius: 15px;
-    font-size: 18px;
-    width: 40%;
+    border-radius: 8px;
+    font-size: 14px;
+    width: 50%;
     height: 50px;
     text-align: center;
     justify-content: center;
     align-items: center;
     transition-duration: 0.5s;
 }
-.drop:hover{
+.dropRes:hover{
     background-color: #BFDCE5;
 }
-.attach{
+.attachRes{
     width: 20px;
     height: 20px;
-    /* margin-right: 10px; */
-    margin-left: 10px;
+    margin-right: 5px;
+    margin-left: 5px;
 }
 :local(p){
     padding-right: 20px;

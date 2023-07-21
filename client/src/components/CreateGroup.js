@@ -30,16 +30,15 @@ function CreateGroup(props) {
             })
             .then(response => response.json())
             .then(data => {
+                // console.log(data)
                 setPfpId(data.public_id);
             }).catch((err) =>{
                 console.log(err)
             });
-            // setTimeout(() =>{
-            //     props.toggle();
-            // }, 1000)
         }else{
             alert('Please specify title and picture!');
         }
+
     }
     useEffect(() =>{
         if(pfpId !== null){
@@ -50,7 +49,10 @@ function CreateGroup(props) {
             }
             socket.emit('create_new_chat', chatData);
             socket.on('chat_created', data =>{
-                if(data == true) props.fetchUserInfo();
+                if(data === true){
+                    props.toggle();
+                    props.fetchUserInfo();
+                }
             });
         }
     },[pfpId]);
@@ -61,22 +63,6 @@ function CreateGroup(props) {
                 <p className='convHeader'>Create a conversation</p>
                 
                 {file ? <img className='createImg' src={file}/> : <img className='createImg' src={defaultImg}/>}
-                {/* <CloudinaryContext cloudName={dataCld.cloudName}>
-                    <input type='file' onChange={e => {
-                        const file = e.target.files[0];
-                        if((file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/gif')){
-                            const reader = new FileReader();
-                            reader.onload = () => {
-                            setFile(reader.result);
-                            };
-                            reader.readAsDataURL(file);
-                        }else{
-                            e.target.value = null;
-                            setFile(null);
-                            alert('Image must jpg/png/gif!');
-                        }
-                    }}/>
-                </CloudinaryContext> */}
                 <input type='text' className='convName' placeholder='Conversation name...' onChange={e => setTitle(e.target.value)}/>
                 <ImgDrop onDrop={onDrop}/>
                 <input type='button' className='createSubmit' value='Confirm' onClick={createChat}/>

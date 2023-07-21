@@ -1,14 +1,16 @@
 import React from 'react'
 import '../styles/signupPage.css';
+import '../styles/signupPageMobile.css';
 import {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import ImgDrop from './dropzone/imgDrop';
 
-const socket = io.connect(process.env.REACT_APP_BACKEND_SERVER_URL);
+function SignupPage(props) {
 
-function SignupPage() {
+  var isDesktop = props.isDesktop;
   const navigate = useNavigate();
+  const socket = props.socket;
 
   const [emailValid, setEmailValid] = useState(false);
   const [emailAddress, setEmailAddress] = useState('');
@@ -25,7 +27,7 @@ function SignupPage() {
   
   const [pfpId, setPfpId] = useState(null);
   const [file, setFile] = useState(null);
-  const [fileData, setFileData] = useState([]);
+  // const [fileData, setFileData] = useState([]);
 
   const dataCld = {
     cloudName: process.env.REACT_APP_CNAME,
@@ -33,6 +35,7 @@ function SignupPage() {
     apiSecret: process.env.REACT_APP_CSECRET,
     uploadPreset: process.env.REACT_APP_CUPLOAD_PRESET
   }
+
   const handleUpload = () =>{
     const formData = new FormData();
     formData.append('file', file);
@@ -58,7 +61,7 @@ function SignupPage() {
   },[password1, password2]);
   useEffect(() =>{
     socket.on("account_creation_status", (data) =>{
-      if(data.new==false){
+      if(data.new === false){
         alert("That account already exists!");
       }else{
         alert("Account succesfully created!");
@@ -66,7 +69,7 @@ function SignupPage() {
     })
   }, []);
   const onDrop = async(data, fileR) =>{
-    setFileData(data);
+    // setFileData(data);
     setFile(fileR);
   };
   const CreateNewAccount = () =>{
@@ -99,8 +102,8 @@ function SignupPage() {
     });
   }, [socket]);
   return (
-    <div className='containerRegisterPage'>
-      <div className='registerLabel'>Sign up</div>
+    <div className={ isDesktop ? 'containerRegisterPage' : 'containerRegisterPageRes'}>
+      <div className={ isDesktop ? 'registerLabel' : 'registerLabelRes'}>Sign up</div>
       <input 
         type="email"
         placeholder='E-mail...' 
@@ -109,13 +112,16 @@ function SignupPage() {
           setEmailValid(regex.test(event.target.value));
           setEmailAddress(event.target.value);
         }}
-        className='emailInputRegister'
+        className={ isDesktop ? 'emailInputRegister ' : 'emailInputRegisterRes'}
       />
-      {emailValid || emailAddress =='' ? null : <p className='errorTextRegister'>The email is not valid</p>}
+      {emailValid || emailAddress =='' ? null : 
+        <p className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}>
+        The email is not valid</p>
+      }
       <input 
         type='text' 
         placeholder='Username...'
-        className='usernameInputRegister'
+        className={ isDesktop ? 'usernameInputRegister' : 'usernameInputRegisterRes'}
         pattern='^[a-zA-Z0-9_.-]*$'
         onChange={(event) =>{
           var usernameRegex = /^[a-zA-Z0-9_.-]*$/;
@@ -125,12 +131,15 @@ function SignupPage() {
           }
         }} 
       />
-      {usernameValid || username == '' ? null : <p className='errorTextRegister'>Your username is not valid</p>}
+      {usernameValid || username === '' ? null : 
+      <p className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}>
+        Your username is not valid
+      </p>}
 
       <input 
         type='password'
         placeholder='Password...' 
-        className='passwordInputRegister'
+        className={ isDesktop ? 'passwordInputRegister' : 'passwordInputRegisterRes' }
         pattern="(?=.*[A-Z])(?=.*[\W_]).{8,20}"
         onChange={(event) =>{
           var passwordRegex = /^(?=.*[A-Z])(?=.*[\W_]).{8,20}$/;
@@ -140,30 +149,47 @@ function SignupPage() {
           }
         }}
       />
-      {passwordValid || password1 =='' ? null : <ul className='errorTextRegister'>Password must contain: <br/>8-20 letter long, one a symbol, upper and lower case letters and a one number</ul>}
+      {passwordValid || password1 =='' ? null : 
+        <ul className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}>
+          Password must contain: <br/>8-20 letter long, one a symbol, upper and lower case letters and a one number
+        </ul>}
       <input 
         type='password' 
         placeholder='Confirm password...' 
-        className='passwordInputRegister'
+        className={ isDesktop ? 'passwordInputRegister' : 'passwordInputRegisterRes'}
         pattern="(?=.*[A-Z])(?=.*[\W_]).{8,20}"
         onChange={(event) =>{ 
           setPassword2(event.target.value);
         }}
       />
-      {password1 !=='' && password2 !=='' ? <p className='errorTextRegister'> Password does {passwordMatch ? 'match' : 'not match'} </p> : null}   
+      {password1 !=='' && password2 !=='' ? 
+        <p className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}> 
+          Password does {passwordMatch ? 'match' : 'not match'} 
+        </p> : null
+      }   
       
-      {file ? <img className='pfpRegister' src={file} alt='no image'/> : null}
-      <ImgDrop onDrop={onDrop}/>
+      {file ? <img className={ isDesktop ? 'pfpRegister' : 'pfpRegisterRes'} src={file} alt='no image'/> : null}
+      <ImgDrop isDesktop={isDesktop} onDrop={onDrop}/>
 
       <input
         type='submit'
-        className='registerInput'
+        className={ isDesktop ? 'registerInput' : 'registerInputRes'}
         onClick={CreateNewAccount}
         value='Sign up'
       />
-      {accountCreated === false ? <p className='errorTextRegister'>Account with given email already exists</p> : null}
-    <hr className='lineBreakRegister'></hr>
-    <p><Link to={"/Login"} className='linkRegister'>Have an account? Click here!</Link> </p>
+      {accountCreated === false ? 
+        <p className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}>
+          Account with given email already exists
+        </p> 
+      : null}
+    <hr className={ isDesktop ? 'lineBreakRegister' : 'lineBreakRegisterRes'}/>
+    <p>
+      <Link 
+        to={"/Login"} 
+        className={ isDesktop ? 'linkRegister' : 'linkRegisterRes'}>
+        Have an account? Click here!
+      </Link>
+    </p>
   </div>
   )
 }

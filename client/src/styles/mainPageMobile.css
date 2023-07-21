@@ -21,29 +21,29 @@
 
     --dateFont: open sans-serif;
 }
-.topSearch{
+.topSearchRes{
     background-color: var(--colorAccent);
 }
-.chat, .bottomOptions{
+.chatRes, .bottomOptionsRes{
     background-color: var(--colorMain);
 }
-.leftPanel{
+.leftPanelRes{
     background-color: var(--colorMain);
 }
-.bottomPanel{
+.bottomPanelRes{
     background-color: var(--colorMain);
     border-left: 1px solid black;
 }
-.inputBar{
+.inputBarRes{
     background-color: var(--colorMain);
 }
-.topInfo{
+.topInfoRes{
     background-color: var(--colorMid);
 }
-.rightPanel{
+.rightPanelRes{
     background-color: var(--colorMain);
 }
-.convSettings{
+.convSettingsRes{
     background-color: var(--colorMid);
 }
 
@@ -53,30 +53,30 @@ body{
     background-color: var(--colorBG);
     font-family: Arial, Helvetica, sans-serif
 }
-.containerConversationPage{
+.containerConversationPageRes{
     display: flex;
     width: 100%;
     height: var(--deviceHeight);
 }
-.chat::-moz-selection{
+.chatRes::-moz-selection{
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
-.chat::selection{
+.chatRes::selection{
     color: var(--linkColor);
     background-color: var(--distractColor);
 }
-.leftPanel{
+.leftPanelRes{
     flex: 0.2;
 }
-.bottomPanel{
+.bottomPanelRes{
     flex: 0.6;
 }
-.rightPanel{
+.rightPanelRes{
     flex:0.2;
 }
 
-.topSearch{
+.topSearchRes{
     height: var(--topInfoHeight);
     display: flex;
     align-items: center;
@@ -101,12 +101,12 @@ body{
     overflow-y: auto;
 }
 .conversation, .conversationSelected{
-    /* margin: 12px; */
+    margin: 12px;
     width: 88%;
     border: transparent solid;
     background-color: transparent;
     border-radius: 10px;
-    /* height: 40px; */
+    height: 55px;
     display: flex;
     align-items: center;
 }
@@ -147,9 +147,6 @@ body{
     font-size: large;
     overflow-wrap: break-word;
 }
-.settingsIcon{
-    float: right;
-}
 .logoutIcon{
     text-align: end;
     width: 30px;
@@ -161,30 +158,30 @@ body{
     border-radius: 10px;
 }
 
-/* SELECT CHAT TAB */
+/* SELECT chatRes TAB */
 
 /*-------------------------------- */
 
-/* CHAT AREA */
+/* chatRes AREA */
 
-.topInfo{
+.topInfoRes{
     display: flex;
     border-bottom: 1px solid black;
     
     height: calc(var(--topInfoHeight) - 1px);
     align-items: center;
 }
-.topInfoPic{
+.topInfoPicRes{
     width: 50px;
     height: 50px;
     margin: 15px;
     border-radius: 16px;
 }
-.topInfoTitle{
+.topInfoTitleRes{
     font-size: large;
 }
 
-.chat{
+.chatRes{
     display: flex;
     flex-direction: column;
     border: none;
@@ -192,51 +189,51 @@ body{
     overflow: auto;
     overflow-y: scroll;
 }
-.chat:-webkit-scrollbar{
+.chatRes:-webkit-scrollbar{
     width: 20px;
 }
-.chat:-webkit-scrollbar-thumb{
+.chatRes:-webkit-scrollbar-thumb{
     background-color: #d6dee1;
     border-radius: 20px;
     border: 6px solid transparent;
     background-clip: content-box;
     transition-duration: 0.3s;
 }
-.chat::-webkit-scrollbar-thumb:hover{
+.chatRes::-webkit-scrollbar-thumb:hover{
     background-color: rgb(144, 144, 212);
 }
 
-.chatBeginning{
+.chatBeginningRes{
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-bottom: 120px;
 }
-.beginTitle{
+.beginTitleRes{
     font-size: 16px;
     text-decoration: double;
 }
-.beginText{
+.beginTextRes{
     font-size: 14px;
 }
 
-.bottomOptions{
+.bottomOptionsRes{
     height: var(--bottomOptionsHeight);
     display: flex;
 }
-.inputBar{
+.inputBarRes{
     display: flex;
     align-items: center;
     height: 35px;
-    width: 94%;
+    width: 97%;
     margin-left: 15px;
     background-color: rgb(236, 236, 236);
     border-radius: 12px;
 }
-.inputMessage, .emojiIcon, .sendMessage, .addAttachment{
-   vertical-align: middle;
+.inputMessageRes, .emojiIconRes, .sendMessageRes, .addAttachmentRes{
+    margin: 2px;
 }
-.addAttachment{
+.addAttachmentRes{
     border-radius: 100%;
     width: 25px;
     height: 25px;
@@ -245,59 +242,62 @@ body{
     font-size: 18px;
     text-align: center;
 }
-.inputMessage{
+.inputMessageRes{
     padding-left: 5px;
     margin-left: 2%;
     width: 85%;
     border: none;
     background-color: transparent;
 }
-.emojiContainer{
+.emojiContainerRes{
     position: relative;
     margin-right: 10px;
 }
-.emojiPicker{
+.emojiPickerRes{
     position: absolute;
     bottom: 0;
     right: 0;
     z-index: 2;
     margin-bottom: 40px;
 }
-.emojiIcon{
-    vertical-align: middle;
+.emojiIconRes{
+    width: 22px;
+    height: 22px;
 }
-.sendMessage{
+.sendMessageRes{
     text-align: center;
     font-size: 15px;
+    width: 40px;
+    height: 20px;
     margin-right: 15px;
     border-radius: 12px;
-    padding: 0 5px 0 5px;
     border: none;
-}
-.addAttachment:hover, .sendMessage:hover{
-    background-color: gray;
-}
-.inputMessage:focus{
-    outline: none;
-}
-.sendMessage:hover{
     background-color: #dfdfdf;
 }
-.diffDay{
+.addAttachmentRes:hover, .sendMessageRes:hover{
+    background-color: gray;
+}
+.inputMessageRes:focus{
+    outline: none;
+}
+.sendMessageRes:hover{
+    background-color: #dfdfdf;
+}
+.diffDayRes{
     font-family: var(--dateFont);
     text-align: center;
 }
-.diffTime{
+.diffTimeRes{
     text-align: center;
     font-size: 14px;
 }
-.messageChain{
+.messageChainRes{
     display: flex;
     flex-direction: column;
     margin-left: 5px;
     margin-right: 5px;
 }
-.message{
+.messageRes{
     width: fit-content;
     border-radius: 14px;
     background-color: #dfdfdf;
@@ -306,12 +306,8 @@ body{
     padding-left: 12px;
     padding-right: 12px;
 }
-.chatImg{
-    width: 350px;
-    height: auto;
-    border-radius: 5px 10px 5px 10px;
-}
-.message, .author, .emptySpace{
+
+.messageRes, .authorRes, .emptySpaceRes{
     float: left;
 }
 
@@ -321,52 +317,52 @@ body{
 .other{
     align-self: flex-start;
 }
-.diffOther{
+.diffOtherRes{
     margin-top: 50px;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Joan&family=Roboto&display=swap');
-.message-content{
+.message-contentRes{
     font-size: 16px;
     font-family: 'Roboto', sans-serif;
 }
-.msgImg{
+.msgImgRes{
     border-radius: 40%;
     width: 32px;
     height: 32px;
     margin-right: 5px;
 }
-.author{
+.authorRes{
     display: flex;
     align-items: center;
     font-size: medium;
     text-decoration: wavy;
 }
-.emptySpace{
+.emptySpaceRes{
     width: 40px;
     height: 35px;
 }
-.spaceBetween{
+.spaceBetweenRes{
     margin-bottom: 40px;
 }
-.authorTooltip{
+.authorTooltipRes{
     display: none;
     position: relative;
 }
-.authorTooltipText{
+.authorTooltipTextRes{
     position: absolute;
     z-index: 1;
     right: 0;
 }
-.author:hover > .authorTooltip{
+.authorRes:hover > .authorTooltipRes{
     display: block;
 }
 
-.tooltipTime{
+.tooltipTimeRes{
     position: relative;
     z-index: 2;
 }
-.tooltipTime::before{
+.tooltipTimeRes::before{
     display: none;
     position: absolute;
 
@@ -384,61 +380,63 @@ body{
     right: 100%;
     margin-right: 25px;
 }
-.tooltipTime:hover::before{
+.tooltipTimeRes:hover::before{
     display: block;
 }
 
 
-.timeMessage{
+.timeMessageRes{
     font-size: 12px;
 }
 
-/* CHAT AREA */
+/* chatRes AREA */
 
 /*-------------------------------- */
 
-/* CHAT INFORMATION TAB */
+/* chatRes INFORMATION TAB */
 
-.chatInfo{
+.chatInfoRes{
     border: 0.5px solid black;
     height: 50vh;
     /* width: 100%; */
 }
-.convSettings{
+.convSettingsRes{
     height: calc( var(--topInfoHeight) + 10vh);
     display: flex;
     flex-direction: column;
     align-items: center;
     border-bottom: 1px solid black;
 }
-.convSettings > .topInfoPic{
+.convSettingsRes > .topInfoPicRes{
     width: 60px;
     height: 60px;
 }
-.inputConvSettings{
+.inputConvSettingsRes{
     border: none;
     border-radius: 16px;
     margin-bottom: 25px;
 }
-.participants{
+.participantsRes{
     width: 95%;
     height: 70vh;
 }
-.member{
+.memberRes{
     border-radius: 16px;
-    padding: 0 8px 0 8px;
-    margin-left: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-left: 15px;
+    /* width: 90%; */
     height: 40px;
 }
-.member:hover{
+.memberRes:hover{
     background-color: var(--colorHover);
 }
-.imageAndStatus{
+.imageAndStatusRes{
     width: fit-content;
     position: relative;
 }
-.memberImage{
-    border-radius: 100%;
+.memberImageRes{
+    border-radius: 40%;
     float: left;
     width: 35px;
     height: 35px;
@@ -461,20 +459,20 @@ body{
 .Custom{
     background-color: purple;
 }
-.flexMember{
+.flexMemberRes{
     width: 80%;
 }
-.memberUsername{
+.memberUsernameRes{
     font-size: 20px;
     margin: 20px;
     margin-left: 40px;
 }
-.memberStatus{
+.memberStatusRes{
     margin-top: -20px;
     margin-left: 40px;
     font-size: 15px;
 }
-.manageUser{
+.manageUserRes{
     border: transparent;
     font-size: 25px;
     border-radius: 20%;
@@ -484,8 +482,7 @@ body{
     text-align: center;
 }
 
-
-.addMemberContainer, .leaveGroupContainer{
+.addMemberContainerRes, .leaveGroupContainerRes{
     margin-top: 20px;
     border-radius: 10px;
     background-color: transparent;
@@ -495,18 +492,18 @@ body{
     display: flex;
     align-items: center;
 }
-.addMemberContainer:hover, .leaveGroupContainer:hover{
+.addMemberContainerRes:hover, .leaveGroupContainerRes:hover{
     background-color: var(--colorHover);
 }
-.addMemberImg, .leaveGroupImg{
+.addMemberImgRes, .leaveGroupImgRes{
     width: 25px;
     height: 25px;
     padding-right: 10px;
     padding-left: 10px;
 }
-.addMemberImg, .addMemberText{
+.addMemberImgRes, .addMemberTextRes{
     float: left;
 }
 
 
-/* CHAT INFORMATION TAB */
+/* chatRes INFORMATION TAB */
