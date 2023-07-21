@@ -10,9 +10,9 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         path: '/socket.io',
-//         origin: "https://messnode.netlify.app",
+        // origin: "http://localhost:3000",
         origin: "*",
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST"]
     },
 });
 const pool = require("./db");
@@ -60,7 +60,7 @@ io.on("disconnect", (socket) =>{
     console.log(`Socket ${socket} disconnected!`);
 });
 app.get("/", (req, res) =>{
-    res.send("Hello to the backend server!");
+    res.send("Welcome to the backend server!");
 });
 app.get('/favicon.ico', (req, res) => res.status(204));
 server.listen(3001, () =>{

@@ -1,6 +1,7 @@
 module.exports = (io, socket, pool) =>{
   
     socket.on('get_chat_data', async (data) =>{
+      console.log('getting chat data')
       var convId = data.convId;
         const queryInfo = await pool.query(`
           SELECT * FROM (SELECT * FROM messages 
@@ -12,12 +13,14 @@ module.exports = (io, socket, pool) =>{
         let messagesData = [];
         const membersInfo = [];
         if(queryInfo.rowCount > 0){
+          
           messagesData = queryInfo.rows.map(row =>({
             msgId: row.msgid,
             authorName: row.username,
             authorId: row.userid,
             authorPfp: row.pfp,
             content: row.content,
+            messageType: row.messagetype,
             timestamp: row.timestamp,
             convId: row.convno
           }));
@@ -41,7 +44,7 @@ module.exports = (io, socket, pool) =>{
             }
             pool.end;
           }
-        }else{
+        } else{
           const convInfo = await pool.query("SELECT * FROM conversation WHERE conversationid=$1", [convId]);
           if(convInfo.rowCount > 0){
             const members = convInfo.rows[0].participants; 

@@ -6,8 +6,8 @@ module.exports = (io, socket, pool, data2) =>{
             logout(io, socket, pool, data);
         });
     }
-    
 }
+
 const logout = async (io, socket, pool, data) =>{
     var userId = data;
     var roomExists = io.sockets.adapter.rooms.has(userId);
@@ -25,9 +25,7 @@ const logout = async (io, socket, pool, data) =>{
                     RETURNING userid, username, activity, customActivity, pfp
                     `, 
                 [userStatus, userId]);
-                
-                // console.log(`Changed user ${userId} activity status to ${userStatus}`);
-                
+
                 var userConvs = await pool.query(`SELECT conversationId FROM conversation WHERE $1 = ANY (participants)`, [userId]);
                 if(updatedUser.rowCount > 0 && userConvs.rowCount > 0){
                     var member = updatedUser.rows[0];
@@ -39,7 +37,6 @@ const logout = async (io, socket, pool, data) =>{
                         customActivity: member.customActivity
                     }
                     userConvs.rows.forEach(conv => {
-                        // console.log("emitting to", conv.conversationid);
                         io.to(conv.conversationid).emit('user_status_change', memberData);
                     });
                 }

@@ -18,6 +18,7 @@ module.exports = (io, socket, pool) =>{
                 authorName: row.username,
                 authorId: row.userid,
                 authorPfp: row.pfp,
+                messageType: row.messagetype,
                 content: row.content,
                 timestamp: row.timestamp,
                 convId: row.convno

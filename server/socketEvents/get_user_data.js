@@ -1,6 +1,7 @@
 module.exports = (io, socket, pool) =>{  
     socket.on("get_user_data", async (data) =>{
         const findUserConv = await pool.query("SELECT DISTINCT * FROM conversation WHERE $1 = ANY(conversation.participants)",[data.userId]);
+        pool.end;
         const conversations = [];
         if(findUserConv.rowCount > 0){
           for(let i=0; i < findUserConv.rowCount; i++){
@@ -11,7 +12,6 @@ module.exports = (io, socket, pool) =>{
             }
             conversations.push(obj1);
           }
-          pool.end;
           userToSocket(data.userId);
           socket.emit("receive_user_data", conversations)
         }

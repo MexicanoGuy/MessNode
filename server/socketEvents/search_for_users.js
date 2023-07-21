@@ -27,7 +27,7 @@ module.exports = (io, socket, pool) =>{
           }
           usersData.push(userObject);
         }
-        // console.log(usersData);
+        pool.end;
         socket.emit("receive_searched_users", usersData);
       });
 }

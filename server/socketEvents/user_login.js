@@ -16,9 +16,6 @@ module.exports = (io, socket, pool) =>{
                     var userStatus = 'Online';
                 }
                 var user = await pool.query(`UPDATE users SET activity = $1 WHERE userid=$2 RETURNING *`, [userStatus, userId]);
-                // console.log(`Changed users ${userId} activity status to ${userStatus}`);
-
-                // ADVERTISE TO ACTIVE CONVS
                 var userConvs = await pool.query(`SELECT conversationId FROM conversation WHERE $1 = ANY (participants)`, [parseInt(userId)]);
                 
                 if(userConvs.rowCount > 0 && user.rowCount > 0){
@@ -31,12 +28,10 @@ module.exports = (io, socket, pool) =>{
                         customActivity: userRow.customActivity
                     }
                     userConvs.rows.forEach(conv => {
-                        // console.log("emitting to", conv.conversationid)
                         io.to(parseInt(conv.conversationid)).emit("user_status_change", memberData);
                     });
                 }
             }
-            // socket.userId = userId;
             pool.end;
         }
     });
