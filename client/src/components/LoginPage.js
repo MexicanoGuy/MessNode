@@ -3,18 +3,18 @@ import '../styles/loginPageMobile.css';
 import {useState, useLayoutEffect, useEffect} from 'react';
 import React from 'react'
 import {Link, useNavigate} from 'react-router-dom';
-
+import LoadingComponent from 'react-loading';
 export default function LoginPage(props) {
   
   const socket = props.socket;
   const isDesktop = props.isDesktop;
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
+  const [awaitingAccount, setAwaitingAccount] = useState(false);
   const [errorMsg, setErrorMsg] = useState(false);
   const navigate = useNavigate();
   
   useLayoutEffect(() =>{
-    // <LoadingPage/>
     if(localStorage.getItem('email')){
       const userData = {
         email: localStorage.getItem('email'),
@@ -31,6 +31,7 @@ export default function LoginPage(props) {
         pwd: pwd,
       }
       socket.emit("request_login_info", userData);
+      setAwaitingAccount(true);
     }
   }
   useEffect(() =>{
@@ -49,11 +50,18 @@ export default function LoginPage(props) {
       }else{
         setErrorMsg(true);
       }
+      setAwaitingAccount(false);
     });
   }, [socket])    
   
 
     return (
+    <>
+    {awaitingAccount ?
+      <div className='loadingContainerRegister'>
+        <LoadingComponent type='spinningBubbles' className='loadingRegister' color='#000000' width='60px'/>
+      </div>
+    : null}
     <div className={isDesktop  ? 'containerLoginPage' : 'containerLoginPageRes'}>
         <div className={isDesktop  ? 'loginLabel' : 'loginLabelRes'}>Login</div>
         <input 
@@ -88,5 +96,7 @@ export default function LoginPage(props) {
         <p> <Link to={"/Signup"} className={isDesktop ? 'linkLogin' : 'linkLoginRes'}> 
           Don't have an account yet?  Sign up here!
         </Link> </p>
-    </div>);
+    </div>
+    </>
+    );
 }

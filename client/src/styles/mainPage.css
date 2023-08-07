@@ -94,11 +94,16 @@ body{
 .searchInConv:hover{
     background-color: azure;
 }
-
 .chatList{
-    text-align: left;
+    /* text-align: left; */
     height: 75%;
     overflow-y: auto;
+}
+.leftPanelLoading{
+    margin-left: 5%;
+    margin-bottom: 5px;
+    height: 35px;
+    border-radius: 8px;
 }
 .conversation, .conversationSelected{
     /* margin: 12px; */
@@ -192,6 +197,19 @@ body{
     overflow: auto;
     overflow-y: scroll;
 }
+.chatLoadingContainer{
+    display: flex;
+}
+.chatLeftLoading{
+    margin-left: 20px;
+    height: 20px;
+    margin-bottom: 5px;
+}
+.chatRightLoading{
+    margin-left: 20px;
+    height: 20px;
+    margin-bottom: 5px;
+}
 .chat:-webkit-scrollbar{
     width: 20px;
 }
@@ -210,7 +228,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 120px;
+    margin-bottom: 60px;
 }
 .beginTitle{
     font-size: 16px;
@@ -423,6 +441,23 @@ body{
 .participants{
     width: 95%;
     height: 70vh;
+}
+
+.loadingMember{
+    display: flex;
+    margin-left: 20px;
+}
+.loadingCircle{
+    margin-left: 10px;
+    width: 40px;
+    height: 40px;
+    flex: 0.2;
+}
+.loadingSquare{
+    /* width: 50%; */
+    height: 30px;
+    margin-top: 15px;
+    flex: 0.8;
 }
 .member{
     border-radius: 16px;

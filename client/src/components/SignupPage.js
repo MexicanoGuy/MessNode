@@ -5,6 +5,8 @@ import {useState, useEffect} from 'react';
 import {Link, useNavigate} from 'react-router-dom';
 import io from 'socket.io-client';
 import ImgDrop from './dropzone/imgDrop';
+import ReactLoading from 'react-loading';
+import LoadingComponent from 'react-loading';
 
 function SignupPage(props) {
 
@@ -23,11 +25,11 @@ function SignupPage(props) {
   const [passwordMatch, setPasswordMatch] = useState(false);
   const [passwordValid, setPasswordValid] = useState(false);
 
-  const [accountCreated, setAccountCreated] = useState('');
-  
+  const [createdSuccessfully, setCreatedSuccessfully] = useState('');
+  const [awaitingAccount, setAwaitingAccount] = useState(false);
+
   const [pfpId, setPfpId] = useState(null);
   const [file, setFile] = useState(null);
-  // const [fileData, setFileData] = useState([]);
 
   const dataCld = {
     cloudName: process.env.REACT_APP_CNAME,
@@ -60,11 +62,11 @@ function SignupPage(props) {
     }else setPasswordMatch(false);
   },[password1, password2]);
   useEffect(() =>{
-    socket.on("account_creation_status", (data) =>{
+    socket.off("account_creation_status").on("account_creation_status", (data) =>{
       if(data.new === false){
         alert("That account already exists!");
       }else{
-        alert("Account succesfully created!");
+        console.log('glitch')
       }
     })
   }, []);
@@ -87,22 +89,31 @@ function SignupPage(props) {
         pfpId: pfpId
       }
       socket.emit('create_new_account', accountData);
+      setAwaitingAccount(true);
     }
   },[pfpId]);
   useEffect(() =>{
     socket.on('account_status', (data) =>{
       if(data === true){
-        setAccountCreated(true);
+        setCreatedSuccessfully(true);
         alert('Account successfully created!');
         navigate('/Login');
       }
       else{
-        setAccountCreated(false);
+        setCreatedSuccessfully(false);
       }
+      setAwaitingAccount(false);
     });
   }, [socket]);
   return (
+    <>
+    {awaitingAccount ?
+        <div className='loadingContainerRegister'>
+          <LoadingComponent type='spinningBubbles' className='loadingRegister' color='#000000' width='60px'/>
+        </div>
+      : null}
     <div className={ isDesktop ? 'containerRegisterPage' : 'containerRegisterPageRes'}>
+      
       <div className={ isDesktop ? 'registerLabel' : 'registerLabelRes'}>Sign up</div>
       <input 
         type="email"
@@ -114,7 +125,7 @@ function SignupPage(props) {
         }}
         className={ isDesktop ? 'emailInputRegister ' : 'emailInputRegisterRes'}
       />
-      {emailValid || emailAddress =='' ? null : 
+      {emailValid || emailAddress ==='' ? null : 
         <p className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}>
         The email is not valid</p>
       }
@@ -177,7 +188,7 @@ function SignupPage(props) {
         onClick={CreateNewAccount}
         value='Sign up'
       />
-      {accountCreated === false ? 
+      {createdSuccessfully === false ? 
         <p className={ isDesktop ? 'errorTextRegister' : 'errorTextRegisterRes'}>
           Account with given email already exists
         </p> 
@@ -191,6 +202,7 @@ function SignupPage(props) {
       </Link>
     </p>
   </div>
+  </>
   )
 }
 

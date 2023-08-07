@@ -1,10 +1,13 @@
-import React, {useLayoutEffect, useEffect, useState, useRef } from 'react'
+import React, {useLayoutEffect, useEffect, useState, useRef } from 'react';
+import ReactLoading from 'react-loading';
+import Skeleton, {SkeletonTheme} from 'react-loading-skeleton';
+import "react-loading-skeleton/dist/skeleton.css";
 import '../styles/mainPage.css';
 import '../styles/mainPageMobile.css';
 import ManageUser from './ManageUser';
 import AddUser from './AddUser';
 import SettingsPage from './SettingsPage';
-import {useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import LeaveGroup from './LeaveGroup';
 import CreateGroup from './CreateGroup';
 import addNewIcon from '../img/addNew.png';
@@ -40,13 +43,14 @@ export default function MainPage(props) {
     const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
     const [toggleCreateGroup, setToggleCreateGroup] = useState(false);
     const [settingsToggle, setSettingsToggle] = useState(false);
+
+    const [appLoading, setAppLoading] = useState(true);
     
     const msgContainerRef = useRef(null);
     const emojiCtRef = useRef(false);
     const [emojiActive, setEmojiActive] = useState(false);
 
     const [searchConv, setSearchConv] = useState('');
-    const [searchActivated, setSearchActivated] = useState(false);
 
     const [fileBottomId, setFileBottomId] = useState(null);
     const [fileBottom, setFileBottom] = useState(null);
@@ -120,7 +124,7 @@ export default function MainPage(props) {
         setToggleAddUser(false);
         setToggleLeaveGroup(false);
         setToggleManageMember(false);
-        if(conversationIndex !== 0 && !searchActivated){
+        if(conversationIndex !== 0){
             var convData = {
                 convId: conversationIndex,
             }
@@ -207,7 +211,7 @@ export default function MainPage(props) {
         socket.emit('join_room', userData.userId);
         socket.on('receive_user_data', (data) =>{
             if(data[0] === undefined){
-
+                
             }else{
                 socket.emit('assign_socket_userId', userData.userId);
                 setConversationIndex(data[0].convId);
@@ -217,6 +221,7 @@ export default function MainPage(props) {
                     pic: data[0].pic
                 }));
                 setConversationList(data);
+                setAppLoading(false);
             }
         });
     }
@@ -420,7 +425,14 @@ export default function MainPage(props) {
                 />
             </div>
             <div className={ isDesktop ? 'chatList' : 'chatListRes'}>
-            {conversationList.map((content) =>(
+            {appLoading ? 
+                <SkeletonTheme width={'88%'}>
+                    <p>
+                        <Skeleton className="leftPanelLoading" count={3.3}/>
+                    </p>
+                </SkeletonTheme>
+            :
+            conversationList.map((content) =>(
                 <div 
                     className={
                         conversationIndex === content.convId
@@ -493,7 +505,16 @@ export default function MainPage(props) {
                     </p> 
                     <p className={ isDesktop ? 'beginText' : 'beginTextRes'}>This is the beginning of the chat...</p>
                 </div>
-                {
+                {appLoading ?
+                    <SkeletonTheme className='chatLoadingContainer' width={'88%'}>
+                        <p>
+                            <Skeleton className="chatLeftLoading" count={0.7}/>
+                            <Skeleton className="chatRightLoading" count={2.3}/>
+                            <Skeleton className="chatRightLoading" count={1.4}/>
+                        </p>
+                    </SkeletonTheme>
+                :
+                
                     renderMessages()
                 }
             </div>
@@ -553,7 +574,22 @@ export default function MainPage(props) {
                 /> */}
             </div>
             <div className={ isDesktop ? 'participants' : 'participantsRes'}>
-                {memberList.map((content) =>{
+                {appLoading ?
+                <>
+                    <SkeletonTheme>
+                        <div className='loadingMember'>
+                            <Skeleton className='loadingCircle' circle/>
+                            <Skeleton className='loadingSquare'/>
+                        </div>
+                    </SkeletonTheme>
+                    {/* <SkeletonTheme className='loadingMember'>
+                        <Skeleton className='loadingCircle' circle/>
+                        <Skeleton className='loadingSquare'/>
+                    </SkeletonTheme> */}
+                </>
+                    
+                :
+                memberList.map((content) =>{
                     return <div className={ isDesktop ? 'member' : 'memberRes'} 
                                 key={content.userId}
                                 onClick={e =>{

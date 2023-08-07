@@ -53,7 +53,22 @@ body{
 .containerRegisterPage::-webkit-scrollbar-thumb:hover{
     background-color: rgb(144, 144, 212);
 }
-
+.loadingContainerRegister{
+    position: fixed;
+    z-index: 4;
+    pointer-events: none;
+    top: 1%;
+    left: 1%;
+    width: 98%;
+    height: 98%;
+    border-radius: 4px;
+    background-color: rgba(186, 178, 178, 0.723);
+}
+.loadingRegister{
+    position: absolute;
+    top: 40%;
+    left: 47%;
+}
 .registerLabel, .emailInputRegister, .passwordInputRegister, .registerInput, .lineBreakRegister, .linkRegister {
   margin: 10px 0;
 }
