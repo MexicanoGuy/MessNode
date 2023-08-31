@@ -3,6 +3,7 @@
 
 A fullstack messenger-like app using Reactjs and Nodejs backend.
 Purpose of this project was to learn new libraries such as Reactjs and achieve realtime data handling.
+The app itself isn't beautyful, but it isn't the goal of this project.
 
 | Feature             | Description                                                                |
 | ----------------- | ------------------------------------------------------------------ |
