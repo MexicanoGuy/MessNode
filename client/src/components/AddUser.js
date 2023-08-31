@@ -28,7 +28,6 @@ function AddUser(props) {
         } 
     }
     const AddNewMember = (userId,e) => {
-        
         if(e){
             var dataM = {
                 userId: userId,

@@ -38,7 +38,7 @@ export default function MainPage(props) {
 
     const [memberList, setMemberList] = useState([]);
 
-    const [toggleManageMember, setToggleManageMember] = useState(null);
+    const [toggleManageMember, setToggleManageMember] = useState(false);
     const [toggleAddUser, setToggleAddUser] = useState(false);
     const [toggleLeaveGroup, setToggleLeaveGroup] = useState(false);
     const [toggleCreateGroup, setToggleCreateGroup] = useState(false);
@@ -71,7 +71,6 @@ export default function MainPage(props) {
     useLayoutEffect(() =>{
         fetchUserInfo();
     },[]);
-
     useEffect(() =>{
         const handleUpload = () =>{
             if(fileBottom !== null){
@@ -290,21 +289,6 @@ export default function MainPage(props) {
             fetchUserInfo();
         }
     }
-    // const addUserToggle = () =>{
-    //     setToggleAddUser(false);
-    // }
-    // const leaveGroupToggle = () =>{
-    //     setToggleLeaveGroup(false);
-    // }
-    // const manageMemberToggle = () =>{
-    //     setToggleManageMember(false);
-    // }
-    // const createGroupToggle = () =>{
-    //     if(toggleCreateGroup === false){
-    //        setToggleCreateGroup(!toggle);
-    //     }
-    //     else setToggleCreateGroup(false);
-    // }
     const renderMessages = () =>{
         if(messageList === null){
             return null;
@@ -392,21 +376,35 @@ export default function MainPage(props) {
             }, []);
         }
     }
-    
+    const addUserToggle = () =>{
+        setToggleAddUser(!toggleAddUser);
+    }
+    const leaveGroupToggle = () =>{
+        setToggleLeaveGroup(!toggleLeaveGroup);
+    }
+    const manageMemberToggle = () =>{
+        setToggleManageMember(!toggleManageMember);
+    }
+    const createGroupToggle = () =>{
+        setToggleCreateGroup(!toggleCreateGroup);
+    }
+
     return (
     <>
     {toggleAddUser && !toggleLeaveGroup && !toggleLeaveGroup && !settingsToggle ?  
-        <AddUser toggle={setToggleAddUser(!toggleAddUser)} memberList={memberList} convId={conversationIndex} roomId={conversationIndex} dataCld={dataCld}/> 
+        <AddUser toggle={addUserToggle} memberList={memberList} convId={conversationIndex} roomId={conversationIndex} dataCld={dataCld}/> 
             : null}
     {toggleLeaveGroup && !toggleAddUser && !toggleCreateGroup && !settingsToggle ?
-        <LeaveGroup toggle={setToggleLeaveGroup(!toggleLeaveGroup)} convId={conversationIndex} userId={userData.userId}/> 
+        <LeaveGroup toggle={leaveGroupToggle} convId={conversationIndex} userId={userData.userId}/> 
             : null}
     {toggleCreateGroup && !toggleLeaveGroup && !toggleAddUser && !settingsToggle ?
-        <CreateGroup toggle={setToggleCreateGroup(!toggleCreateGroup)} userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}/> 
+        <CreateGroup 
+            toggle={createGroupToggle} 
+            userId={userData.userId} dataCld={dataCld} fetchUserInfo={fetchUserInfo}/> 
             : null}
-    {settingsToggle && !toggleAddUser && !toggleCreateGroup && !toggleManageMember ?
-        <SettingsPage toggle={setSettingsToggle(!settingsToggle)}/> : null
-    }
+    {/* {settingsToggle && !toggleAddUser && !toggleCreateGroup && !toggleManageMember ?
+        <SettingsPage toggle={togglesett}/> : null
+    } */}
     <div className={ isDesktop ? 'containerConversationPage' : 'containerConversationPageRes'}>
         <div className={ isDesktop ? 'leftPanel' : 'leftPanelRes'}>
             <div className={ isDesktop ? 'topSearch' : 'topSearchRes'}>
@@ -419,9 +417,7 @@ export default function MainPage(props) {
                 <img
                     src={addNewIcon}
                     className={ isDesktop ? 'addNewConv' : 'addNewConvRes'}
-                    // onClick={e => {
-                    //     setToggleCreateGroup(!toggleCreateGroup);
-                    // }}
+                    onClick={createGroupToggle}
                 />
             </div>
             <div className={ isDesktop ? 'chatList' : 'chatListRes'}>
@@ -614,24 +610,24 @@ export default function MainPage(props) {
                                 : (content.activity === 'Offline' ? 'Offline' : 'Custom')
                             }/>
                         </div>
-                        {/* <button className='manageUser' onClick={e =>{
+                        <div className='manageUser' onClick={e =>{
                             setToggleManageMember((oldId) =>{
                                 return oldId == content.userId ? null : content.userId;
                             });
-                        } }>...</button> */}
+                        } }>...</div>
                         <div className={ isDesktop ? 'flexMember' : 'flexMemberRes'}>
                             <p className={ isDesktop ? 'memberUsername' : 'memberUsernameRes'}>{content.username}</p>
                             <p className={ isDesktop ? 'memberStatus' : 'memberStatusRes'}>{content.activity}</p>
                         </div>
                         {toggleManageMember === content.userId  ? 
-                            <ManageUser toggle={setToggleManageMember(!toggleManageMember)} memberId={content.userId} convId={conversationIndex}/>  : null }
+                            <ManageUser toggle={manageMemberToggle} memberId={content.userId} convId={conversationIndex}/>  : null }
                     </div>
                 })}
             { conversationIndex !== 0 
             ?
-                <div>
+                <>
                     <div className={ isDesktop ? 'addMemberContainer' : 'addMemberContainerRes'} 
-                        onClick={e =>{ setToggleAddUser(!toggleAddUser)}}>
+                        onClick={addUserToggle}>
                         <img className={ isDesktop ? 'addMemberImg' : 'addMemberImgRes'}
                             src={addMemberIcon}
                         />
@@ -642,7 +638,7 @@ export default function MainPage(props) {
                         <img className={ isDesktop ? 'leaveGroupImg' : 'leaveGroupImgRes'} src={logoutIcon}/>
                         <p className={ isDesktop ? 'leaveGroupText' : 'leaveGroupTextRes'}>Leave group</p>
                     </div> 
-                </div>
+                </>
             : null}
             </div>
         </div>
