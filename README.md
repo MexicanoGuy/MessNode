@@ -90,5 +90,5 @@ App is being hosted on vercel: https://mess-node.vercel.app
 
 ## License
 
-[UNLICENSED]UNLICENSED
+[UNLICENSED]
 
